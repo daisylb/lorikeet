@@ -43,7 +43,8 @@ class SubclassListSerializer(serializers.ListSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     items = SubclassListSerializer(child=LineItemSerializer())
+    grand_total = fields.DecimalField(max_digits=7, decimal_places=2, source='get_grand_total')
 
     class Meta:
         model = models.Cart
-        fields = ('items',)
+        fields = ('items', 'grand_total')

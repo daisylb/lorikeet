@@ -12,6 +12,9 @@ class Cart(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
 
+    def get_grand_total(self):
+        return sum(x.get_total() for x in self.items.select_subclasses().all())
+
 
 
 class Order(models.Model):
