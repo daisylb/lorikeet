@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
 from rest_framework.response import Response
 from . import api_serializers
 
@@ -19,3 +19,13 @@ class CartItemView(RetrieveUpdateDestroyAPIView):
     def get_serializer(self, instance, *args, **kwargs):
         ser_class = api_serializers.registry.get_serializer_class(instance)
         return ser_class(instance, *args, **kwargs)
+
+
+class AddToCartView(CreateAPIView):
+    def get_serializer(self, data, *args, **kwargs):
+        ser_class = api_serializers.registry[data['type']]
+        return ser_class(data=data['data'], *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.cart = self.request.get_cart()
+        super().perform_create(serializer)
