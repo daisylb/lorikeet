@@ -15,21 +15,34 @@ class LineItemSerializerRegistry(dict):
 registry = LineItemSerializerRegistry()
 
 
-class InheritanceRelatedField(fields.Field):
-    def instance_to_representation(self, instance):
+class RegistryRelatedField(fields.Field):
+    def to_representation(self, instance):
+        return registry.get_serializer(instance).data
+
+
+class LineItemSerializer(serializers.Serializer):
+    type = fields.CharField()
+    data = RegistryRelatedField()
+    total = fields.DecimalField(max_digits=7, decimal_places=2)
+    url = fields.URLField()
+
+    def to_representation(self, instance):
         return {
-            'type': instance.__class__.__name__,
-            'data': registry.get_serializer(instance).data,
-            'total': instance.get_total(),
-            'url': reverse('cart:cart-item', kwargs={'id': instance.id}),
+            'type': self.fields['type'].to_representation(instance.__class__.__name__),
+            'data': self.fields['data'].to_representation(instance),
+            'total': self.fields['total'].to_representation(instance.get_total()),
+            'url': self.fields['url'].to_representation(reverse('cart:cart-item', kwargs={'id': instance.id})),
         }
 
-    def to_representation(self, internal_value):
-        return [self.instance_to_representation(x)
-                for x in internal_value.all().select_subclasses()]
+
+class SubclassListSerializer(serializers.ListSerializer):
+    def to_representation(self, instance, *args, **kwargs):
+        instance = instance.select_subclasses()
+        return super().to_representation(instance, *args, **kwargs)
+
 
 class CartSerializer(serializers.ModelSerializer):
-    items = InheritanceRelatedField()
+    items = SubclassListSerializer(child=LineItemSerializer())
 
     class Meta:
         model = models.Cart
