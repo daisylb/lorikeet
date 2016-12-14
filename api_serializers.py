@@ -48,3 +48,19 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Cart
         fields = ('items', 'grand_total')
+
+
+class LineItemSerializer(serializers.ModelSerializer):
+    def __init__(self, instance=None, *args, **kwargs):
+        if instance is not None:
+            self.cart =  instance.cart
+        elif 'cart' in kwargs:
+            self.cart = kwargs.pop('cart')
+        else:
+            raise TypeError("Either instance or cart arguments must be "
+                            "provided to {}".format(self.__class__.__name__))
+        return super().__init__(instance, *args, **kwargs)
+
+    def create(self, validated_data):
+        validated_data['cart'] = self.cart
+        return super().create(validated_data)
