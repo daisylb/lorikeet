@@ -71,6 +71,11 @@ class LineItem(models.Model):
 
     objects = InheritanceManager()
 
+    class Meta:
+        # Because IDs auto increment, ordering by ID has the same effect as
+        # ordering by date added, but we don't have to store the date
+        ordering = ('id',)
+
     def get_total(self):
         raise NotImplemented("Provide a get_total method in your LineItem "
                              "subclass {}.".format(self.__class__.__name__))
