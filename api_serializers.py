@@ -52,10 +52,10 @@ class CartSerializer(serializers.ModelSerializer):
 
 class LineItemSerializer(serializers.ModelSerializer):
     def __init__(self, instance=None, *args, **kwargs):
-        if instance is not None:
-            self.cart =  instance.cart
-        elif 'cart' in kwargs:
+        if 'cart' in kwargs:
             self.cart = kwargs.pop('cart')
+        elif instance is not None:
+            self.cart =  instance.cart
         else:
             raise TypeError("Either instance or cart arguments must be "
                             "provided to {}".format(self.__class__.__name__))
