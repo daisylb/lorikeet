@@ -15,7 +15,7 @@ class LineItemSerializerRegistry(dict):
 registry = LineItemSerializerRegistry()
 
 
-class PublicKeyModelSerializer(serializers.ModelSerializer):
+class PrimaryKeyModelSerializer(serializers.ModelSerializer):
     """A serializer that accepts the primary key of an object as input.
 
     When read from, this serializer works exactly the same as ModelSerializer.
