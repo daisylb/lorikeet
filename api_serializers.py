@@ -61,11 +61,15 @@ class SubclassListSerializer(serializers.ListSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     items = SubclassListSerializer(child=LineItemSerializer())
+    new_item_url = fields.SerializerMethodField()
     grand_total = fields.DecimalField(max_digits=7, decimal_places=2, source='get_grand_total')
+
+    def get_new_item_url(self, _):
+        return reverse('cart:add-to-cart')
 
     class Meta:
         model = models.Cart
-        fields = ('items', 'grand_total')
+        fields = ('items', 'new_item_url', 'grand_total')
 
 
 class LineItemSerializer(serializers.ModelSerializer):
