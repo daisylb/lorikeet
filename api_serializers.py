@@ -73,6 +73,10 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class LineItemSerializer(serializers.ModelSerializer):
+    """Base serializer for LineItem subclasses.
+
+    This is part of the public API.
+    """
     def __init__(self, instance=None, *args, **kwargs):
         if 'cart' in kwargs:
             self.cart = kwargs.pop('cart')
