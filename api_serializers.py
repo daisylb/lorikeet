@@ -15,6 +15,24 @@ class LineItemSerializerRegistry(dict):
 registry = LineItemSerializerRegistry()
 
 
+class PublicKeyModelSerializer(serializers.ModelSerializer):
+    """A serializer that accepts the primary key of an object as input.
+
+    When read from, this serializer works exactly the same as ModelSerializer.
+    When written to, it accepts a valid primary key of an existing instance
+    of the same model.
+
+    This class is provided as
+
+    This class is part of the public API.
+    """
+    def get_queryset(self):
+        self.Meta.model.objects.all()
+
+    def to_internal_value(self, repr):
+        return self.get_queryset().get(pk=repr)
+
+
 class RegistryRelatedField(fields.Field):
     def to_representation(self, instance):
         return registry.get_serializer(instance).data
