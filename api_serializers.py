@@ -38,7 +38,7 @@ class RegistryRelatedField(fields.Field):
         return registry.get_serializer(instance).data
 
 
-class LineItemSerializer(serializers.Serializer):
+class LineItemMetadataSerializer(serializers.Serializer):
     type = fields.CharField()
     data = RegistryRelatedField()
     total = fields.DecimalField(max_digits=7, decimal_places=2)
@@ -60,7 +60,7 @@ class SubclassListSerializer(serializers.ListSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    items = SubclassListSerializer(child=LineItemSerializer())
+    items = SubclassListSerializer(child=LineItemMetadataSerializer())
     new_item_url = fields.SerializerMethodField()
     grand_total = fields.DecimalField(max_digits=7, decimal_places=2, source='get_grand_total')
 
