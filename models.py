@@ -11,9 +11,15 @@ class Cart(models.Model):
     referenced from a session.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+    delivery_address = models.ForeignKey('cart.DeliveryAddress', blank=True, null=True)
 
     def get_grand_total(self):
         return sum(x.get_total() for x in self.items.select_subclasses().all())
+
+    @property
+    def delivery_address_subclass(self):
+        return DeliveryAddress.objects.get_subclass(id=self.delivery_address_id)
+
 
 
 
@@ -57,7 +63,12 @@ class Payment(models.Model):
 
 
 class DeliveryAddress(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+    """An address that an order can be shipped to.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True,
+                             related_name='delivery_addresses')
+
+    objects = InheritanceManager()
 
 
 class LineItem(models.Model):

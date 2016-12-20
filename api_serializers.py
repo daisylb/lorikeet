@@ -62,14 +62,22 @@ class SubclassListSerializer(serializers.ListSerializer):
 class CartSerializer(serializers.ModelSerializer):
     items = SubclassListSerializer(child=LineItemMetadataSerializer())
     new_item_url = fields.SerializerMethodField()
+    delivery_address = RegistryRelatedField(source='delivery_address_subclass')
+    available_delivery_addresses = fields.SerializerMethodField()
     grand_total = fields.DecimalField(max_digits=7, decimal_places=2, source='get_grand_total')
 
     def get_new_item_url(self, _):
         return reverse('cart:add-to-cart')
 
+    def get_available_delivery_addresses(self, _):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated():
+            return request.user.delivery_address_set.all()
+        return []
+
     class Meta:
         model = models.Cart
-        fields = ('items', 'new_item_url', 'grand_total')
+        fields = ('items', 'new_item_url', 'delivery_address', 'available_delivery_addresses', 'grand_total')
 
 
 class LineItemSerializer(serializers.ModelSerializer):

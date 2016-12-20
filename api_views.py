@@ -7,7 +7,7 @@ from . import api_serializers
 class CartView(APIView):
     def get(self, request, format=None):
         cart = request.get_cart()
-        data = api_serializers.CartSerializer(cart).data
+        data = api_serializers.CartSerializer(cart, context={'request': self.request}).data
         return Response(data)
 
 
