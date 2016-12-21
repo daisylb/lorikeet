@@ -78,10 +78,14 @@ class CartSerializer(serializers.ModelSerializer):
     items = SubclassListSerializer(child=LineItemMetadataSerializer())
     new_item_url = fields.SerializerMethodField()
     delivery_addresses = fields.SerializerMethodField()
+    new_address_url = fields.SerializerMethodField()
     grand_total = fields.DecimalField(max_digits=7, decimal_places=2, source='get_grand_total')
 
     def get_new_item_url(self, _):
         return reverse('cart:add-to-cart')
+
+    def get_new_address_url(self, _):
+        return reverse('cart:new-address')
 
     def get_delivery_addresses(self, _):
         request = self.context.get('request')
@@ -101,7 +105,7 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Cart
-        fields = ('items', 'new_item_url', 'delivery_addresses', 'grand_total')
+        fields = ('items', 'new_item_url', 'delivery_addresses', 'new_address_url', 'grand_total')
 
 
 class LineItemSerializer(serializers.ModelSerializer):

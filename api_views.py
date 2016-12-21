@@ -27,3 +27,15 @@ class AddToCartView(CreateAPIView):
         ser_class = api_serializers.registry[data['type']]
         return ser_class(data=data['data'], cart=self.request.get_cart(),
                          *args, **kwargs)
+
+
+class NewAddressView(CreateAPIView):
+    def get_serializer(self, data, *args, **kwargs):
+        ser_class = api_serializers.registry[data['type']]
+        return ser_class(data=data['data'], *args, **kwargs)
+
+    def perform_create(self, serializer):
+        super().perform_create(serializer)
+        cart = self.request.get_cart()
+        cart.delivery_address = serializer.instance
+        cart.save()
