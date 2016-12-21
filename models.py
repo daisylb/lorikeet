@@ -18,7 +18,9 @@ class Cart(models.Model):
 
     @property
     def delivery_address_subclass(self):
-        return DeliveryAddress.objects.get_subclass(id=self.delivery_address_id)
+        if self.delivery_address_id is not None:
+            return DeliveryAddress.objects.get_subclass(
+                id=self.delivery_address_id)
 
 
 
