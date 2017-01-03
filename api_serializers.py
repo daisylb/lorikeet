@@ -28,7 +28,7 @@ class PrimaryKeyModelSerializer(serializers.ModelSerializer):
     This class is part of the public API.
     """
     def get_queryset(self):
-        self.Meta.model.objects.all()
+        return self.Meta.model.objects.all()
 
     def to_internal_value(self, repr):
         return self.get_queryset().get(pk=repr)
@@ -98,7 +98,7 @@ class CartSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated():
             the_set = request.user.delivery_address_set.all()
 
-        if selected not in the_set:
+        if selected is not None and selected not in the_set:
             the_set = chain(the_set, [selected])
 
         return DeliveryAddressSerializer(instance=the_set, many=True, context={'selected': selected}).data
