@@ -58,7 +58,7 @@ class LineItemMetadataSerializer(RegistryRelatedWithMetadataSerializer):
         return str(instance.get_total())
 
     def get_url(self, instance):
-        return reverse('cart:cart-item', kwargs={'id': instance.id})
+        return reverse('lorikeet:cart-item', kwargs={'id': instance.id})
 
 
 class DeliveryAddressSerializer(RegistryRelatedWithMetadataSerializer):
@@ -82,10 +82,10 @@ class CartSerializer(serializers.ModelSerializer):
     grand_total = fields.DecimalField(max_digits=7, decimal_places=2, source='get_grand_total')
 
     def get_new_item_url(self, _):
-        return reverse('cart:add-to-cart')
+        return reverse('lorikeet:add-to-cart')
 
     def get_new_address_url(self, _):
-        return reverse('cart:new-address')
+        return reverse('lorikeet:new-address')
 
     def get_delivery_addresses(self, _):
         request = self.context.get('request')

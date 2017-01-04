@@ -1,17 +1,17 @@
-# w4yl.apps.cart
+# Lorikeet
 
-This package implements the generic components of the shopping cart functionality of w4yl.
+Lorikeet is a simple, generic, API-only shopping cart framework for Django.
 
 ## Design Goals
 
-- **Be customisable, without being overbearing.** Rather than providing an extremely complex application with bells, whistles and configuration options to satisfy every use case, w4yl.apps.cart provides a shopping cart framework, on top of which you can build your online store. In this regard, w4yl.apps.cart is heavily inspired by [Django-SHOP](https://django-shop.readthedocs.io/en/latest/architecture.html).
-- **Be minimal.** w4yl.apps.cart's sole concern is the shopping cart and checkout process. w4yl.apps.cart has no knowledge of things like products, variations, categories, and so on, nor does it contain views to display these things. This is in keeping with the previous design goal, because it allows you to structure both the data model and UI of your products in a way that makes sense for the site you're building.
-- **Be loosely coupled.** While w4yl.apps.cart was originally built as part of an online store that uses Django CMS and React, it does not depend on either, and could be used with any CMS or frontend framework, or none at all. w4yl.apps.cart provides an optional companion set of reusable React components for the checkout experience, but the REST API used to manipulate the cart is well-documented and considered part of the library's public API surface.
-- **Get out of the way.** One of the core design goals of the project w4yl.apps.cart was extracted from is to provide a simple, low-friction checkout experience. w4yl.apps.cart was designed from the ground up to enable this.
+- **Be customisable, without being overbearing.** Rather than providing an extremely complex application with bells, whistles and configuration options to satisfy every use case, lorikeet provides a shopping cart framework, on top of which you can build your online store. In this regard, Lorikeet is heavily inspired by [Django-SHOP](https://django-shop.readthedocs.io/en/latest/architecture.html).
+- **Be minimal.** Lorikeet's sole concern is the shopping cart and checkout process. Lorikeet has no knowledge of things like products, variations, categories, and so on, nor does it contain views to display these things. This is in keeping with the previous design goal, because it allows you to structure both the data model and UI of your products in a way that makes sense for the site you're building.
+- **Be loosely coupled.** While Lorikeet was originally built as part of an online store that uses Django CMS and React, it does not depend on either, and could be used with any CMS or frontend framework, or none at all. Lorikeet provides an optional companion set of reusable React components for the checkout experience, but the REST API used to manipulate the cart is well-documented and considered part of the library's public API surface.
+- **Get out of the way.** One of the core design goals of the project Lorikeet was extracted from is to provide a simple, low-friction checkout experience. Lorikeet was designed from the ground up to enable this.
 
 ## Implementation Guide
 
-### Install w4yl.apps.cart
+### Install Lorikeet
 
 TODO
 
@@ -23,7 +23,7 @@ The first thing you'll need to do is define what sort of things can go into your
 
 ```python
 from django.db import models
-from w4yl.apps.cart.models import LineItem
+from lorikeet.models import LineItem
 
 class MyLineItem(LineItem):
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
@@ -49,7 +49,7 @@ In this example, we've done just that, and we've also made a serializer for our
 
 ```python
 from rest_framework import fields
-from w4yl.apps.cart.api_serializers import (LineItemSerializer,
+from lorikeet.api_serializers import (LineItemSerializer,
                                             PrimaryKeyModelSerializer)
 
 from . import models
@@ -73,7 +73,7 @@ class WineLineItemSerializer(LineItemSerializer):
         return super().create(validated_data)
 ```
 
-Your products and line items are now all done. You don't need to write any APIViews or ViewSets or Router entries for your serializers, because w4yl.apps.cart provides all of that for you.
+Your products and line items are now all done. You don't need to write any APIViews or ViewSets or Router entries for your serializers, because Lorikeet provides all of that for you.
 
 ### Build the frontend
 

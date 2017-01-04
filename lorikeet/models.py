@@ -11,7 +11,7 @@ class Cart(models.Model):
     referenced from a session.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
-    delivery_address = models.ForeignKey('cart.DeliveryAddress', blank=True, null=True)
+    delivery_address = models.ForeignKey('lorikeet.DeliveryAddress', blank=True, null=True)
 
     def get_grand_total(self):
         return sum(x.get_total() for x in self.items.select_subclasses().all())
@@ -31,8 +31,8 @@ class Order(models.Model):
     custom_invoice_id = models.CharField(max_length=255)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
     guest_email = models.EmailField(blank=True)
-    payment = models.ForeignKey('cart.Payment')
-    delivery_address = models.ForeignKey('cart.DeliveryAddress')
+    payment = models.ForeignKey('lorikeet.Payment')
+    delivery_address = models.ForeignKey('lorikeet.DeliveryAddress')
 
     @property
     def email(self):

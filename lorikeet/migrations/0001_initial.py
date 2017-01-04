@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
             name='LineItem',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='cart.Cart')),
+                ('cart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='lorikeet.Cart')),
             ],
         ),
         migrations.CreateModel(
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('custom_invoice_id', models.CharField(max_length=255)),
                 ('guest_email', models.EmailField(blank=True, max_length=254)),
-                ('delivery_address', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cart.DeliveryAddress')),
+                ('delivery_address', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lorikeet.DeliveryAddress')),
             ],
         ),
         migrations.CreateModel(
@@ -62,12 +62,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='payment',
             name='method',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cart.PaymentMethod'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lorikeet.PaymentMethod'),
         ),
         migrations.AddField(
             model_name='order',
             name='payment',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cart.Payment'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='lorikeet.Payment'),
         ),
         migrations.AddField(
             model_name='order',
@@ -77,6 +77,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='lineitem',
             name='order',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='cart.Order'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='lorikeet.Order'),
         ),
     ]
