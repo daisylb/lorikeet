@@ -1,5 +1,7 @@
 # Lorikeet
 
+⚠️ **Note:** Lorikeet is a work in progress. It may change at any time, and you shouldn't use it in production yet.
+
 Lorikeet is a simple, generic, API-only shopping cart framework for Django.
 
 ## Design Goals
