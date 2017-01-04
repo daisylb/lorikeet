@@ -14,4 +14,9 @@ setup(
         'djangorestframework>=3.5.3,<3.6',
         'django-model-utils>=2.6,<3',
     ],
+    extras_require={
+        'stripe': [
+            'stripe>=1.44.0,<2',
+        ],
+    },
 )

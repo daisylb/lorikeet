@@ -68,6 +68,13 @@ class DeliveryAddressSerializer(RegistryRelatedWithMetadataSerializer):
         return instance == self.context.get('selected')
 
 
+class PaymentMethodSerializer(RegistryRelatedWithMetadataSerializer):
+    selected = fields.SerializerMethodField()
+
+    def get_selected(self, instance):
+        return instance == self.context.get('selected')
+
+
 class SubclassListSerializer(serializers.ListSerializer):
     def to_representation(self, instance, *args, **kwargs):
         instance = instance.select_subclasses()
@@ -79,6 +86,8 @@ class CartSerializer(serializers.ModelSerializer):
     new_item_url = fields.SerializerMethodField()
     delivery_addresses = fields.SerializerMethodField()
     new_address_url = fields.SerializerMethodField()
+    payment_methods = fields.SerializerMethodField()
+    new_payment_method_url = fields.SerializerMethodField()
     grand_total = fields.DecimalField(max_digits=7, decimal_places=2, source='get_grand_total')
 
     def get_new_item_url(self, _):
@@ -103,9 +112,28 @@ class CartSerializer(serializers.ModelSerializer):
 
         return DeliveryAddressSerializer(instance=the_set, many=True, context={'selected': selected}).data
 
+    def get_new_payment_method_url(self, _):
+        return reverse('lorikeet:new-payment-method')
+
+    def get_payment_methods(self, cart):
+        request = self.context.get('request')
+        the_set = []
+
+        selected = cart.payment_method_subclass
+
+        if request and request.user.is_authenticated():
+            the_set = request.user.delivery_address_set.all()
+
+        if selected is not None and selected not in the_set:
+            the_set = chain(the_set, [selected])
+
+        return PaymentMethodSerializer(instance=the_set, many=True, context={'selected': selected}).data
+
     class Meta:
         model = models.Cart
-        fields = ('items', 'new_item_url', 'delivery_addresses', 'new_address_url', 'grand_total')
+        fields = ('items', 'new_item_url', 'delivery_addresses',
+                  'new_address_url', 'payment_methods',
+                  'new_payment_method_url', 'grand_total')
 
 
 class LineItemSerializer(serializers.ModelSerializer):

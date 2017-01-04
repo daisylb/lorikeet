@@ -12,6 +12,7 @@ class Cart(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
     delivery_address = models.ForeignKey('lorikeet.DeliveryAddress', blank=True, null=True)
+    payment_method = models.ForeignKey('lorikeet.PaymentMethod', blank=True, null=True)
 
     def get_grand_total(self):
         return sum(x.get_total() for x in self.items.select_subclasses().all())
@@ -21,6 +22,12 @@ class Cart(models.Model):
         if self.delivery_address_id is not None:
             return DeliveryAddress.objects.get_subclass(
                 id=self.delivery_address_id)
+
+    @property
+    def payment_method_subclass(self):
+        if self.payment_method_id is not None:
+            return PaymentMethod.objects.get_subclass(
+                id=self.payment_method_id)
 
 
 
@@ -50,6 +57,8 @@ class Order(models.Model):
 
 class PaymentMethod(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+
+    objects = InheritanceManager()
 
     def make_payment(self, amount, description):
         raise NotImplemented("Provide a make_payment method in your "
