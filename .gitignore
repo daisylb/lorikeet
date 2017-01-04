@@ -1,0 +1,6 @@
+# .js files in the root are build artefacts for the NPM package.
+# This is kinda gross, but it's less gross than having to have js-built/blah or
+# something in the import path
+/*.js
+
+node_modules
