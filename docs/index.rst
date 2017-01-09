@@ -1,18 +1,24 @@
-.. Lorikeet documentation master file, created by
-   sphinx-quickstart on Thu Jan  5 14:41:18 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to Lorikeet's documentation!
-====================================
+.. include:: ../README.rst
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents
+   :caption: Getting Started Guide
 
-   guide
+   install
+   backend
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference
+
    api
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Extras
+
+   stripe
 
 
 Indices and tables

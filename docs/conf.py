@@ -49,7 +49,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Lorikeet'
-copyright = '2017, Adam Brenecki'
+from datetime import date
+copyright = '2016–{:%Y}, Commercial Motor Vehicles Pty Ltd'.format(date.today())
 author = 'Adam Brenecki'
 
 # The version info for the project you're documenting, acts as replacement for
