@@ -1,0 +1,6 @@
+image: randomknowledge/docker-pyenv-tox
+
+test:
+    stage: test
+    script:
+        - tox
