@@ -16,8 +16,8 @@ modelled using the following model.
     from django.db import models
 
     class Product(models.Model):
-        name = CharField(max_length=255)
-        unit_price = DecimalField(max_digits=7, decimal_places=2)
+        name = models.CharField(max_length=255)
+        unit_price = models.DecimalField(max_digits=7, decimal_places=2)
 
 Lorikeet itself doesn't care how your products are modelled, though; your
 ``Product`` model could be more complex than this, you could have multiple
