@@ -47,6 +47,27 @@ def test_empty_cart_logged_in(admin_client):
 
 
 @pytest.mark.django_db
+def test_cart_contents(client, cart):
+    i = factories.MyLineItemFactory(cart=cart)
+    resp = client.get('/_cart/cart/')
+    data = loads(resp.content.decode('utf-8'))
+    assert data['items'] == [{
+        'type': 'MyLineItem',
+        'url': '/_cart/cart/{}/'.format(i.id),
+        'data': {
+            'product': {
+                'id': i.product.id,
+                'name': i.product.name,
+                'unit_price': str(i.product.unit_price),
+            },
+            'quantity': i.quantity,
+        },
+        'total': str(i.product.unit_price * i.quantity),
+    }]
+    assert data['grand_total'] == str(i.product.unit_price * i.quantity)
+
+
+@pytest.mark.django_db
 def test_add_item_to_cart(client):
     p = factories.ProductFactory()
     resp = client.post('/_cart/cart/new/', dumps({
