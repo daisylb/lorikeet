@@ -49,7 +49,13 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Lorikeet'
+# Setup to keep Django happy
+import os
+import sys
 from datetime import date
+
+import django
+
 copyright = '2016–{:%Y}, Commercial Motor Vehicles Pty Ltd'.format(
     date.today())
 author = 'Adam Brenecki'
@@ -156,3 +162,7 @@ texinfo_documents = [
      author, 'Lorikeet', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+sys.path += [os.path.join(os.path.dirname(os.path.dirname(__file__)), 'testproject')]
+os.environ['DJANGO_SETTINGS_MODULE'] = 'testproject.settings'
+django.setup()

@@ -7,8 +7,18 @@ from . import models
 
 
 class LineItemSerializerRegistry(dict):
+    """Registers serializers with their associated models.
+
+    This is used instead of discovery or a metaclass-based registry as
+    making sure the classes to be registered actually get imported can be
+    fragile and non-obvious to debug.
+
+    The registry instance is available at
+    ``lorikeet.api_serializers.registry``.
+    """
 
     def register(self, model, serializer):
+        """Associate ``model`` with ``serializer``."""
         self[model.__name__] = serializer
 
     def get_serializer_class(self, instance):
@@ -25,14 +35,19 @@ class PrimaryKeyModelSerializer(serializers.ModelSerializer):
 
     When read from, this serializer works exactly the same as ModelSerializer.
     When written to, it accepts a valid primary key of an existing instance
-    of the same model.
+    of the same model. It can't be used to add or edit model instances.
 
-    This class is provided as
-
-    This class is part of the public API.
+    This is provided as a convenience, for the common use case of a
+    :class:`~lorikeet.models.LineItem` subclass that has a foreign key to
+    a product model; see the :doc:`Getting Started Guide <backend>` for a
+    usage example.
     """
 
     def get_queryset(self):
+        """Returns a queryset which the model instance is retrieved from.
+
+        By default, returns ``self.Meta.model.objects.all()``.
+        """
         return self.Meta.model.objects.all()
 
     def to_internal_value(self, repr):
@@ -145,10 +160,7 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class LineItemSerializer(serializers.ModelSerializer):
-    """Base serializer for LineItem subclasses.
-
-    This is part of the public API.
-    """
+    """Base serializer for LineItem subclasses."""
 
     def __init__(self, instance=None, *args, **kwargs):
         if 'cart' in kwargs:

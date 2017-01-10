@@ -12,6 +12,7 @@
    :maxdepth: 2
    :caption: Reference
 
+   python
    api
 
 .. toctree::

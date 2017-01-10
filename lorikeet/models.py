@@ -6,8 +6,9 @@ from model_utils.managers import InheritanceManager
 class Cart(models.Model):
     """An in-progress shopping cart.
 
-    These can be attached to a user, or they can have a null user and be
-    referenced from a session.
+    Carts are associated with the user for an authenticated request, or with
+    the session otherwise; in either case it can be accessed on
+    ``request.cart``.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
     delivery_address = models.ForeignKey(
@@ -16,16 +17,27 @@ class Cart(models.Model):
         'lorikeet.PaymentMethod', blank=True, null=True)
 
     def get_grand_total(self):
+        """Calculate the grand total for this cart."""
         return sum(x.get_total() for x in self.items.select_subclasses().all())
 
     @property
     def delivery_address_subclass(self):
+        """Get the delivery address instance selected for this cart.
+
+        Returns an instance of one of the registered
+        :class:`~lorikeet.models.DeliveryAddress` subclasses.
+        """
         if self.delivery_address_id is not None:
             return DeliveryAddress.objects.get_subclass(
                 id=self.delivery_address_id)
 
     @property
     def payment_method_subclass(self):
+        """Get the payment method instance selected for this cart.
+
+        Returns an instance of one of the registered
+        :class:`~lorikeet.models.PaymentMethod` subclasses.
+        """
         if self.payment_method_id is not None:
             return PaymentMethod.objects.get_subclass(
                 id=self.payment_method_id)
@@ -55,6 +67,11 @@ class Order(models.Model):
 
 
 class PaymentMethod(models.Model):
+    """A payment method, like a credit card or bank details.
+
+    This model doesn't do anything by itself; you'll need to subclass it as
+    described in the :doc:`Getting Started Guide <backend>`.
+    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
 
     objects = InheritanceManager()
@@ -73,7 +90,10 @@ class Payment(models.Model):
 
 
 class DeliveryAddress(models.Model):
-    """An address that an order can be shipped to.
+    """An address that an order can be delivered to.
+
+    This model doesn't do anything by itself; you'll need to subclass it as
+    described in the :doc:`Getting Started Guide <backend>`.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True,
                              related_name='delivery_addresses')
@@ -84,8 +104,8 @@ class DeliveryAddress(models.Model):
 class LineItem(models.Model):
     """An individual item that is either in a shopping cart or on an order.
 
-    Subclasses of LineItem should provide a get_total method that should
-    depend only on data stored on this model.
+    This model doesn't do anything by itself; you'll need to subclass it as
+    described in the :doc:`Getting Started Guide <backend>`.
     """
     cart = models.ForeignKey(Cart, related_name='items', blank=True, null=True)
     order = models.ForeignKey(
@@ -99,6 +119,11 @@ class LineItem(models.Model):
         ordering = ('id',)
 
     def get_total(self):
+        """Returns the total amount to charge on this LineItem.
+
+        By default this raises ``NotImplemented``; subclasses of this class
+        need to override this.
+        """
         raise NotImplemented("Provide a get_total method in your LineItem "
                              "subclass {}.".format(self.__class__.__name__))
 
