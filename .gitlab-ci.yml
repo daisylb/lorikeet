@@ -10,9 +10,9 @@ test:
 
 style:
     stage: test
-    image: calthorpeanalytics/pre-commit
+    image: python:3.5
     script:
-        - pip install -e .[stripe,docs]
+        - pip install -e .[stripe,docs] pre-commit prospector
         - pre-commit run --all-files
 
 wheel:
