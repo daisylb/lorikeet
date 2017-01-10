@@ -6,7 +6,7 @@ from rest_framework import fields, serializers
 from . import models
 
 
-class LineItemSerializerRegistry(dict):
+class LineItemSerializerRegistry:
     """Registers serializers with their associated models.
 
     This is used instead of discovery or a metaclass-based registry as
@@ -17,15 +17,36 @@ class LineItemSerializerRegistry(dict):
     ``lorikeet.api_serializers.registry``.
     """
 
+    def __init__(self):
+        self.line_items = {}
+        self.payment_methods = {}
+        self.delivery_addresses = {}
+
     def register(self, model, serializer):
         """Associate ``model`` with ``serializer``."""
-        self[model.__name__] = serializer
+        print(model.__mro__)
+        if issubclass(model, models.LineItem):
+            self.line_items[model.__name__] = serializer
+        elif issubclass(model, models.PaymentMethod):
+            self.payment_methods[model.__name__] = serializer
+        elif issubclass(model, models.DeliveryAddress):
+            self.delivery_addresses[model.__name__] = serializer
+        else:
+            raise ValueError("model must be a subclass of "
+                             "LineItem, PaymentMethod or DeliveryAddress")
 
     def get_serializer_class(self, instance):
-        return self[instance.__class__.__name__]
+        if isinstance(instance, models.LineItem):
+            return self.line_items[instance.__class__.__name__]
+        if isinstance(instance, models.PaymentMethod):
+            return self.payment_methods[instance.__class__.__name__]
+        if isinstance(instance, models.DeliveryAddress):
+            return self.delivery_addresses[instance.__class__.__name__]
+        raise ValueError("instance must be an instance of a "
+                         "LineItem, PaymentMethod or DeliveryAddress subclass")
 
     def get_serializer(self, instance):
-        return self[instance.__class__.__name__](instance)
+        return self.get_serializer_class(instance)(instance)
 
 registry = LineItemSerializerRegistry()
 

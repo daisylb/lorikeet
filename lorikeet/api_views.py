@@ -33,7 +33,7 @@ class CartItemView(RetrieveUpdateDestroyAPIView):
 class AddToCartView(CreateAPIView):
 
     def get_serializer(self, data, *args, **kwargs):
-        ser_class = api_serializers.registry[data['type']]
+        ser_class = api_serializers.registry.line_items[data['type']]
         return ser_class(data=data['data'], cart=self.request.get_cart(),
                          *args, **kwargs)
 
@@ -41,7 +41,7 @@ class AddToCartView(CreateAPIView):
 class NewAddressView(CreateAPIView):
 
     def get_serializer(self, data, *args, **kwargs):
-        ser_class = api_serializers.registry[data['type']]
+        ser_class = api_serializers.registry.delivery_addresses[data['type']]
         return ser_class(data=data['data'], *args, **kwargs)
 
     def perform_create(self, serializer):
@@ -54,7 +54,7 @@ class NewAddressView(CreateAPIView):
 class NewPaymentMethodView(CreateAPIView):
 
     def get_serializer(self, data, *args, **kwargs):
-        ser_class = api_serializers.registry[data['type']]
+        ser_class = api_serializers.registry.payment_methods[data['type']]
         return ser_class(data=data['data'],
                          context={'request': self.request},
                          *args, **kwargs)
