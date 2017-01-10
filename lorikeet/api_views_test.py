@@ -125,3 +125,36 @@ def test_change_cart_item(client, cart):
     }), content_type='application/json')
     assert resp.status_code == 200
     assert smodels.MyLineItem.objects.get(id=i.id).quantity == 3
+
+
+@pytest.mark.django_db
+def test_add_delivery_address(client, cart):
+    resp = client.post('/_cart/cart/new-address/', dumps({
+        'type': "AustralianDeliveryAddress",
+        'data': {
+            'addressee': 'Adam Brenecki',
+            'address': 'Commercial Motor Vehicles Pty Ltd\n'
+                       'Level 1, 290 Wright Street',
+            'suburb': 'Adelaide',
+            'state': 'SA',
+            'postcode': '5000',
+        },
+    }), content_type='application/json')
+    assert resp.status_code == 201
+    assert smodels.AustralianDeliveryAddress.objects.count() == 1
+    cart.refresh_from_db()
+    assert cart.delivery_address is not None
+
+
+@pytest.mark.django_db
+def test_add_payment_method(client, cart):
+    resp = client.post('/_cart/cart/new-payment-method/', dumps({
+        'type': "PipeCard",
+        'data': {
+            'card_token': 'Lvfn4242',
+        },
+    }), content_type='application/json')
+    assert resp.status_code == 201
+    assert smodels.PipeCard.objects.count() == 1
+    cart.refresh_from_db()
+    assert cart.payment_method is not None

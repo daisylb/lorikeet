@@ -10,3 +10,7 @@ class ShopConfig(AppConfig):
 
         registry.register(models.MyLineItem,
                           api_serializers.MyLineItemSerializer)
+        registry.register(models.AustralianDeliveryAddress,
+                          api_serializers.AustralianDeliveryAddressSerializer)
+        registry.register(models.PipeCard,
+                          api_serializers.PipeCardSerializer)

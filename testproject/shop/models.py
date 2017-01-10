@@ -1,5 +1,16 @@
 from django.db import models
-from lorikeet.models import LineItem
+from lorikeet.models import DeliveryAddress, LineItem, PaymentMethod
+
+AUSTRALIAN_STATES = (
+    ('NSW', 'New South Wales'),
+    ('VIC', 'Victoria'),
+    ('QLD', 'Queensland'),
+    ('WA', 'Western Australia'),
+    ('SA', 'South Australia'),
+    ('TAS', 'Tasmania'),
+    ('ACT', 'Australian Capital Territory'),
+    ('NT', 'Northern Territory'),
+)
 
 
 class Product(models.Model):
@@ -13,3 +24,15 @@ class MyLineItem(LineItem):
 
     def get_total(self):
         return self.quantity * self.product.unit_price
+
+
+class AustralianDeliveryAddress(DeliveryAddress):
+    addressee = models.CharField(max_length=255)
+    address = models.TextField()
+    suburb = models.CharField(max_length=255)
+    state = models.CharField(max_length=3, choices=AUSTRALIAN_STATES)
+    postcode = models.CharField(max_length=4)
+
+
+class PipeCard(PaymentMethod):
+    card_id = models.CharField(max_length=30)
