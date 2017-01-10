@@ -54,11 +54,42 @@ def test_add_item_to_cart(client):
 
 
 @pytest.mark.django_db
+def test_view_cart_item(client, cart):
+    i = factories.MyLineItemFactory(cart=cart)
+    resp = client.get('/_cart/cart/{}/'.format(i.id))
+    data = loads(resp.content.decode('utf-8'))
+    assert data == {
+        'product': {
+            'id': i.product.id,
+            'name': i.product.name,
+            'unit_price': str(i.product.unit_price),
+        },
+        'quantity': i.quantity,
+    }
+
+
+@pytest.mark.django_db
+def test_cannot_view_cart_item_not_in_cart(client):
+    i = factories.MyLineItemFactory()
+    resp = client.get('/_cart/cart/{}/'.format(i.id))
+    assert resp.status_code == 404
+    assert smodels.MyLineItem.objects.count() == 1
+
+
+@pytest.mark.django_db
 def test_remove_cart_item(client, cart):
     i = factories.MyLineItemFactory(cart=cart)
     resp = client.delete('/_cart/cart/{}/'.format(i.id))
     assert resp.status_code == 204
     assert smodels.MyLineItem.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_cannot_remove_cart_item_not_in_cart(client):
+    i = factories.MyLineItemFactory()
+    resp = client.delete('/_cart/cart/{}/'.format(i.id))
+    assert resp.status_code == 404
+    assert smodels.MyLineItem.objects.count() == 1
 
 
 @pytest.mark.django_db

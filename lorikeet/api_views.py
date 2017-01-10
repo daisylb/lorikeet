@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
 from rest_framework.response import Response
-from . import api_serializers
+from . import api_serializers, models
+from django.http import Http404
 
 
 class CartView(APIView):
@@ -14,7 +15,10 @@ class CartView(APIView):
 class CartItemView(RetrieveUpdateDestroyAPIView):
     def get_object(self):
         cart = self.request.get_cart()
-        return cart.items.get_subclass(id=self.kwargs['id'])
+        try:
+            return cart.items.get_subclass(id=self.kwargs['id'])
+        except models.LineItem.DoesNotExist:
+            raise Http404()
 
     def get_serializer(self, instance, *args, **kwargs):
         ser_class = api_serializers.registry.get_serializer_class(instance)
