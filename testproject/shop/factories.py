@@ -19,3 +19,14 @@ class MyLineItemFactory(DjangoModelFactory):
 
     class Meta:
         model = models.MyLineItem
+
+
+class AustralianDeliveryAddressFactory(DjangoModelFactory):
+    addressee = factory.Faker('name', locale='en_AU')
+    address = factory.Faker('street_address', locale='en_AU')
+    suburb = factory.Faker('city', locale='en_AU')
+    state = factory.Faker('state_abbr', locale='en_AU')
+    postcode = factory.Faker('postcode', locale='en_AU')
+
+    class Meta:
+        model = models.AustralianDeliveryAddress

@@ -16,6 +16,12 @@ def cart(client):
     return cart
 
 
+@pytest.fixture
+def admin_cart(admin_client):
+    cart = models.Cart.objects.create(user=admin_client.user)
+    return cart
+
+
 @pytest.mark.django_db
 def test_empty_cart(client):
     resp = client.get('/_cart/cart/')
@@ -48,7 +54,13 @@ def test_empty_cart_logged_in(admin_client):
 
 @pytest.mark.django_db
 def test_cart_contents(client, cart):
+    # set up cart contents
     i = factories.MyLineItemFactory(cart=cart)
+
+    # add some more line items not attached to the cart
+    factories.MyLineItemFactory()
+    factories.MyLineItemFactory()
+
     resp = client.get('/_cart/cart/')
     data = loads(resp.content.decode('utf-8'))
     assert data['items'] == [{
@@ -65,6 +77,51 @@ def test_cart_contents(client, cart):
         'total': str(i.product.unit_price * i.quantity),
     }]
     assert data['grand_total'] == str(i.product.unit_price * i.quantity)
+
+
+@pytest.mark.django_db
+def test_cart_delivery_addresses(client, cart):
+    # set up cart contents
+    cart.delivery_address = factories.AustralianDeliveryAddressFactory()
+    cart.save()
+
+    # Add another address not attached to the card
+    factories.AustralianDeliveryAddressFactory()
+
+    resp = client.get('/_cart/cart/')
+    data = loads(resp.content.decode('utf-8'))
+    assert data['delivery_addresses'] == [{
+        'type': 'AustralianDeliveryAddress',
+        'selected': True,
+        'data': {
+            'addressee': cart.delivery_address.addressee,
+            'address': cart.delivery_address.address,
+            'suburb': cart.delivery_address.suburb,
+            'state': cart.delivery_address.state,
+            'postcode': cart.delivery_address.postcode,
+        }
+    }]
+
+
+@pytest.mark.django_db
+def test_cart_payment_methods(client, cart):
+    # set up cart contents
+    cart.payment_method = smodels.PipeCard.objects.create(card_id='Visa4242')
+    cart.save()
+
+    # add a payment method not attached to the card
+    smodels.PipeCard.objects.create(card_id='Mastercard4242')
+
+    resp = client.get('/_cart/cart/')
+    data = loads(resp.content.decode('utf-8'))
+    assert data['payment_methods'] == [{
+        'type': 'PipeCard',
+        'selected': True,
+        'data': {
+            'brand': 'Visa',
+            'last4': '4242',
+        }
+    }]
 
 
 @pytest.mark.django_db
