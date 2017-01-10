@@ -1,11 +1,12 @@
 import factory
 from factory.django import DjangoModelFactory
+from factory import fuzzy
 
 from . import models
 
 class ProductFactory(DjangoModelFactory):
-    name = factory.fuzzy.FuzzyText()
-    unit_price = factory.fuzzy.FuzzyDecimal()
+    name = fuzzy.FuzzyText()
+    unit_price = fuzzy.FuzzyDecimal(1, 200)
 
     class Meta:
         model = models.Product
@@ -13,7 +14,7 @@ class ProductFactory(DjangoModelFactory):
 
 class MyLineItemFactory(DjangoModelFactory):
     product = factory.SubFactory(ProductFactory)
-    quantity = factory.fuzzy.FuzzyInteger()
+    quantity = fuzzy.FuzzyInteger(1, 10)
 
     class Meta:
         model = models.MyLineItem
