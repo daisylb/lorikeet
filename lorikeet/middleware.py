@@ -8,7 +8,7 @@ def cart_getter_factory(request):
         cart = None
 
         if request.user.is_authenticated():
-            cart = Cart.objects.get_or_create(user=request.user)
+            cart, _ = Cart.objects.get_or_create(user=request.user)
         elif 'cart_id' in request.session:
             try:
                 cart = Cart.objects.get(id=request.session['cart_id'])

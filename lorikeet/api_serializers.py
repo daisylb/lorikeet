@@ -105,7 +105,7 @@ class CartSerializer(serializers.ModelSerializer):
             selected = request.get_cart().delivery_address_subclass
 
         if request and request.user.is_authenticated():
-            the_set = request.user.delivery_address_set.all()
+            the_set = request.user.delivery_addresses.all()
 
         if selected is not None and selected not in the_set:
             the_set = chain(the_set, [selected])
@@ -122,7 +122,7 @@ class CartSerializer(serializers.ModelSerializer):
         selected = cart.payment_method_subclass
 
         if request and request.user.is_authenticated():
-            the_set = request.user.delivery_address_set.all()
+            the_set = request.user.delivery_addresses.all()
 
         if selected is not None and selected not in the_set:
             the_set = chain(the_set, [selected])
