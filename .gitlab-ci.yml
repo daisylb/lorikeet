@@ -1,6 +1,13 @@
-image: randomknowledge/docker-pyenv-tox
 
 test:
     stage: test
+    image: randomknowledge/docker-pyenv-tox
     script:
         - tox
+
+style:
+    stage: test
+    image: calthorpeanalytics/pre-commit
+    script:
+        - pip install -e .[stripe,docs]
+        - pre-commit run --all-files

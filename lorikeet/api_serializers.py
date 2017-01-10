@@ -1,9 +1,13 @@
-from rest_framework import serializers, fields
-from . import models
-from django.core.urlresolvers import reverse
 from itertools import chain
 
+from django.core.urlresolvers import reverse
+from rest_framework import fields, serializers
+
+from . import models
+
+
 class LineItemSerializerRegistry(dict):
+
     def register(self, model, serializer):
         self[model.__name__] = serializer
 
@@ -27,6 +31,7 @@ class PrimaryKeyModelSerializer(serializers.ModelSerializer):
 
     This class is part of the public API.
     """
+
     def get_queryset(self):
         return self.Meta.model.objects.all()
 
@@ -35,6 +40,7 @@ class PrimaryKeyModelSerializer(serializers.ModelSerializer):
 
 
 class RegistryRelatedField(fields.Field):
+
     def to_representation(self, instance):
         return registry.get_serializer(instance).data
 
@@ -76,6 +82,7 @@ class PaymentMethodSerializer(RegistryRelatedWithMetadataSerializer):
 
 
 class SubclassListSerializer(serializers.ListSerializer):
+
     def to_representation(self, instance, *args, **kwargs):
         instance = instance.select_subclasses()
         return super().to_representation(instance, *args, **kwargs)
@@ -88,7 +95,8 @@ class CartSerializer(serializers.ModelSerializer):
     new_address_url = fields.SerializerMethodField()
     payment_methods = fields.SerializerMethodField()
     new_payment_method_url = fields.SerializerMethodField()
-    grand_total = fields.DecimalField(max_digits=7, decimal_places=2, source='get_grand_total')
+    grand_total = fields.DecimalField(
+        max_digits=7, decimal_places=2, source='get_grand_total')
 
     def get_new_item_url(self, _):
         return reverse('lorikeet:add-to-cart')
@@ -141,11 +149,12 @@ class LineItemSerializer(serializers.ModelSerializer):
 
     This is part of the public API.
     """
+
     def __init__(self, instance=None, *args, **kwargs):
         if 'cart' in kwargs:
             self.cart = kwargs.pop('cart')
         elif instance is not None:
-            self.cart =  instance.cart
+            self.cart = instance.cart
         else:
             raise TypeError("Either instance or cart arguments must be "
                             "provided to {}".format(self.__class__.__name__))

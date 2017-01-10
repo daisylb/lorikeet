@@ -1,18 +1,22 @@
-from rest_framework.views import APIView
-from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
-from rest_framework.response import Response
-from . import api_serializers, models
 from django.http import Http404
+from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from . import api_serializers, models
 
 
 class CartView(APIView):
+
     def get(self, request, format=None):
         cart = request.get_cart()
-        data = api_serializers.CartSerializer(cart, context={'request': self.request}).data
+        data = api_serializers.CartSerializer(
+            cart, context={'request': self.request}).data
         return Response(data)
 
 
 class CartItemView(RetrieveUpdateDestroyAPIView):
+
     def get_object(self):
         cart = self.request.get_cart()
         try:
@@ -27,6 +31,7 @@ class CartItemView(RetrieveUpdateDestroyAPIView):
 
 
 class AddToCartView(CreateAPIView):
+
     def get_serializer(self, data, *args, **kwargs):
         ser_class = api_serializers.registry[data['type']]
         return ser_class(data=data['data'], cart=self.request.get_cart(),
@@ -34,6 +39,7 @@ class AddToCartView(CreateAPIView):
 
 
 class NewAddressView(CreateAPIView):
+
     def get_serializer(self, data, *args, **kwargs):
         ser_class = api_serializers.registry[data['type']]
         return ser_class(data=data['data'], *args, **kwargs)
@@ -46,6 +52,7 @@ class NewAddressView(CreateAPIView):
 
 
 class NewPaymentMethodView(CreateAPIView):
+
     def get_serializer(self, data, *args, **kwargs):
         ser_class = api_serializers.registry[data['type']]
         return ser_class(data=data['data'],

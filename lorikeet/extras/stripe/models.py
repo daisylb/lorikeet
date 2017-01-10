@@ -1,8 +1,8 @@
+import stripe
 from django.core.cache import cache
 from django.db import models
-import stripe
-
 from lorikeet.models import PaymentMethod
+
 
 class StripeCard(PaymentMethod):
     card_token = models.CharField(max_length=30)

@@ -32,8 +32,8 @@
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
-    'sphinx.ext.todo',
-    'sphinx.ext.viewcode']
+              'sphinx.ext.todo',
+              'sphinx.ext.viewcode']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -50,7 +50,8 @@ master_doc = 'index'
 # General information about the project.
 project = 'Lorikeet'
 from datetime import date
-copyright = '2016–{:%Y}, Commercial Motor Vehicles Pty Ltd'.format(date.today())
+copyright = '2016–{:%Y}, Commercial Motor Vehicles Pty Ltd'.format(
+    date.today())
 author = 'Adam Brenecki'
 
 # The version info for the project you're documenting, acts as replacement for

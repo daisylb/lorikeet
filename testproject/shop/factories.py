@@ -1,8 +1,9 @@
 import factory
-from factory.django import DjangoModelFactory
 from factory import fuzzy
+from factory.django import DjangoModelFactory
 
 from . import models
+
 
 class ProductFactory(DjangoModelFactory):
     name = fuzzy.FuzzyText()

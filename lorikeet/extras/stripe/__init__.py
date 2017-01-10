@@ -2,6 +2,7 @@ from django.apps import AppConfig
 from django.conf import settings
 import stripe
 
+
 class StripeAppConfig(AppConfig):
     name = 'lorikeet.extras.stripe'
     verbose_name = "Lorikeet Stripe"

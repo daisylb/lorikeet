@@ -1,5 +1,6 @@
 from .models import Cart
 
+
 def cart_getter_factory(request):
     def get_cart():
         if hasattr(request, '_cart'):
@@ -27,6 +28,8 @@ def cart_getter_factory(request):
         return cart
     return get_cart
 
+
 class CartMiddleware:
+
     def process_request(self, request):
         request.get_cart = cart_getter_factory(request)

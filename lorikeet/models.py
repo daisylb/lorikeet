@@ -1,6 +1,5 @@
-from django.db import models
 from django.conf import settings
-from decimal import Decimal
+from django.db import models
 from model_utils.managers import InheritanceManager
 
 
@@ -11,8 +10,10 @@ class Cart(models.Model):
     referenced from a session.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
-    delivery_address = models.ForeignKey('lorikeet.DeliveryAddress', blank=True, null=True)
-    payment_method = models.ForeignKey('lorikeet.PaymentMethod', blank=True, null=True)
+    delivery_address = models.ForeignKey(
+        'lorikeet.DeliveryAddress', blank=True, null=True)
+    payment_method = models.ForeignKey(
+        'lorikeet.PaymentMethod', blank=True, null=True)
 
     def get_grand_total(self):
         return sum(x.get_total() for x in self.items.select_subclasses().all())
@@ -28,8 +29,6 @@ class Cart(models.Model):
         if self.payment_method_id is not None:
             return PaymentMethod.objects.get_subclass(
                 id=self.payment_method_id)
-
-
 
 
 class Order(models.Model):
@@ -89,7 +88,8 @@ class LineItem(models.Model):
     depend only on data stored on this model.
     """
     cart = models.ForeignKey(Cart, related_name='items', blank=True, null=True)
-    order = models.ForeignKey(Order, related_name='items', blank=True, null=True)
+    order = models.ForeignKey(
+        Order, related_name='items', blank=True, null=True)
 
     objects = InheritanceManager()
 

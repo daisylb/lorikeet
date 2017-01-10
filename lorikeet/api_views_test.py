@@ -1,8 +1,11 @@
-from json import loads, dumps
-from shop import factories, models as smodels
-from . import models
+from json import dumps, loads
 
 import pytest
+from shop import models as smodels
+from shop import factories
+
+from . import models
+
 
 @pytest.fixture
 def cart(client):
@@ -11,6 +14,7 @@ def cart(client):
     session['cart_id'] = cart.id
     session.save()
     return cart
+
 
 @pytest.mark.django_db
 def test_empty_cart(client):
