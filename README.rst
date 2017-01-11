@@ -12,27 +12,6 @@ Lorikeet currently supports Django 1.8 to 1.10 on Python 3.4+. New versions of L
 Design Goals
 ------------
 
--  **Be customisable, without being overbearing.** Rather than providing
-   an extremely complex application with bells, whistles and
-   configuration options to satisfy every use case, lorikeet provides a
-   shopping cart framework, on top of which you can build your online
-   store. In this regard, Lorikeet is heavily inspired by
-   `Django-SHOP <https://django-shop.readthedocs.io/en/latest/architecture.html>`__.
--  **Be minimal.** Lorikeet's sole concern is the shopping cart and
-   checkout process. Lorikeet has no knowledge of things like products,
-   variations, categories, and so on, nor does it contain views to
-   display these things. This is in keeping with the previous design
-   goal, because it allows you to structure both the data model and UI
-   of your products in a way that makes sense for the site you're
-   building.
--  **Be loosely coupled.** While Lorikeet was originally built as part
-   of an online store that uses Django CMS and React, it does not depend
-   on either, and could be used with any CMS or frontend framework, or
-   none at all. Lorikeet provides an optional companion set of reusable
-   React components for the checkout experience, but the REST API used
-   to manipulate the cart is well-documented and considered part of the
-   library's public API surface.
--  **Get out of the way.** One of the core design goals of the project
-   Lorikeet was extracted from is to provide a simple, low-friction
-   checkout experience. Lorikeet was designed from the ground up to
-   enable this.
+- **Simple.** Lorikeet isn't an *e-commerce framework*, it's a *shopping cart framework*. It provides a cart that end users can put things in, attach a delivery address to, pick a payment method, and check out; everything else, including the product pages themselves, is left up to you to do in a way that best suits your needs. (This also means Lorikeet can be used with Wagtail, Mezzanine, Django CMS, another CMS, or none at all!)
+- **Generic.** Lorikeet is a framework, not an app. Instead of trying to be all things to all people, Lorikeet lets you define your own models for line items, delivery addresses and payment methods. This means that simple sites only take a few lines of code, and are free of unneeded complexity; complex sites can be tailored to their specific needs rather than trying to shoe-horn a solution.
+- **API-only.** One of Lorikeet's main goals is to enable you to create a fast, frictionless checkout experience. The easiest way to do this is with an API.
