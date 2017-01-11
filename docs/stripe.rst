@@ -8,4 +8,6 @@ Installation
 2. Add ``'lorikeet.extras.stripe'`` to your ``INSTALLED_APPS``.
 3. Set the ``STRIPE_API_KEY`` variable in ``settings.py`` to your Stripe API key.
 
-That's all!
+.. todo::
+
+    Document behaviour and API
