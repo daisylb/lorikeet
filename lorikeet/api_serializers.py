@@ -51,6 +51,18 @@ class LineItemSerializerRegistry:
 registry = LineItemSerializerRegistry()
 
 
+class WritableSerializerMethodField(fields.SerializerMethodField):
+
+    def __init__(self, write_serializer, method_name=None, **kwargs):
+        self.method_name = method_name
+        self.write_serializer = write_serializer
+        kwargs['source'] = '*'
+        super(fields.SerializerMethodField, self).__init__(**kwargs)
+
+    def to_internal_value(self, representation):
+        return {self.field_name: self.write_serializer.to_representation(representation)}
+
+
 class PrimaryKeyModelSerializer(serializers.ModelSerializer):
     """A serializer that accepts the primary key of an object as input.
 
@@ -111,11 +123,18 @@ class DeliveryAddressSerializer(RegistryRelatedWithMetadataSerializer):
 
 
 class PaymentMethodSerializer(RegistryRelatedWithMetadataSerializer):
-    selected = fields.SerializerMethodField()
+    selected = WritableSerializerMethodField(fields.BooleanField())
     url = fields.SerializerMethodField()
 
     def get_selected(self, instance):
         return instance.id == self.context['cart'].payment_method_id
+
+    def update(self, instance, validated_data):
+        if validated_data['selected']:
+            cart = self.context['cart']
+            cart.payment_method = instance
+            cart.save()
+        return instance
 
     def get_url(self, instance):
         return reverse('lorikeet:payment-method', kwargs={'id': instance.id})
