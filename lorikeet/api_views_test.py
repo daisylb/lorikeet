@@ -126,6 +126,45 @@ def test_cart_payment_methods(client, cart):
 
 
 @pytest.mark.django_db
+def test_cart_payment_methods_logged_in(admin_user, admin_client, admin_cart):
+    # set up cart contents
+    admin_cart.payment_method = smodels.PipeCard.objects.create(
+        card_id='Visa4242')
+    admin_cart.save()
+    other = smodels.PipeCard.objects.create(
+        card_id='Discover4242', user=admin_user)
+
+    # add a payment method not attached to the card
+    smodels.PipeCard.objects.create(card_id='Mastercard4242')
+    smodels.PipeCard.objects.create(
+        card_id='Amex4242', user=admin_user, active=False)
+
+    resp = admin_client.get('/_cart/cart/')
+    data = loads(resp.content.decode('utf-8'))
+    # we don't care about the order
+    assert data['payment_methods'] == [
+        {
+            'type': 'PipeCard',
+            'selected': False,
+            'data': {
+                'brand': 'Discover',
+                'last4': '4242',
+            },
+            'url': '/_cart/cart/payment-method/{}/'.format(other.id)
+        },
+        {
+            'type': 'PipeCard',
+            'selected': True,
+            'data': {
+                'brand': 'Visa',
+                'last4': '4242',
+            },
+            'url': '/_cart/cart/payment-method/{}/'.format(admin_cart.payment_method_id)
+        },
+    ]
+
+
+@pytest.mark.django_db
 def test_add_item_to_cart(client):
     p = factories.ProductFactory()
     resp = client.post('/_cart/cart/new/', dumps({

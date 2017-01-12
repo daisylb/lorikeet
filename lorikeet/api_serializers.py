@@ -164,13 +164,12 @@ class CartSerializer(serializers.ModelSerializer):
         return reverse('lorikeet:new-payment-method')
 
     def get_payment_methods(self, cart):
-        request = self.context.get('request')
         the_set = []
-
         selected = cart.payment_method_subclass
 
-        if request and request.user.is_authenticated():
-            the_set = request.user.delivery_addresses.all()
+        if cart.user:
+            the_set = cart.user.paymentmethod_set.filter(
+                active=True).select_subclasses()
 
         if selected is not None and selected not in the_set:
             the_set = chain(the_set, [selected])
