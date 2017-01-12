@@ -112,9 +112,13 @@ class DeliveryAddressSerializer(RegistryRelatedWithMetadataSerializer):
 
 class PaymentMethodSerializer(RegistryRelatedWithMetadataSerializer):
     selected = fields.SerializerMethodField()
+    url = fields.SerializerMethodField()
 
     def get_selected(self, instance):
-        return instance == self.context.get('selected')
+        return instance.id == self.context['cart'].payment_method_id
+
+    def get_url(self, instance):
+        return reverse('lorikeet:payment-method', kwargs={'id': instance.id})
 
 
 class SubclassListSerializer(serializers.ListSerializer):
@@ -171,7 +175,7 @@ class CartSerializer(serializers.ModelSerializer):
         if selected is not None and selected not in the_set:
             the_set = chain(the_set, [selected])
 
-        return PaymentMethodSerializer(instance=the_set, many=True, context={'selected': selected}).data
+        return PaymentMethodSerializer(instance=the_set, many=True, context={'cart': cart}).data
 
     class Meta:
         model = models.Cart

@@ -73,6 +73,7 @@ class PaymentMethod(models.Model):
     described in the :doc:`Getting Started Guide <backend>`.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     objects = InheritanceManager()
 

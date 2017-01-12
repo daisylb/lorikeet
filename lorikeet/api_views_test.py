@@ -17,8 +17,8 @@ def cart(client):
 
 
 @pytest.fixture
-def admin_cart(admin_client):
-    cart = models.Cart.objects.create(user=admin_client.user)
+def admin_cart(admin_user):
+    cart = models.Cart.objects.create(user=admin_user)
     return cart
 
 
@@ -120,7 +120,8 @@ def test_cart_payment_methods(client, cart):
         'data': {
             'brand': 'Visa',
             'last4': '4242',
-        }
+        },
+        'url': '/_cart/cart/payment-method/{}/'.format(cart.payment_method_id)
     }]
 
 
@@ -215,3 +216,55 @@ def test_add_payment_method(client, cart):
     assert smodels.PipeCard.objects.count() == 1
     cart.refresh_from_db()
     assert cart.payment_method is not None
+
+
+@pytest.mark.django_db
+def test_view_payment_method(client, cart):
+    cart.payment_method = smodels.PipeCard.objects.create(card_id='Visa4242')
+    cart.save()
+
+    url = '/_cart/cart/payment-method/{}/'.format(cart.payment_method_id)
+    resp = client.get(url)
+    data = loads(resp.content.decode('utf-8'))
+    assert data == {
+        'type': 'PipeCard',
+        'selected': True,
+        'data': {
+            'brand': 'Visa',
+            'last4': '4242',
+        },
+        'url': url,
+    }
+
+
+@pytest.mark.django_db
+def test_view_owned_unselected_payment_method(admin_user, admin_client):
+    pm = smodels.PipeCard.objects.create(card_id='Visa4242', user=admin_user)
+
+    url = '/_cart/cart/payment-method/{}/'.format(pm.id)
+    resp = admin_client.get(url)
+    data = loads(resp.content.decode('utf-8'))
+    assert data == {
+        'type': 'PipeCard',
+        'selected': False,
+        'data': {
+            'brand': 'Visa',
+            'last4': '4242',
+        },
+        'url': url,
+    }
+
+
+@pytest.mark.django_db
+def test_delete_payment_method(client, cart):
+    pm = smodels.PipeCard.objects.create(card_id='Visa4242')
+    cart.payment_method = pm
+    cart.save()
+
+    url = '/_cart/cart/payment-method/{}/'.format(cart.payment_method_id)
+    resp = client.delete(url)
+    assert resp.status_code == 204
+    cart.refresh_from_db()
+    assert cart.payment_method is None
+    pm.refresh_from_db()
+    assert not pm.active

@@ -64,3 +64,30 @@ class NewPaymentMethodView(CreateAPIView):
         cart = self.request.get_cart()
         cart.payment_method = serializer.instance
         cart.save()
+
+
+class PaymentMethodView(RetrieveUpdateDestroyAPIView):
+
+    def get_object(self):
+        try:
+            assert self.request.user.is_authenticated()
+            return models.PaymentMethod.objects.get_subclass(
+                user=self.request.user, id=self.kwargs['id'])
+        except (AssertionError, models.PaymentMethod.DoesNotExist):
+            cart = self.request.get_cart()
+            if int(self.kwargs['id']) == cart.payment_method_id:
+                return cart.payment_method_subclass
+
+        raise Http404()
+
+    def perform_destroy(self, instance):
+        instance.active = False
+        instance.save()
+        cart = self.request.get_cart()
+        if cart.payment_method_id == instance.id:
+            cart.payment_method = None
+            cart.save()
+
+    def get_serializer(self, instance, *args, **kwargs):
+        return api_serializers.PaymentMethodSerializer(
+            instance, context={'cart': self.request.get_cart()}, *args, **kwargs)
