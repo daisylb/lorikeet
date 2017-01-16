@@ -51,43 +51,55 @@ export default class CartClient {
     this.reloadCart.bind(this)
     this.addItem.bind(this)
 
-    // add localStorage listener
-    window.addEventListener('storage', (ev) => {
-      if (ev.key == localStorageKey) {
-        this.postProcessCart(JSON.parse(ev.newValue))
-      }
-    })
-
     this.cartUrl = cartUrl
     this.cartListeners = []
 
-    // if we've been passed cart data from the server, load that
+    // try to load initial data from localStorage
+    var lsString = localStorage.getItem(localStorageKey)
+    if (lsString){
+      this.processReceivedCart(JSON.parse(lsString), true)
+    }
+
+    // If we've been passed in data from the server, try loading it in to see
+    // if it's newer. We do this second because we want to trigger a setItem
+    // on localStorage if what we've got is newer than what's currently there.
     if (cartData){
-      this.postProcessCart(cartData)
-    } else {
-      var cartFromStorage = localStorage.getItem(localStorageKey)
-      if (cartFromStorage) {
-        this.postProcessCart(JSON.parse(cartFromStorage))
-      }
+      this.processReceivedCart(cartData)
     }
 
     // do an initial load of the cart, if we didn't already get the data
-    // from the server
-    if (!cartData) {
+    // from somewhere
+    if (!this.cart) {
       this.reloadCart()
     }
+
+    // add localStorage listener
+    window.addEventListener('storage', (ev) => {
+      if (ev.key == localStorageKey) {
+        this.processReceivedCart(JSON.parse(ev.newValue), true)
+      }
+    })
   }
 
   reloadCart(){
     apiFetch(this.cartUrl)
     .then(response => response.json())
     .then(json => {
-      localStorage.setItem(localStorageKey, JSON.stringify(json))
-      this.postProcessCart(json)
+      this.processReceivedCart(json)
     })
   }
 
-  postProcessCart(cart){
+  processReceivedCart(cart, receivedFromLocalStorage){
+    // If the cart we recieved is more stale than what we already have, bail
+    if (self.cart && self.cart.updated_at > cart.updated_at) {
+      return
+    }
+
+    // If we didn't get it _from_ local storage, post it _to_ local storage
+    if (!receivedFromLocalStorage){
+      localStorage.setItem(localStorageKey, JSON.stringify(cart))
+    }
+
     // Attach the update method to each member of items
     cart.items.forEach(x => {
       x.update = makeUpdate(this).bind(x)

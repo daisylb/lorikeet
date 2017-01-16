@@ -1,4 +1,5 @@
 from itertools import chain
+from time import time
 
 from django.core.urlresolvers import reverse
 from rest_framework import fields, serializers
@@ -156,6 +157,7 @@ class CartSerializer(serializers.ModelSerializer):
     new_payment_method_url = fields.SerializerMethodField()
     grand_total = fields.DecimalField(
         max_digits=7, decimal_places=2, source='get_grand_total')
+    generated_at = fields.SerializerMethodField()
 
     def get_new_item_url(self, _):
         return reverse('lorikeet:add-to-cart')
@@ -195,11 +197,14 @@ class CartSerializer(serializers.ModelSerializer):
 
         return PaymentMethodSerializer(instance=the_set, many=True, context={'cart': cart}).data
 
+    def get_generated_at(self, cart):
+        return time()
+
     class Meta:
         model = models.Cart
         fields = ('items', 'new_item_url', 'delivery_addresses',
                   'new_address_url', 'payment_methods',
-                  'new_payment_method_url', 'grand_total')
+                  'new_payment_method_url', 'grand_total', 'generated_at')
 
 
 class LineItemSerializer(serializers.ModelSerializer):
