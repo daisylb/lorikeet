@@ -1,5 +1,15 @@
 const csrftoken = decodeURIComponent(/(?:^|;)\s*csrftoken=([^;]+)/.exec(document.cookie)[1])
 
+function apiFetch(url, params){
+  var actualParams = Object.create(params || null)
+  actualParams.headers = Object.create(params? params.headers || null : null)
+  actualParams.headers['Accept'] = 'application/json'
+  actualParams.headers['Content-Type'] = 'application/json'
+  actualParams.headers['X-CSRFToken'] = csrftoken
+  actualParams.credentials = 'same-origin'
+  return fetch(url, actualParams)
+}
+
 function makeUpdate(client){
   /**
    * Update method for LineItems.
@@ -8,10 +18,8 @@ function makeUpdate(client){
     // Note: We have to reload the entire cart rather than just copying the
     // data we got back into the server, because adding/modifying the cart could
     // change other things e.g. multiple-line-item discounts
-    return fetch(this.url, {
+    return apiFetch(this.url, {
       method: 'PATCH',
-      credentials: 'same-origin',
-      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(newData),
     })
     .then(response => response.json())
@@ -24,9 +32,8 @@ function makeDelete(client){
    * Delete method for LineItems.
    */
   return function(newData){
-    return fetch(this.url, {
+    return apiFetch(this.url, {
       method: 'DELETE',
-      credentials: 'same-origin',
     })
     .then(() => client.reloadCart())
   }
@@ -57,7 +64,7 @@ export default class CartClient {
   }
 
   reloadCart(){
-    fetch(this.cartUrl, {credentials: 'same-origin'})
+    apiFetch(this.cartUrl)
     .then(response => response.json())
     .then(json => {
       this.postProcessCart(json)
@@ -100,13 +107,8 @@ export default class CartClient {
    *     is expecting.
    */
   addItem(type, data){
-    return fetch(this.cartUrl + 'new/', {
+    return apiFetch(this.cartUrl + 'new/', {
       method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrftoken,
-      },
       body: JSON.stringify({type, data}),
     })
     .then(response => response.json())
