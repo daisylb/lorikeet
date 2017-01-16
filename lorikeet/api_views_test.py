@@ -24,30 +24,34 @@ def admin_cart(admin_user):
 
 @pytest.mark.django_db
 def test_empty_cart(client):
-    resp = client.get('/_cart/cart/')
+    resp = client.get('/_cart/')
     data = loads(resp.content.decode('utf-8'))
+    generated_at = data.pop('generated_at')
+    assert type(generated_at) == float
     assert data == {
         'items': [],
-        'new_item_url': '/_cart/cart/new/',
+        'new_item_url': '/_cart/new/',
         'delivery_addresses': [],
-        'new_address_url': '/_cart/cart/new-address/',
+        'new_address_url': '/_cart/new-address/',
         'payment_methods': [],
-        'new_payment_method_url': '/_cart/cart/new-payment-method/',
+        'new_payment_method_url': '/_cart/new-payment-method/',
         'grand_total': '0.00',
     }
 
 
 @pytest.mark.django_db
 def test_empty_cart_logged_in(admin_client):
-    resp = admin_client.get('/_cart/cart/')
+    resp = admin_client.get('/_cart/')
     data = loads(resp.content.decode('utf-8'))
+    generated_at = data.pop('generated_at')
+    assert type(generated_at) == float
     assert data == {
         'items': [],
-        'new_item_url': '/_cart/cart/new/',
+        'new_item_url': '/_cart/new/',
         'delivery_addresses': [],
-        'new_address_url': '/_cart/cart/new-address/',
+        'new_address_url': '/_cart/new-address/',
         'payment_methods': [],
-        'new_payment_method_url': '/_cart/cart/new-payment-method/',
+        'new_payment_method_url': '/_cart/new-payment-method/',
         'grand_total': '0.00',
     }
 
@@ -61,11 +65,11 @@ def test_cart_contents(client, cart):
     factories.MyLineItemFactory()
     factories.MyLineItemFactory()
 
-    resp = client.get('/_cart/cart/')
+    resp = client.get('/_cart/')
     data = loads(resp.content.decode('utf-8'))
     assert data['items'] == [{
         'type': 'MyLineItem',
-        'url': '/_cart/cart/{}/'.format(i.id),
+        'url': '/_cart/{}/'.format(i.id),
         'data': {
             'product': {
                 'id': i.product.id,
@@ -88,7 +92,7 @@ def test_cart_delivery_addresses(client, cart):
     # Add another address not attached to the card
     factories.AustralianDeliveryAddressFactory()
 
-    resp = client.get('/_cart/cart/')
+    resp = client.get('/_cart/')
     data = loads(resp.content.decode('utf-8'))
     assert data['delivery_addresses'] == [{
         'type': 'AustralianDeliveryAddress',
@@ -112,7 +116,7 @@ def test_cart_payment_methods(client, cart):
     # add a payment method not attached to the card
     smodels.PipeCard.objects.create(card_id='Mastercard4242')
 
-    resp = client.get('/_cart/cart/')
+    resp = client.get('/_cart/')
     data = loads(resp.content.decode('utf-8'))
     assert data['payment_methods'] == [{
         'type': 'PipeCard',
@@ -121,7 +125,7 @@ def test_cart_payment_methods(client, cart):
             'brand': 'Visa',
             'last4': '4242',
         },
-        'url': '/_cart/cart/payment-method/{}/'.format(cart.payment_method_id)
+        'url': '/_cart/payment-method/{}/'.format(cart.payment_method_id)
     }]
 
 
@@ -139,7 +143,7 @@ def test_cart_payment_methods_logged_in(admin_user, admin_client, admin_cart):
     smodels.PipeCard.objects.create(
         card_id='Amex4242', user=admin_user, active=False)
 
-    resp = admin_client.get('/_cart/cart/')
+    resp = admin_client.get('/_cart/')
     data = loads(resp.content.decode('utf-8'))
     # we don't care about the order
     assert data['payment_methods'] == [
@@ -150,7 +154,7 @@ def test_cart_payment_methods_logged_in(admin_user, admin_client, admin_cart):
                 'brand': 'Discover',
                 'last4': '4242',
             },
-            'url': '/_cart/cart/payment-method/{}/'.format(other.id)
+            'url': '/_cart/payment-method/{}/'.format(other.id)
         },
         {
             'type': 'PipeCard',
@@ -159,7 +163,7 @@ def test_cart_payment_methods_logged_in(admin_user, admin_client, admin_cart):
                 'brand': 'Visa',
                 'last4': '4242',
             },
-            'url': '/_cart/cart/payment-method/{}/'.format(admin_cart.payment_method_id)
+            'url': '/_cart/payment-method/{}/'.format(admin_cart.payment_method_id)
         },
     ]
 
@@ -167,7 +171,7 @@ def test_cart_payment_methods_logged_in(admin_user, admin_client, admin_cart):
 @pytest.mark.django_db
 def test_add_item_to_cart(client):
     p = factories.ProductFactory()
-    resp = client.post('/_cart/cart/new/', dumps({
+    resp = client.post('/_cart/new/', dumps({
         'type': "MyLineItem",
         'data': {'product': p.id, 'quantity': 2},
     }), content_type='application/json')
@@ -178,7 +182,7 @@ def test_add_item_to_cart(client):
 @pytest.mark.django_db
 def test_view_cart_item(client, cart):
     i = factories.MyLineItemFactory(cart=cart)
-    resp = client.get('/_cart/cart/{}/'.format(i.id))
+    resp = client.get('/_cart/{}/'.format(i.id))
     data = loads(resp.content.decode('utf-8'))
     assert data == {
         'product': {
@@ -193,7 +197,7 @@ def test_view_cart_item(client, cart):
 @pytest.mark.django_db
 def test_cannot_view_cart_item_not_in_cart(client):
     i = factories.MyLineItemFactory()
-    resp = client.get('/_cart/cart/{}/'.format(i.id))
+    resp = client.get('/_cart/{}/'.format(i.id))
     assert resp.status_code == 404
     assert smodels.MyLineItem.objects.count() == 1
 
@@ -201,7 +205,7 @@ def test_cannot_view_cart_item_not_in_cart(client):
 @pytest.mark.django_db
 def test_remove_cart_item(client, cart):
     i = factories.MyLineItemFactory(cart=cart)
-    resp = client.delete('/_cart/cart/{}/'.format(i.id))
+    resp = client.delete('/_cart/{}/'.format(i.id))
     assert resp.status_code == 204
     assert smodels.MyLineItem.objects.count() == 0
 
@@ -209,7 +213,7 @@ def test_remove_cart_item(client, cart):
 @pytest.mark.django_db
 def test_cannot_remove_cart_item_not_in_cart(client):
     i = factories.MyLineItemFactory()
-    resp = client.delete('/_cart/cart/{}/'.format(i.id))
+    resp = client.delete('/_cart/{}/'.format(i.id))
     assert resp.status_code == 404
     assert smodels.MyLineItem.objects.count() == 1
 
@@ -217,7 +221,7 @@ def test_cannot_remove_cart_item_not_in_cart(client):
 @pytest.mark.django_db
 def test_change_cart_item(client, cart):
     i = factories.MyLineItemFactory(cart=cart)
-    resp = client.patch('/_cart/cart/{}/'.format(i.id), dumps({
+    resp = client.patch('/_cart/{}/'.format(i.id), dumps({
         'quantity': 3,
     }), content_type='application/json')
     assert resp.status_code == 200
@@ -226,7 +230,7 @@ def test_change_cart_item(client, cart):
 
 @pytest.mark.django_db
 def test_add_delivery_address(client, cart):
-    resp = client.post('/_cart/cart/new-address/', dumps({
+    resp = client.post('/_cart/new-address/', dumps({
         'type': "AustralianDeliveryAddress",
         'data': {
             'addressee': 'Adam Brenecki',
@@ -245,7 +249,7 @@ def test_add_delivery_address(client, cart):
 
 @pytest.mark.django_db
 def test_add_payment_method(client, cart):
-    resp = client.post('/_cart/cart/new-payment-method/', dumps({
+    resp = client.post('/_cart/new-payment-method/', dumps({
         'type': "PipeCard",
         'data': {
             'card_token': 'Lvfn4242',
@@ -262,7 +266,7 @@ def test_view_payment_method(client, cart):
     cart.payment_method = smodels.PipeCard.objects.create(card_id='Visa4242')
     cart.save()
 
-    url = '/_cart/cart/payment-method/{}/'.format(cart.payment_method_id)
+    url = '/_cart/payment-method/{}/'.format(cart.payment_method_id)
     resp = client.get(url)
     data = loads(resp.content.decode('utf-8'))
     assert data == {
@@ -280,7 +284,7 @@ def test_view_payment_method(client, cart):
 def test_view_owned_unselected_payment_method(admin_user, admin_client):
     pm = smodels.PipeCard.objects.create(card_id='Visa4242', user=admin_user)
 
-    url = '/_cart/cart/payment-method/{}/'.format(pm.id)
+    url = '/_cart/payment-method/{}/'.format(pm.id)
     resp = admin_client.get(url)
     data = loads(resp.content.decode('utf-8'))
     assert data == {
@@ -298,7 +302,7 @@ def test_view_owned_unselected_payment_method(admin_user, admin_client):
 def test_select_payment_method(admin_user, admin_client, admin_cart):
     pm = smodels.PipeCard.objects.create(card_id='Visa4242', user=admin_user)
 
-    url = '/_cart/cart/payment-method/{}/'.format(pm.id)
+    url = '/_cart/payment-method/{}/'.format(pm.id)
     resp = admin_client.patch(url, dumps({'selected': True}),
                               content_type='application/json')
     assert resp.status_code == 200
@@ -312,7 +316,7 @@ def test_delete_payment_method(client, cart):
     cart.payment_method = pm
     cart.save()
 
-    url = '/_cart/cart/payment-method/{}/'.format(cart.payment_method_id)
+    url = '/_cart/payment-method/{}/'.format(cart.payment_method_id)
     resp = client.delete(url)
     assert resp.status_code == 204
     cart.refresh_from_db()
