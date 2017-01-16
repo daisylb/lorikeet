@@ -1,0 +1,74 @@
+JavaScript API
+==============
+
+Lorikeet comes with a small JavaScript library to make manipulating the cart from client JavaScript a little easier. It provides convenience creation, update and delete methods for line items, delivery addresses and payment methods, and also keeps the state of the shopping cart in sync if it's open in multiple tabs using ``localStorage``.
+
+It supports IE11, the latest versions of Safari, Edge and Firefox, and the two latest versions of Chrome. It requires a ``window.fetch`` polyfill for IE and Safari.
+
+Installation
+------------
+
+The JavaScript component of Lorikeet can be installed via NPM (to be used with a bundler like Webpack). In the future, it will also be provided as a CDN-hosted file you can reference in a ``<script>`` tag. To install it, run ``npm install https://gitlab.com/abre/lorikeet``.
+
+Usage
+-----
+
+If you're using the NPM version, ``import CartClient from 'lorikeet'`` or ``var CartClient = require('lorikeet')`` as appropriate for your setup.
+
+Use the CartClient constructor to instantiate the client. This is the object you'll use to interact with the API.
+
+.. code:: javascript
+
+    var client = new CartClient('/_cart/')
+
+You can now access the current state of the cart on ``client.cart``, which exposes the entire contents of the main endpoint of the :doc:`api`.
+
+.. code:: javascript
+
+    console.log(client.cart.grand_total) // "123.45"
+    console.log(client.cart.items.length) // 3
+
+You can listen for changes using the ``addListener`` and ``removeListener`` events.
+
+.. code:: javascript
+
+    var listenerRef = client.addListener(function(cart){console.log("Cart updated", cart)})
+    client.removeListener(listenerRef)
+
+All of the members of the lists at ``client.cart.items``, ``client.cart.delivery_addresses`` and ``client.cart.payment_methods`` have a ``delete()`` method. Members of ``client.cart.items`` also have ``update(data)`` method, which performs a partial update (``PATCH`` request) using the data you pass, and members of the other two have a ``select()`` method that, makes them the active delivery address or payment method.
+
+.. code:: javascript
+
+    client.cart.items[0].update({quantity: 3})
+    client.cart.items[1].delete()
+    client.cart.delivery_addresses[2].select()
+    client.cart.payment_methods[3].delete()
+
+There's also ``addItem``, ``addAddress`` and ``addPaymentMethod`` methods, which take a type of line item, address or payment method as their first item, and a blob in the format expected by the corresponding serializer as the second.
+
+.. code:: javascript
+
+    client.addItem("MyLineItem", {product: 1, quantity: 2})
+    client.addAddress("AustralianDeliveryAddress", {
+      addressee: "Adam Brenecki",
+      address: "Commercial Motor Vehicles Pty Ltd\nLevel 1, 290 Wright St",
+      suburb: "Adelaide", state: "SA", postcode: "5000",
+    })
+    client.addPaymentMethod("PipeCard", {card_token: "tok_zdchtodladvrcmkxsgvq"})
+
+React
+-----
+
+Lorikeet also comes with an optional decorator for React users. Wrap your top-level cart component like this:
+
+.. code:: javascript
+
+    import cartify from 'lorikeet/react'
+
+    class MyCart extends Component {
+      // ...
+    }
+
+    MyCart = cartify(MyCart)
+
+When you use ``MyCart``, pass it a Lorikeet client object as the ``cartClient`` prop, and your component will automatically re-render whenever the cart updates. Inside this component, you'll be able to access the client on ``this.props.cartClient``, but you'll also have the ``client.cart`` object on ``this.props.cart`` as a shortcut.

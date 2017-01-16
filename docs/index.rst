@@ -14,6 +14,7 @@
 
    python
    api
+   js
 
 .. toctree::
    :maxdepth: 2
