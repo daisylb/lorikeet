@@ -1,4 +1,5 @@
 const csrftoken = decodeURIComponent(/(?:^|;)\s*csrftoken=([^;]+)/.exec(document.cookie)[1])
+const localStorageKey = 'au.com.cmv.open-source.lorikeet.cart-data'
 
 function apiFetch(url, params){
   var actualParams = Object.create(params || null)
@@ -50,11 +51,25 @@ export default class CartClient {
     this.reloadCart.bind(this)
     this.addItem.bind(this)
 
+    // add localStorage listener
+    window.addEventListener('storage', (ev) => {
+      if (ev.key == localStorageKey) {
+        this.postProcessCart(JSON.parse(ev.newValue))
+      }
+    })
+
     this.cartUrl = cartUrl
+    this.cartListeners = []
+
+    // if we've been passed cart data from the server, load that
     if (cartData){
       this.postProcessCart(cartData)
+    } else {
+      var cartFromStorage = localStorage.getItem(localStorageKey)
+      if (cartFromStorage) {
+        this.postProcessCart(JSON.parse(cartFromStorage))
+      }
     }
-    this.cartListeners = []
 
     // do an initial load of the cart, if we didn't already get the data
     // from the server
@@ -67,8 +82,8 @@ export default class CartClient {
     apiFetch(this.cartUrl)
     .then(response => response.json())
     .then(json => {
+      localStorage.setItem(localStorageKey, JSON.stringify(json))
       this.postProcessCart(json)
-      this.cartListeners.forEach(x => x(this.cart))
     })
   }
 
@@ -79,6 +94,7 @@ export default class CartClient {
       x.delete = makeDelete(this).bind(x)
     })
     this.cart = cart
+    this.cartListeners.forEach(x => x(this.cart))
   }
 
   /**
