@@ -11,11 +11,8 @@ function apiFetch(url, params){
   return fetch(url, actualParams)
 }
 
-function makeUpdate(client){
-  /**
-   * Update method for LineItems.
-   */
-  return function(newData){
+function addUpdateDelete(client, thing){
+  thing.update = function(newData){
     // Note: We have to reload the entire cart rather than just copying the
     // data we got back into the server, because adding/modifying the cart could
     // change other things e.g. multiple-line-item discounts
@@ -25,19 +22,14 @@ function makeUpdate(client){
     })
     .then(response => response.json())
     .then(() => client.reloadCart())
-  }
-}
+  }.bind(thing)
 
-function makeDelete(client){
-  /**
-   * Delete method for LineItems.
-   */
-  return function(newData){
+  thing.delete = function(){
     return apiFetch(this.url, {
       method: 'DELETE',
     })
     .then(() => client.reloadCart())
-  }
+  }.bind(thing)
 }
 
 export default class CartClient {
@@ -101,10 +93,10 @@ export default class CartClient {
     }
 
     // Attach the update method to each member of items
-    cart.items.forEach(x => {
-      x.update = makeUpdate(this).bind(x)
-      x.delete = makeDelete(this).bind(x)
-    })
+    cart.items.forEach(x => addUpdateDelete(this, x))
+    cart.delivery_addresses.forEach(x => addUpdateDelete(this, x))
+    cart.payment_methods.forEach(x => addUpdateDelete(this, x))
+
     this.cart = cart
     this.cartListeners.forEach(x => x(this.cart))
   }
@@ -128,6 +120,15 @@ export default class CartClient {
     this.cartListeners.splice(this.cartListeners.indexOf(listener), 1)
   }
 
+  add(url, type, data){
+    return apiFetch(url, {
+      method: 'POST',
+      body: JSON.stringify({type, data}),
+    })
+    .then(response => response.json())
+    .then(() => this.reloadCart())
+  }
+
   /**
    * Add an item to the shopping cart.
    * @param {string} type - Type of LineItem to create
@@ -135,11 +136,26 @@ export default class CartClient {
    *     is expecting.
    */
   addItem(type, data){
-    return apiFetch(this.cartUrl + 'new/', {
-      method: 'POST',
-      body: JSON.stringify({type, data}),
-    })
-    .then(response => response.json())
-    .then(() => this.reloadCart())
+    return this.add(this.cart.new_item_url, type, data)
+  }
+
+  /**
+   * Add a delivery address to the shopping cart.
+   * @param {string} type - Type of DeliveryAddress to create
+   * @param {object} data - Data that the corresponding DeliveryAddress
+   * serializer is expecting.
+   */
+  addAddress(type, data){
+    return this.add(this.cart.new_address_url, type, data)
+  }
+
+  /**
+   * Add a delivery address to the shopping cart.
+   * @param {string} type - Type of PaymentMethod to create
+   * @param {object} data - Data that the corresponding PaymentMethod
+   * serializer is expecting.
+   */
+  addPaymentMethod(type, data){
+    return this.add(this.cart.new_address_url, type, data)
   }
 }
