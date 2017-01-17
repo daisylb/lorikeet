@@ -106,6 +106,7 @@ class RegistryRelatedWithMetadataSerializer(serializers.Serializer):
 
 
 class LineItemMetadataSerializer(RegistryRelatedWithMetadataSerializer):
+    data = WritableSerializerMethodField(fields.DictField())
     total = fields.SerializerMethodField()
     url = fields.SerializerMethodField()
 
@@ -114,6 +115,10 @@ class LineItemMetadataSerializer(RegistryRelatedWithMetadataSerializer):
 
     def get_url(self, instance):
         return reverse('lorikeet:cart-item', kwargs={'id': instance.id})
+
+    def update(self, instance, validated_data):
+        ser = registry.get_serializer(instance)
+        return ser.update(instance, validated_data['data'])
 
 
 class DeliveryAddressSerializer(RegistryRelatedWithMetadataSerializer):

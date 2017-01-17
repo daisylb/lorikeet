@@ -25,9 +25,8 @@ class CartItemView(RetrieveUpdateDestroyAPIView):
             raise Http404()
 
     def get_serializer(self, instance, *args, **kwargs):
-        ser_class = api_serializers.registry.get_serializer_class(instance)
-        return ser_class(instance, cart=self.request.get_cart(),
-                         *args, **kwargs)
+        return api_serializers.LineItemMetadataSerializer(
+            instance, context={'cart': self.request.get_cart()}, *args, **kwargs)
 
 
 class AddToCartView(CreateAPIView):

@@ -22,12 +22,17 @@ def test_view_cart_item(client, cart):
     resp = client.get('/_cart/{}/'.format(i.id))
     data = loads(resp.content.decode('utf-8'))
     assert data == {
-        'product': {
-            'id': i.product.id,
-            'name': i.product.name,
-            'unit_price': str(i.product.unit_price),
+        'type': "MyLineItem",
+        'data': {
+            'product': {
+                'id': i.product.id,
+                'name': i.product.name,
+                'unit_price': str(i.product.unit_price),
+            },
+            'quantity': i.quantity,
         },
-        'quantity': i.quantity,
+        'total': str(i.quantity * i.product.unit_price),
+        'url': '/_cart/{}/'.format(i.id),
     }
 
 
@@ -58,8 +63,10 @@ def test_cannot_remove_cart_item_not_in_cart(client):
 @pytest.mark.django_db
 def test_change_cart_item(client, cart):
     i = factories.MyLineItemFactory(cart=cart)
+    new_qty = i.quantity + 1
     resp = client.patch('/_cart/{}/'.format(i.id), dumps({
-        'quantity': 3,
+        'data': {'quantity': new_qty},
     }), content_type='application/json')
+    print(resp.content)
     assert resp.status_code == 200
-    assert smodels.MyLineItem.objects.get(id=i.id).quantity == 3
+    assert smodels.MyLineItem.objects.get(id=i.id).quantity == new_qty
