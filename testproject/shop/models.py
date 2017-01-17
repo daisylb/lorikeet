@@ -1,5 +1,5 @@
 from django.db import models
-from lorikeet.models import DeliveryAddress, LineItem, PaymentMethod
+from lorikeet.models import DeliveryAddress, LineItem, Payment, PaymentMethod
 
 AUSTRALIAN_STATES = (
     ('NSW', 'New South Wales'),
@@ -36,3 +36,10 @@ class AustralianDeliveryAddress(DeliveryAddress):
 
 class PipeCard(PaymentMethod):
     card_id = models.CharField(max_length=30)
+
+    def make_payment(self, amount):
+        return PipePayment.objects.create(method=self, amount=amount)
+
+
+class PipePayment(Payment):
+    amount = models.DecimalField(max_digits=7, decimal_places=2)

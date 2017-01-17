@@ -1,6 +1,16 @@
 import pytest
+from shop import models as smodels
+from shop import factories
 
 from . import models
+
+
+def fill_cart(cart):
+    factories.MyLineItemFactory(cart=cart)
+    factories.MyLineItemFactory(cart=cart)
+    cart.delivery_address = factories.AustralianDeliveryAddressFactory()
+    cart.payment_method = smodels.PipeCard.objects.create(card_id="Visa4242")
+    cart.save()
 
 
 @pytest.fixture
@@ -13,6 +23,18 @@ def cart(client):
 
 
 @pytest.fixture
+def filled_cart(cart):
+    fill_cart(cart)
+    return cart
+
+
+@pytest.fixture
 def admin_cart(admin_user):
     cart = models.Cart.objects.create(user=admin_user)
     return cart
+
+
+@pytest.fixture
+def filled_admin_cart(admin_cart):
+    fill_cart(admin_cart)
+    return admin_cart

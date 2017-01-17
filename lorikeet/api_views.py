@@ -1,9 +1,14 @@
+from logging import getLogger
+
+from django.db.transaction import atomic
 from django.http import Http404
 from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from . import api_serializers, models
+from . import api_serializers, exceptions, models
+
+logger = getLogger(__name__)
 
 
 class CartView(APIView):
@@ -117,3 +122,37 @@ class DeliveryAddressView(RetrieveUpdateDestroyAPIView):
     def get_serializer(self, instance, *args, **kwargs):
         return api_serializers.DeliveryAddressSerializer(
             instance, context={'cart': self.request.get_cart()}, *args, **kwargs)
+
+
+class CheckoutView(APIView):
+
+    def post(self, request, format=None):
+        try:
+            with atomic():
+                # Prepare the order object
+                cart = request.get_cart()
+                order = models.Order.objects.create(user=cart.user)
+
+                # copy items onto order, also calculate grand total
+                grand_total = 0
+                for item in cart.items.select_subclasses().all():
+                    total = item.get_total()
+                    grand_total += total
+                    item.total_when_charged = total
+                    item.order = order
+                    item.cart = None
+                    item._new_order = True
+                    item.save()
+
+                # copy delivery address over
+                order.delivery_address = cart.delivery_address
+
+                # make payment and attach it to order
+                order.payment = cart.payment_method_subclass.make_payment(
+                    grand_total)
+                order.grand_total = grand_total
+                order.save()
+        except exceptions.PaymentError as e:
+            return Response({}, status=201)
+        else:
+            return Response({}, status=200)

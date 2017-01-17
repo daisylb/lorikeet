@@ -49,8 +49,9 @@ class Order(models.Model):
     custom_invoice_id = models.CharField(max_length=255)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
     guest_email = models.EmailField(blank=True)
-    payment = models.ForeignKey('lorikeet.Payment')
-    delivery_address = models.ForeignKey('lorikeet.DeliveryAddress')
+    payment = models.ForeignKey('lorikeet.Payment', blank=True, null=True)
+    delivery_address = models.ForeignKey(
+        'lorikeet.DeliveryAddress', blank=True, null=True)
 
     @property
     def email(self):
@@ -77,10 +78,10 @@ class PaymentMethod(models.Model):
 
     objects = InheritanceManager()
 
-    def make_payment(self, amount, description):
-        raise NotImplemented("Provide a make_payment method in your "
-                             "PaymentMethod subclass {}.".format(
-                                 self.__class__.__name__))
+    def make_payment(self, amount):
+        raise NotImplementedError("Provide a make_payment method in your "
+                                  "PaymentMethod subclass {}.".format(
+                                      self.__class__.__name__))
 
     def assign_to_user(self, user):
         self.user = user
