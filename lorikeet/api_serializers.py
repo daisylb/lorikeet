@@ -117,10 +117,21 @@ class LineItemMetadataSerializer(RegistryRelatedWithMetadataSerializer):
 
 
 class DeliveryAddressSerializer(RegistryRelatedWithMetadataSerializer):
-    selected = fields.SerializerMethodField()
+    selected = WritableSerializerMethodField(fields.BooleanField())
+    url = fields.SerializerMethodField()
 
     def get_selected(self, instance):
-        return instance == self.context.get('selected')
+        return instance.id == self.context['cart'].delivery_address_id
+
+    def get_url(self, instance):
+        return reverse('lorikeet:address', kwargs={'id': instance.id})
+
+    def update(self, instance, validated_data):
+        if validated_data['selected']:
+            cart = self.context['cart']
+            cart.delivery_address = instance
+            cart.save()
+        return instance
 
 
 class PaymentMethodSerializer(RegistryRelatedWithMetadataSerializer):
@@ -165,21 +176,17 @@ class CartSerializer(serializers.ModelSerializer):
     def get_new_address_url(self, _):
         return reverse('lorikeet:new-address')
 
-    def get_delivery_addresses(self, _):
-        request = self.context.get('request')
-        selected = None
+    def get_delivery_addresses(self, cart):
+        selected = cart.delivery_address_subclass
         the_set = []
 
-        if request:
-            selected = request.get_cart().delivery_address_subclass
-
-        if request and request.user.is_authenticated():
-            the_set = request.user.delivery_addresses.all()
+        if cart.user:
+            the_set = cart.user.delivery_addresses.all().select_subclasses()
 
         if selected is not None and selected not in the_set:
             the_set = chain(the_set, [selected])
 
-        return DeliveryAddressSerializer(instance=the_set, many=True, context={'selected': selected}).data
+        return DeliveryAddressSerializer(instance=the_set, many=True, context={'cart': cart}).data
 
     def get_new_payment_method_url(self, _):
         return reverse('lorikeet:new-payment-method')

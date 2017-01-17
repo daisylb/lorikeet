@@ -86,7 +86,8 @@ def test_cart_delivery_addresses(client, cart):
             'suburb': cart.delivery_address.suburb,
             'state': cart.delivery_address.state,
             'postcode': cart.delivery_address.postcode,
-        }
+        },
+        'url': '/_cart/address/{}/'.format(cart.delivery_address_id),
     }]
 
 

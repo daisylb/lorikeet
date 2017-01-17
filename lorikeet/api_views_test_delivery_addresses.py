@@ -1,7 +1,8 @@
-from json import dumps
+from json import dumps, loads
 
 import pytest
 from shop import models as smodels
+from shop import factories
 
 
 @pytest.mark.django_db
@@ -21,3 +22,73 @@ def test_add_delivery_address(client, cart):
     assert smodels.AustralianDeliveryAddress.objects.count() == 1
     cart.refresh_from_db()
     assert cart.delivery_address is not None
+
+
+@pytest.mark.django_db
+def test_view_delivery_address(client, cart):
+    cart.delivery_address = factories.AustralianDeliveryAddressFactory()
+    cart.save()
+
+    url = '/_cart/address/{}/'.format(cart.delivery_address_id)
+    resp = client.get(url)
+    data = loads(resp.content.decode('utf-8'))
+    assert data == {
+        'type': "AustralianDeliveryAddress",
+        'data': {
+            'addressee': cart.delivery_address.addressee,
+            'address': cart.delivery_address.address,
+            'suburb': cart.delivery_address.suburb,
+            'state': cart.delivery_address.state,
+            'postcode': cart.delivery_address.postcode,
+        },
+        'selected': True,
+        'url': url,
+    }
+
+
+@pytest.mark.django_db
+def test_view_owned_unselected_delivery_address(admin_user, admin_client):
+    addr = factories.AustralianDeliveryAddressFactory(user=admin_user)
+
+    url = '/_cart/address/{}/'.format(addr.id)
+    resp = admin_client.get(url)
+    data = loads(resp.content.decode('utf-8'))
+    assert data == {
+        'type': "AustralianDeliveryAddress",
+        'data': {
+            'addressee': addr.addressee,
+            'address': addr.address,
+            'suburb': addr.suburb,
+            'state': addr.state,
+            'postcode': addr.postcode,
+        },
+        'selected': False,
+        'url': url,
+    }
+
+
+@pytest.mark.django_db
+def test_select_delivery_address(admin_user, admin_client, admin_cart):
+    addr = factories.AustralianDeliveryAddressFactory(user=admin_user)
+
+    url = '/_cart/address/{}/'.format(addr.id)
+    resp = admin_client.patch(url, dumps({'selected': True}),
+                              content_type='application/json')
+    assert resp.status_code == 200
+    admin_cart.refresh_from_db()
+    assert admin_cart.delivery_address_id == addr.id
+
+
+@pytest.mark.django_db
+def test_delete_delivery_address(client, cart):
+    addr = factories.AustralianDeliveryAddressFactory()
+    cart.delivery_address = addr
+    cart.save()
+
+    url = '/_cart/address/{}/'.format(addr.id)
+    resp = client.delete(url)
+    assert resp.status_code == 204
+    cart.refresh_from_db()
+    assert cart.delivery_address is None
+    addr.refresh_from_db()
+    assert not addr.active

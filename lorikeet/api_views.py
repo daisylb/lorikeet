@@ -91,3 +91,30 @@ class PaymentMethodView(RetrieveUpdateDestroyAPIView):
     def get_serializer(self, instance, *args, **kwargs):
         return api_serializers.PaymentMethodSerializer(
             instance, context={'cart': self.request.get_cart()}, *args, **kwargs)
+
+
+class DeliveryAddressView(RetrieveUpdateDestroyAPIView):
+
+    def get_object(self):
+        try:
+            assert self.request.user.is_authenticated()
+            return models.DeliveryAddress.objects.get_subclass(
+                user=self.request.user, id=self.kwargs['id'])
+        except (AssertionError, models.DeliveryAddress.DoesNotExist):
+            cart = self.request.get_cart()
+            if int(self.kwargs['id']) == cart.delivery_address_id:
+                return cart.delivery_address_subclass
+
+        raise Http404()
+
+    def perform_destroy(self, instance):
+        instance.active = False
+        instance.save()
+        cart = self.request.get_cart()
+        if cart.delivery_address_id == instance.id:
+            cart.delivery_address = None
+            cart.save()
+
+    def get_serializer(self, instance, *args, **kwargs):
+        return api_serializers.DeliveryAddressSerializer(
+            instance, context={'cart': self.request.get_cart()}, *args, **kwargs)

@@ -98,6 +98,7 @@ class DeliveryAddress(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True,
                              related_name='delivery_addresses')
+    active = models.BooleanField(default=True)
 
     objects = InheritanceManager()
 
