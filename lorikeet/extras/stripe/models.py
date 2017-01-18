@@ -1,7 +1,8 @@
 import stripe
 from django.core.cache import cache
 from django.db import models
-from lorikeet.models import PaymentMethod
+from lorikeet.exceptions import PaymentError
+from lorikeet.models import Payment, PaymentMethod
 
 
 class StripeCard(PaymentMethod):
@@ -25,3 +26,21 @@ class StripeCard(PaymentMethod):
         card = customer.sources.retrieve(self.card_token)
         cache.set(cache_key, card, 3600)
         return card
+
+    def make_payment(self, amount):
+        try:
+            chg = stripe.Charge.create(
+                amount=int(amount * 100),
+                currency='AUD',
+                customer=self.customer_token,
+                source=self.card_token,
+            )
+        except stripe.error.CardError as e:
+            raise PaymentError(e.json_body)
+        else:
+            return StripePayment.objects.create(method=self,
+                                                charge_id=chg['id'])
+
+
+class StripePayment(Payment):
+    charge_id = models.CharField(max_length=30)
