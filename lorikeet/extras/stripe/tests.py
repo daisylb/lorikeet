@@ -39,7 +39,7 @@ def test_add_stripe_card(client, cart, card_id):
             'card_token': card_id,
         },
     }), content_type='application/json')
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     assert models.StripeCard.objects.count() == 1
     card_obj = models.StripeCard.objects.first()
     assert card_obj.data['last4'] == '4242'
