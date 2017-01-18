@@ -36,7 +36,7 @@ class StripeCard(PaymentMethod):
                 source=self.card_token,
             )
         except stripe.error.CardError as e:
-            raise PaymentError(e.json_body)
+            raise PaymentError(e.json_body['error'])
         else:
             return StripePayment.objects.create(method=self,
                                                 charge_id=chg['id'])
