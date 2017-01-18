@@ -1,4 +1,5 @@
 from django.db import models
+from lorikeet.exceptions import PaymentError
 from lorikeet.models import DeliveryAddress, LineItem, Payment, PaymentMethod
 
 AUSTRALIAN_STATES = (
@@ -38,6 +39,8 @@ class PipeCard(PaymentMethod):
     card_id = models.CharField(max_length=30)
 
     def make_payment(self, amount):
+        if self.card_id.endswith('9'):
+            raise PaymentError("Insufficient funds")
         return PipePayment.objects.create(method=self, amount=amount)
 
 

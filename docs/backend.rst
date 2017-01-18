@@ -193,3 +193,29 @@ We've accomplished that by using a ``write_only`` field and a pair of ``Serializ
             card_token = validated_data.pop('card_token')
             validated_data['card_id'] = pipe.create_card(card_token)['id']
             return super().create(validated_data)
+
+Now that we can create payment methods, let's look at what happens when we charge them. We'll need a model to store details about a charge, which should be a subclass of :class:`lorikeet.models.Payment`.
+
+.. code:: python
+
+    class PipePayment(Payment):
+        payment_id = models.CharField(max_length=30)
+
+Then, we'll need to add a ``make_payment`` method to our ``PipeCard`` class. This should either return an instance of our ``PipePayment`` class, or raise :class:`lorikeet.exceptions.PaymentError` if the payment is unsuccessful.
+
+.. note::
+
+    The :class:`~lorikeet.models.Payment` model has a mandatory ``method`` field, which you'll need to fill with ``self`` when you create new instances.
+
+.. code:: python
+
+    class PipeCard(PaymentMethod):
+        card_id = models.CharField(max_length=30)
+
+        def make_payment(self, amount):
+            try:
+                payment_id = pipe.charge_card(self.card_id, amount)
+            except pipe.ChargeError as e:
+                raise PaymentError(e.user_info)
+            else:
+                return PipePayment.objects.create(method=self, payment_id=payment_id)

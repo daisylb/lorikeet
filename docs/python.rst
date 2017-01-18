@@ -23,3 +23,8 @@ Serializers
     :members:
 
 .. autoclass:: lorikeet.api_serializers.PrimaryKeyModelSerializer
+
+Exceptions
+----------
+
+.. autoclass:: lorikeet.exceptions.PaymentError

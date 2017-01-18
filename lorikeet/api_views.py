@@ -153,6 +153,14 @@ class CheckoutView(APIView):
                 order.grand_total = grand_total
                 order.save()
         except exceptions.PaymentError as e:
-            return Response({}, status=201)
+            return Response({
+                'success': False,
+                'reason': 'payment',
+                'payment_method': cart.payment_method_subclass.__class__.__name__,
+                'info': e.info,
+            }, status=422)
         else:
-            return Response({}, status=200)
+            return Response({
+                'success': True,
+                'id': order.id,
+            }, status=200)
