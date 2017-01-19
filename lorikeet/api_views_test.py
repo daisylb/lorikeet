@@ -19,6 +19,19 @@ def test_empty_cart(client):
         'payment_methods': [],
         'new_payment_method_url': '/_cart/new-payment-method/',
         'grand_total': '0.00',
+        'incomplete_reasons': [
+            {
+                'code': 'not_set',
+                'field': 'delivery_address',
+                'message': 'A delivery address is required.',
+            },
+            {
+                'code': 'not_set',
+                'field': 'payment_method',
+                'message': 'A payment method is required.',
+            },
+        ],
+        'is_complete': False,
     }
 
 
@@ -36,6 +49,19 @@ def test_empty_cart_logged_in(admin_client):
         'payment_methods': [],
         'new_payment_method_url': '/_cart/new-payment-method/',
         'grand_total': '0.00',
+        'incomplete_reasons': [
+            {
+                'code': 'not_set',
+                'field': 'delivery_address',
+                'message': 'A delivery address is required.',
+            },
+            {
+                'code': 'not_set',
+                'field': 'payment_method',
+                'message': 'A payment method is required.',
+            },
+        ],
+        'is_complete': False,
     }
 
 

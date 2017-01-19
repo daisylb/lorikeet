@@ -1,6 +1,10 @@
 from django.conf import settings
 from django.db import models
+from django.utils.module_loading import import_string
 from model_utils.managers import InheritanceManager
+
+from . import settings as lorikeet_settings
+from . import exceptions
 
 
 class Cart(models.Model):
@@ -41,6 +45,37 @@ class Cart(models.Model):
         if self.payment_method_id is not None:
             return PaymentMethod.objects.get_subclass(
                 id=self.payment_method_id)
+
+    def is_complete(self, raise_exc=False):
+        """Determine if this cart is able to be checked out.
+
+        If this function returns ``False``, the ``.errors`` attribute will
+        be set to a :class:`~lorikeet.exceptions.IncompleteCartErrorSet`
+        containing all of the reasons the cart cannot be checked out.
+
+        :param raise_exc: If ``True`` and there are errors, raise the
+            resulting :class:`~lorikeet.exceptions.IncompleteCartErrorSet`
+            instead of just returning ``False``.
+        :type raise_exc: bool
+        :return: Whether this cart can be checked out.
+        :rtype: bool
+        """
+
+        # Use the .errors attribute to effectively memoize this function
+        if not hasattr(self, 'errors'):
+            self.errors = exceptions.IncompleteCartErrorSet()
+
+            for checker in lorikeet_settings.LORIKEET_CART_COMPLETE_CHECKERS:
+                checker_func = import_string(checker)
+                try:
+                    checker_func(self)
+                except exceptions.IncompleteCartError as e:
+                    self.errors.add(e)
+
+        if raise_exc and self.errors:
+            raise self.errors
+
+        return not bool(self.errors)
 
 
 class Order(models.Model):

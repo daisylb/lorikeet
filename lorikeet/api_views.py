@@ -133,6 +133,9 @@ class CheckoutView(APIView):
                 cart = request.get_cart()
                 order = models.Order.objects.create(user=cart.user)
 
+                # Check the cart is ready to be checked out
+                cart.is_complete(raise_exc=True)
+
                 # copy items onto order, also calculate grand total
                 grand_total = 0
                 for item in cart.items.select_subclasses().all():
@@ -167,6 +170,12 @@ class CheckoutView(APIView):
                 'reason': 'payment',
                 'payment_method': cart.payment_method_subclass.__class__.__name__,
                 'info': e.info,
+            }, status=422)
+        except exceptions.IncompleteCartErrorSet as e:
+            return Response({
+                'success': False,
+                'reason': 'incomplete',
+                'info': e.to_json(),
             }, status=422)
         else:
             return Response({

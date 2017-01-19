@@ -21,6 +21,30 @@ def test_checkout(client, filled_cart):
 
 
 @pytest.mark.django_db
+def test_cart_incomplete(client, cart):
+    resp = client.post('/_cart/checkout/', dumps({}),
+                       content_type='application/json')
+    assert resp.status_code == 422
+    assert loads(resp.content.decode('utf-8')) == {
+        'success': False,
+        'reason': 'incomplete',
+        'info': [
+            {
+                'code': 'not_set',
+                'field': 'delivery_address',
+                'message': 'A delivery address is required.',
+            },
+            {
+                'code': 'not_set',
+                'field': 'payment_method',
+                'message': 'A payment method is required.',
+            },
+        ],
+    }
+    assert models.Order.objects.count() == 0
+
+
+@pytest.mark.django_db
 def test_payment_failed(client, filled_cart):
     filled_cart.payment_method = smodels.PipeCard.objects.create(
         card_id="Visa4949")
