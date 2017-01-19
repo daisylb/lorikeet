@@ -8,7 +8,13 @@ function apiFetch(url, params){
   actualParams.headers['Content-Type'] = 'application/json'
   actualParams.headers['X-CSRFToken'] = csrftoken
   actualParams.credentials = 'same-origin'
-  return fetch(url, actualParams)
+  return fetch(url, actualParams).then((resp) => {
+    // Reject the promise if we get a non-2xx return code
+    if (resp.ok){
+      return resp.json()
+    }
+    return resp.json().then((x) => Promise.reject(x))
+  })
 }
 
 function addUpdateDelete(client, thing){
@@ -20,7 +26,6 @@ function addUpdateDelete(client, thing){
       method: 'PATCH',
       body: JSON.stringify(newData),
     })
-    .then(response => response.json())
     .then(() => client.reloadCart())
   }.bind(thing)
 
@@ -75,7 +80,6 @@ export default class CartClient {
 
   reloadCart(){
     apiFetch(this.cartUrl)
-    .then(response => response.json())
     .then(json => {
       this.processReceivedCart(json)
     })
@@ -125,7 +129,6 @@ export default class CartClient {
       method: 'POST',
       body: JSON.stringify({type, data}),
     })
-    .then(response => response.json())
     .then(() => this.reloadCart())
   }
 
@@ -156,6 +159,10 @@ export default class CartClient {
    * serializer is expecting.
    */
   addPaymentMethod(type, data){
-    return this.add(this.cart.new_address_url, type, data)
+    return this.add(this.cart.new_payment_method_url, type, data)
+  }
+
+  checkout(){
+    return apiFetch(this.cart.checkout_url, {method: 'POST'})
   }
 }

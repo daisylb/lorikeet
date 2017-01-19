@@ -175,6 +175,7 @@ class CartSerializer(serializers.ModelSerializer):
         max_digits=7, decimal_places=2, source='get_grand_total')
     is_complete = fields.SerializerMethodField()
     incomplete_reasons = fields.SerializerMethodField()
+    checkout_url = fields.SerializerMethodField()
     generated_at = fields.SerializerMethodField()
 
     def get_new_item_url(self, _):
@@ -220,12 +221,15 @@ class CartSerializer(serializers.ModelSerializer):
     def get_incomplete_reasons(self, cart):
         return cart.errors.to_json()
 
+    def get_checkout_url(self, _):
+        return reverse('lorikeet:checkout')
+
     class Meta:
         model = models.Cart
         fields = ('items', 'new_item_url', 'delivery_addresses',
                   'new_address_url', 'payment_methods',
                   'new_payment_method_url', 'grand_total', 'generated_at',
-                  'is_complete', 'incomplete_reasons')
+                  'is_complete', 'incomplete_reasons', 'checkout_url')
 
 
 class LineItemSerializer(serializers.ModelSerializer):
