@@ -19,6 +19,21 @@ def test_add_payment_method(client, cart):
 
 
 @pytest.mark.django_db
+def test_add_payment_method_logged_in(admin_user, admin_client, admin_cart):
+    resp = admin_client.post('/_cart/new-payment-method/', dumps({
+        'type': "PipeCard",
+        'data': {
+            'card_token': 'Lvfn4242',
+        },
+    }), content_type='application/json')
+    assert resp.status_code == 201
+    assert smodels.PipeCard.objects.count() == 1
+    assert smodels.PipeCard.objects.first().user == admin_user
+    admin_cart.refresh_from_db()
+    assert admin_cart.payment_method is not None
+
+
+@pytest.mark.django_db
 def test_view_payment_method(client, cart):
     cart.payment_method = smodels.PipeCard.objects.create(card_id='Visa4242')
     cart.save()

@@ -25,6 +25,26 @@ def test_add_delivery_address(client, cart):
 
 
 @pytest.mark.django_db
+def test_add_delivery_address_logged_in(admin_user, admin_client, admin_cart):
+    resp = admin_client.post('/_cart/new-address/', dumps({
+        'type': "AustralianDeliveryAddress",
+        'data': {
+            'addressee': 'Adam Brenecki',
+            'address': 'Commercial Motor Vehicles Pty Ltd\n'
+                       'Level 1, 290 Wright Street',
+            'suburb': 'Adelaide',
+            'state': 'SA',
+            'postcode': '5000',
+        },
+    }), content_type='application/json')
+    assert resp.status_code == 201
+    assert smodels.AustralianDeliveryAddress.objects.count() == 1
+    assert smodels.AustralianDeliveryAddress.objects.first().user == admin_user
+    admin_cart.refresh_from_db()
+    assert admin_cart.delivery_address is not None
+
+
+@pytest.mark.django_db
 def test_view_delivery_address(client, cart):
     cart.delivery_address = factories.AustralianDeliveryAddressFactory()
     cart.save()

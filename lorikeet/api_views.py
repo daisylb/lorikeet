@@ -49,6 +49,8 @@ class NewAddressView(CreateAPIView):
         return ser_class(data=data['data'], *args, **kwargs)
 
     def perform_create(self, serializer):
+        if self.request.user.is_authenticated():
+            serializer.validated_data['user'] = self.request.user
         super().perform_create(serializer)
         cart = self.request.get_cart()
         cart.delivery_address = serializer.instance
@@ -64,6 +66,8 @@ class NewPaymentMethodView(CreateAPIView):
                          *args, **kwargs)
 
     def perform_create(self, serializer):
+        if self.request.user.is_authenticated():
+            serializer.validated_data['user'] = self.request.user
         super().perform_create(serializer)
         cart = self.request.get_cart()
         cart.payment_method = serializer.instance
