@@ -17,24 +17,55 @@ function apiFetch(url, params){
   })
 }
 
-function addUpdateDelete(client, thing){
-  thing.update = function(newData){
-    // Note: We have to reload the entire cart rather than just copying the
-    // data we got back into the server, because adding/modifying the cart could
-    // change other things e.g. multiple-line-item discounts
+class CartEntry {
+  constructor(client, data){
+    this.client = client
+    for (var prop in data){
+      if (!data.hasOwnProperty(prop)){
+        continue
+      }
+      if (prop in this){
+        console.warn('Skipping prop '+ prop +' because it would override a property')
+        continue
+      }
+      this[prop] = data[prop]
+    }
+    this.delete = this.delete.bind(this)
+  }
+  delete(){
+    return apiFetch(this.url, {
+      method: 'DELETE',
+    })
+    .then(() => this.client.reloadCart())
+  }
+}
+
+class CartItem extends CartEntry {
+  constructor(client, data){
+    super(client, data)
+    this.update = this.update.bind(this)
+  }
+  update(newData){
     return apiFetch(this.url, {
       method: 'PATCH',
       body: JSON.stringify(newData),
     })
-    .then(() => client.reloadCart())
-  }.bind(thing)
+    .then(() => this.client.reloadCart())
+  }
+}
 
-  thing.delete = function(){
+class AddressOrPayment extends CartEntry {
+  constructor(client, data){
+    super(client, data)
+    this.select = this.select.bind(this)
+  }
+  select(){
     return apiFetch(this.url, {
-      method: 'DELETE',
+      method: 'PATCH',
+      body: '{"selected": true}',
     })
-    .then(() => client.reloadCart())
-  }.bind(thing)
+    .then(() => this.client.reloadCart())
+  }
 }
 
 export default class CartClient {
@@ -100,9 +131,9 @@ export default class CartClient {
     }
 
     // Attach the update method to each member of items
-    cart.items.forEach(x => addUpdateDelete(this, x))
-    cart.delivery_addresses.forEach(x => addUpdateDelete(this, x))
-    cart.payment_methods.forEach(x => addUpdateDelete(this, x))
+    cart.items = cart.items.map(x => new CartItem(this, x))
+    cart.delivery_addresses = cart.delivery_addresses.map(x => new AddressOrPayment(this, x))
+    cart.payment_methods = cart.payment_methods.map(x => new AddressOrPayment(this, x))
 
     this.cart = cart
     this.cartListeners.forEach(x => x(this.cart))
