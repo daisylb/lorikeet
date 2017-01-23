@@ -29,3 +29,4 @@
     hooks:
     -   id: prospector
         exclude: migrations\/[^/]*\.py
+        args: ['-A', '--uses', 'django']
