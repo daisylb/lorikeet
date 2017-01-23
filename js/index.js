@@ -45,8 +45,11 @@ export default class CartClient {
    */
   constructor(cartUrl, cartData){
     // bind all the things
-    this.reloadCart.bind(this)
-    this.addItem.bind(this)
+    this.reloadCart = this.reloadCart.bind(this)
+    this.addItem = this.addItem.bind(this)
+    this.addAddress = this.addAddress.bind(this)
+    this.addPaymentMethod = this.addPaymentMethod.bind(this)
+    this.checkout = this.checkout.bind(this)
 
     this.cartUrl = cartUrl
     this.cartListeners = []
