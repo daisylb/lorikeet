@@ -17,3 +17,12 @@ def payment_method_required(cart):
         raise IncompleteCartError('not_set',
                                   'A payment method is required.',
                                   'payment_method')
+
+
+def cart_not_empty(cart):
+    """Checks that a payment method is set on the cart."""
+
+    if not cart.items.exists():
+        raise IncompleteCartError('empty',
+                                  'There are no items in the cart.',
+                                  'items')

@@ -198,5 +198,6 @@ export default class CartClient {
 
   checkout(){
     return apiFetch(this.cart.checkout_url, {method: 'POST'})
+    .then((x) => {this.reloadCart(); return x})
   }
 }

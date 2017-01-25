@@ -25,7 +25,8 @@ class StripeCardSerializer(serializers.ModelSerializer):
         customer = None
 
         if request.user.is_authenticated():
-            first_card = request.user.stripecard_set.order_by('id').first()
+            first_card = models.StripeCard.objects.filter(
+                user=request.user).order_by('id').first()
             if first_card is not None:
                 customer = stripe.Customer.retrieve(first_card.customer_token)
         if customer is None:
