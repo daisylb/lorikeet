@@ -30,6 +30,11 @@ def test_empty_cart(client):
                 'field': 'payment_method',
                 'message': 'A payment method is required.',
             },
+            {
+                'code': 'empty',
+                'field': 'items',
+                'message': 'There are no items in the cart.',
+            },
         ],
         'is_complete': False,
         'checkout_url': '/_cart/checkout/',
@@ -60,6 +65,11 @@ def test_empty_cart_logged_in(admin_client):
                 'code': 'not_set',
                 'field': 'payment_method',
                 'message': 'A payment method is required.',
+            },
+            {
+                'code': 'empty',
+                'field': 'items',
+                'message': 'There are no items in the cart.',
             },
         ],
         'is_complete': False,

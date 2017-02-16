@@ -39,6 +39,11 @@ def test_cart_incomplete(client, cart):
                 'field': 'payment_method',
                 'message': 'A payment method is required.',
             },
+            {
+                'code': 'empty',
+                'field': 'items',
+                'message': 'There are no items in the cart.',
+            },
         ],
     }
     assert models.Order.objects.count() == 0

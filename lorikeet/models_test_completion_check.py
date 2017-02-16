@@ -25,6 +25,11 @@ def test_default_check_fails_cart_empty(cart):
             'field': 'payment_method',
             'message': 'A payment method is required.',
         },
+        {
+            'code': 'empty',
+            'field': 'items',
+            'message': 'There are no items in the cart.',
+        },
     ]
 
 
