@@ -37,6 +37,7 @@ class CartEntry {
       method: 'DELETE',
     })
     .then(() => this.client.reloadCart())
+    .catch(x => {this.client.reloadCart(); return Promise.reject(x)})
   }
 }
 
@@ -51,6 +52,7 @@ class CartItem extends CartEntry {
       body: JSON.stringify(newData),
     })
     .then(() => this.client.reloadCart())
+    .catch(x => {this.client.reloadCart(); return Promise.reject(x)})
   }
 }
 
@@ -64,7 +66,8 @@ class AddressOrPayment extends CartEntry {
       method: 'PATCH',
       body: '{"selected": true}',
     })
-    .then(() => this.client.reloadCart())
+    .then(x => {this.client.reloadCart(); return x})
+    .catch(x => {this.client.reloadCart(); return Promise.reject(x)})
   }
 }
 
@@ -163,7 +166,8 @@ export default class CartClient {
       method: 'POST',
       body: JSON.stringify({type, data}),
     })
-    .then(() => this.reloadCart())
+    .then(x => {this.reloadCart(); return x})
+    .catch(x => {this.reloadCart(); return Promise.reject(x)})
   }
 
   /**
@@ -199,5 +203,6 @@ export default class CartClient {
   checkout(){
     return apiFetch(this.cart.checkout_url, {method: 'POST'})
     .then((x) => {this.reloadCart(); return x})
+    .catch(x => {this.reloadCart(); return Promise.reject(x)})
   }
 }
