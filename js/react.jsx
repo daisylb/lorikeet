@@ -8,20 +8,35 @@ import { render } from 'react-dom'
  * component.
  */
 export default function cartify(InnerComponent){
-  class CartWrapper extends Component {
-    constructor(props){
-      super(props)
-      this.state = {cart: props.cartClient.cart}
+  var wrapper = class extends Component {
+    constructor(props, context){
+      super(props, context)
+      this.state = {cart: context.cartClient.cart}
     }
     componentDidMount(){
-      this.listenerRef = this.props.cartClient.addListener((c) => this.setState({cart: c}))
+      this.listenerRef = this.context.cartClient.addListener((c) => this.setState({cart: c}))
     }
     componentWillUnmount(){
-      this.props.client.removeListener(this.listenerRef)
+      this.context.cartClient.removeListener(this.listenerRef)
     }
     render(){
-      return <InnerComponent cart={this.state.cart} {...this.props} />
+      return <InnerComponent cartClient={this.context.cartClient} cart={this.state.cart} {...this.props} />
     }
   }
-  return CartWrapper
+  var innerName = InnerComponent.displayName || InnerComponent.name || 'Inner'
+  wrapper.displayName = `CartWrapper(${innerName})`
+  wrapper.contextTypes = CartProvider.childContextTypes
+  return wrapper
+}
+
+export class CartProvider extends Component {
+  getChildContext(){
+    return {cartClient: this.props.client}
+  }
+  render(){
+    return <span>{this.props.children}</span>
+  }
+}
+CartProvider.childContextTypes = {
+    cartClient: React.PropTypes.object,
 }

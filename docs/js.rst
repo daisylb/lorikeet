@@ -59,16 +59,33 @@ There's also ``addItem``, ``addAddress`` and ``addPaymentMethod`` methods, which
 React
 -----
 
-Lorikeet also comes with an optional decorator for React users. Wrap your top-level cart component like this:
+Lorikeet also comes with optional support for React. To use it, wrap your React app's outermost component in ``CartProvider``, providing your Lorikeet client instance as the ``client`` prop.
+
+.. code:: javascript
+
+    import { CartProvider } from 'lorikeet/react'
+
+    class App extends Component {
+      render() {
+        return <CartProvider client={myClient}>
+            // ...
+        </CartProvider>
+      }
+    }
+
+Then, in any component where you want to use the client, decorate it with ``cartify``, and you'll have access to the client as ``props.cartClient``, as well as a shortcut to the cart itself on ``props.cart``.
 
 .. code:: javascript
 
     import cartify from 'lorikeet/react'
 
     class MyCart extends Component {
-      // ...
+      handleAddItem(item){
+        this.props.cartClient.addItem('ItemType', item)
+      }
+      render(){
+        return <div>My cart has {this.props.cart.items.length} items!</div>
+      }
     }
 
     MyCart = cartify(MyCart)
-
-When you use ``MyCart``, pass it a Lorikeet client object as the ``cartClient`` prop, and your component will automatically re-render whenever the cart updates. Inside this component, you'll be able to access the client on ``this.props.cartClient``, but you'll also have the ``client.cart`` object on ``this.props.cart`` as a shortcut.
