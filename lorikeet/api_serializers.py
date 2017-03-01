@@ -190,7 +190,8 @@ class CartSerializer(serializers.ModelSerializer):
         the_set = []
 
         if cart.user:
-            the_set = cart.user.delivery_addresses.all().select_subclasses()
+            the_set = cart.user.delivery_addresses.filter(
+                active=True).select_subclasses()
 
         if selected is not None and selected not in the_set:
             the_set = chain(the_set, [selected])

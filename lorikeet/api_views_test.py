@@ -132,6 +132,50 @@ def test_cart_delivery_addresses(client, cart):
 
 
 @pytest.mark.django_db
+def test_cart_delivery_addresses_logged_in(admin_user, admin_client, admin_cart):
+    # set up cart contents
+    admin_cart.delivery_address = factories.AustralianDeliveryAddressFactory(
+        addressee="Active Address", user=admin_user)
+    admin_cart.save()
+    other_addr = factories.AustralianDeliveryAddressFactory(
+        user=admin_user, addressee="Inactive Address")
+
+    # Add another address not attached to the card
+    factories.AustralianDeliveryAddressFactory()
+    factories.AustralianDeliveryAddressFactory(
+        user=admin_user, active=False, addressee="Disabled Address")
+
+    resp = admin_client.get('/_cart/')
+    data = loads(resp.content.decode('utf-8'))
+    assert data['delivery_addresses'] == [
+        {
+            'type': 'AustralianDeliveryAddress',
+            'selected': True,
+            'data': {
+                'addressee': admin_cart.delivery_address.addressee,
+                'address': admin_cart.delivery_address.address,
+                'suburb': admin_cart.delivery_address.suburb,
+                'state': admin_cart.delivery_address.state,
+                'postcode': admin_cart.delivery_address.postcode,
+            },
+            'url': '/_cart/address/{}/'.format(admin_cart.delivery_address_id),
+        },
+        {
+            'type': 'AustralianDeliveryAddress',
+            'selected': False,
+            'data': {
+                'addressee': other_addr.addressee,
+                'address': other_addr.address,
+                'suburb': other_addr.suburb,
+                'state': other_addr.state,
+                'postcode': other_addr.postcode,
+            },
+            'url': '/_cart/address/{}/'.format(other_addr.id),
+        },
+    ]
+
+
+@pytest.mark.django_db
 def test_cart_payment_methods(client, cart):
     # set up cart contents
     cart.payment_method = smodels.PipeCard.objects.create(card_id='Visa4242')
