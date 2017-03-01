@@ -71,6 +71,25 @@ def test_view_owned_unselected_payment_method(admin_user, admin_client):
 
 
 @pytest.mark.django_db
+def test_view_unowned_payment_method(admin_user, client):
+    pm = smodels.PipeCard.objects.create(card_id='Visa4242', user=admin_user)
+
+    url = '/_cart/payment-method/{}/'.format(pm.id)
+    resp = client.get(url)
+    assert resp.status_code == 404
+
+
+@pytest.mark.django_db
+def test_view_inactive_payment_method(admin_user, admin_client):
+    pm = smodels.PipeCard.objects.create(card_id='Visa4242', user=admin_user,
+                                         active=False)
+
+    url = '/_cart/payment-method/{}/'.format(pm.id)
+    resp = admin_client.get(url)
+    assert resp.status_code == 404
+
+
+@pytest.mark.django_db
 def test_select_payment_method(admin_user, admin_client, admin_cart):
     pm = smodels.PipeCard.objects.create(card_id='Visa4242', user=admin_user)
 
@@ -80,6 +99,19 @@ def test_select_payment_method(admin_user, admin_client, admin_cart):
     assert resp.status_code == 200
     admin_cart.refresh_from_db()
     assert admin_cart.payment_method_id == pm.id
+
+
+@pytest.mark.django_db
+def test_select_inactive_payment_method(admin_user, admin_client, admin_cart):
+    pm = smodels.PipeCard.objects.create(card_id='Visa4242', user=admin_user,
+                                         active=False)
+
+    url = '/_cart/payment-method/{}/'.format(pm.id)
+    resp = admin_client.patch(url, dumps({'selected': True}),
+                              content_type='application/json')
+    assert resp.status_code == 404
+    admin_cart.refresh_from_db()
+    assert admin_cart.payment_method_id != pm.id
 
 
 @pytest.mark.django_db

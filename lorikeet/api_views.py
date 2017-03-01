@@ -80,7 +80,10 @@ class PaymentMethodView(RetrieveUpdateDestroyAPIView):
         try:
             assert self.request.user.is_authenticated()
             return models.PaymentMethod.objects.get_subclass(
-                user=self.request.user, id=self.kwargs['id'])
+                user=self.request.user,
+                id=self.kwargs['id'],
+                active=True,
+            )
         except (AssertionError, models.PaymentMethod.DoesNotExist):
             cart = self.request.get_cart()
             if int(self.kwargs['id']) == cart.payment_method_id:
@@ -107,7 +110,10 @@ class DeliveryAddressView(RetrieveUpdateDestroyAPIView):
         try:
             assert self.request.user.is_authenticated()
             return models.DeliveryAddress.objects.get_subclass(
-                user=self.request.user, id=self.kwargs['id'])
+                user=self.request.user,
+                id=self.kwargs['id'],
+                active=True,
+            )
         except (AssertionError, models.DeliveryAddress.DoesNotExist):
             cart = self.request.get_cart()
             if int(self.kwargs['id']) == cart.delivery_address_id:

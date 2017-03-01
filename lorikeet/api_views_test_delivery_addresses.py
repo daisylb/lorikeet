@@ -88,6 +88,25 @@ def test_view_owned_unselected_delivery_address(admin_user, admin_client):
 
 
 @pytest.mark.django_db
+def test_view_unowned_delivery_address(admin_user, client):
+    addr = factories.AustralianDeliveryAddressFactory(user=admin_user)
+
+    url = '/_cart/address/{}/'.format(addr.id)
+    resp = client.get(url)
+    assert resp.status_code == 404
+
+
+@pytest.mark.django_db
+def test_view_inactive_delivery_address(admin_user, admin_client):
+    addr = factories.AustralianDeliveryAddressFactory(user=admin_user,
+                                                      active=False)
+
+    url = '/_cart/address/{}/'.format(addr.id)
+    resp = admin_client.get(url)
+    assert resp.status_code == 404
+
+
+@pytest.mark.django_db
 def test_select_delivery_address(admin_user, admin_client, admin_cart):
     addr = factories.AustralianDeliveryAddressFactory(user=admin_user)
 
@@ -97,6 +116,19 @@ def test_select_delivery_address(admin_user, admin_client, admin_cart):
     assert resp.status_code == 200
     admin_cart.refresh_from_db()
     assert admin_cart.delivery_address_id == addr.id
+
+
+@pytest.mark.django_db
+def test_select_inactive_delivery_address(admin_user, admin_client, admin_cart):
+    addr = factories.AustralianDeliveryAddressFactory(user=admin_user,
+                                                      active=False)
+
+    url = '/_cart/address/{}/'.format(addr.id)
+    resp = admin_client.patch(url, dumps({'selected': True}),
+                              content_type='application/json')
+    assert resp.status_code == 404
+    admin_cart.refresh_from_db()
+    assert admin_cart.delivery_address_id != addr.id
 
 
 @pytest.mark.django_db
