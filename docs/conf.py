@@ -33,7 +33,8 @@
 # ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.todo',
-              'sphinx.ext.viewcode']
+              'sphinx.ext.viewcode',
+              'sphinx_js']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -166,3 +167,5 @@ texinfo_documents = [
 sys.path += [os.path.join(os.path.dirname(os.path.dirname(__file__)), 'testproject')]
 os.environ['DJANGO_SETTINGS_MODULE'] = 'testproject.settings'
 django.setup()
+
+js_source_path = '../js'

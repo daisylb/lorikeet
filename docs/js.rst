@@ -56,6 +56,25 @@ There's also ``addItem``, ``addAddress`` and ``addPaymentMethod`` methods, which
     })
     client.addPaymentMethod("PipeCard", {card_token: "tok_zdchtodladvrcmkxsgvq"})
 
+Reference
+---------
+
+.. js:autoclass:: CartClient
+
+    .. js:autofunction:: CartClient#addItem
+    .. js:autofunction:: CartClient#addAddress
+    .. js:autofunction:: CartClient#addPaymentMethod
+    .. js:autofunction:: CartClient#addListener
+    .. js:autofunction:: CartClient#removeListener
+
+.. js:autoclass:: CartItem
+
+    .. js:autofunction:: CartItem#update
+
+.. js:autoclass:: AddressOrPayment
+
+    .. js:autofunction:: AddressOrPayment#select
+
 React
 -----
 

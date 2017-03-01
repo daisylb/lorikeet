@@ -41,11 +41,22 @@ class CartEntry {
   }
 }
 
+/**
+ * A single item in a cart.
+ */
 class CartItem extends CartEntry {
   constructor(client, data){
     super(client, data)
     this.update = this.update.bind(this)
   }
+  /**
+   * Update this cart item with new data, e.g. changing a quantity count. Note
+   * that calling this method will not update the current CartItem; you'll have
+   * to retrieve a new CartItem from the client's cart property or from an event
+   * handler.
+   * @param {object} newData The data to patch this cart item with. Can be a
+   *     partial update (i.e. something you'd send to a HTTP PATCH call).
+   */
   update(newData){
     return apiFetch(this.url, {
       method: 'PATCH',
@@ -56,11 +67,18 @@ class CartItem extends CartEntry {
   }
 }
 
+/**
+ * A single delivery address, or a single payment method. (Both have the same
+ * shape and methods, so they share a class.)
+ */
 class AddressOrPayment extends CartEntry {
   constructor(client, data){
     super(client, data)
     this.select = this.select.bind(this)
   }
+  /**
+   * Make this the active address or payment method.
+   */
   select(){
     return apiFetch(this.url, {
       method: 'PATCH',
@@ -71,12 +89,30 @@ class AddressOrPayment extends CartEntry {
   }
 }
 
-export default class CartClient {
-  /**
-   * @param {string} cartUrl - URL to the shopping cart API endpoint.
-   * @param {object=} cartData - Current state of the cart. If provided,
-   *     should match the expected strcuture returned by the cart endpoint.
-   */
+/**
+ * Cart data as returned by the Lorikeet API.
+ * @typedef {object} CartData
+ * @property {CartItem[]} items All items currently in the cart.
+ * @property {AddressOrPayment[]} delivery_addresses All delivery addresses
+ *     currently available to the user.
+ * @property {AddressOrPayment[]} payment_methods All payment methods currently
+ *     available to the user.
+ */
+
+/**
+ * A callback
+ * @callback CartClient~cartCallback
+ * @param {CartData} cart New state of the cart.
+ */
+
+/**
+ * A client that interacts with the Lorikeet API.
+ * @param {string} cartUrl - URL to the shopping cart API endpoint.
+ * @param {object=} cartData - Current state of the cart. If provided,
+ *     should match the expected strcuture returned by the cart endpoint.
+ * @prop {CartData} cart Current state of the cart.
+ */
+class CartClient {
   constructor(cartUrl, cartData){
     // bind all the things
     this.reloadCart = this.reloadCart.bind(this)
@@ -144,10 +180,10 @@ export default class CartClient {
 
   /**
    * Register a listener function to be called every time the cart is updated.
-   * @param {function} listener - The listener to add.
-   * @return {function} Returns the listener function that was passed in,
-   *     so you can pass in an anonymous function and still have something
-   *     to pass to removeListener later.
+   * @param {CartClient~cartCallback} listener The listener to add.
+   * @return {CartClient~cartCallback} Returns the listener function that was
+   *     passed in, so you can pass in an anonymous function and still have
+   *     something to pass to removeListener later.
    */
   addListener(listener){
     this.cartListeners.push(listener)
@@ -155,7 +191,7 @@ export default class CartClient {
   }
 
   /**
-   * @param {function} listener - The listener to remove.
+   * @param {CartClient~cartCallback} listener The listener to remove.
    */
   removeListener(listener){
     this.cartListeners.splice(this.cartListeners.indexOf(listener), 1)
@@ -184,7 +220,7 @@ export default class CartClient {
    * Add a delivery address to the shopping cart.
    * @param {string} type - Type of DeliveryAddress to create
    * @param {object} data - Data that the corresponding DeliveryAddress
-   * serializer is expecting.
+   *     serializer is expecting.
    */
   addAddress(type, data){
     return this.add(this.cart.new_address_url, type, data)
@@ -194,7 +230,7 @@ export default class CartClient {
    * Add a delivery address to the shopping cart.
    * @param {string} type - Type of PaymentMethod to create
    * @param {object} data - Data that the corresponding PaymentMethod
-   * serializer is expecting.
+   *     serializer is expecting.
    */
   addPaymentMethod(type, data){
     return this.add(this.cart.new_payment_method_url, type, data)
@@ -206,3 +242,5 @@ export default class CartClient {
     .catch(x => {this.reloadCart(); return Promise.reject(x)})
   }
 }
+
+export default CartClient
