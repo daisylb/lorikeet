@@ -76,6 +76,58 @@ HTTP API
             "url": "/_cart/address/55/"
         }
 
+.. http:post:: /_cart/checkout/
+
+    Finalise the checkout process; process the payment and generate an order.
+
+    :statuscode 200: Checkout succesful; payment has been processed and order has been generated.
+    :statuscode 422: Checkout failed, either because the cart was not ready for checkout or the payment failed.
+
+    This endpoint should be called without any parameters, but the user's cart should be in a state that's ready for checkout; that is the ``is_complete`` key returned in :http:get:`/_cart/` should be ``true``, and ``incomplete_reasons`` should be empty.
+
+    If checkout was successful, the response body will look like this:
+
+    .. sourcecode:: javascript
+
+        {
+            "id": 7,
+        }
+    
+    where the returned ``id`` is the ID of the :class:`~lorikeet.models.Order` instance that was created.
+
+    If the cart was not ready for checkout, the endpoint will return a 422 response with a body that looks like this:
+
+    .. sourcecode:: javascript
+
+        {
+            "reason": "incomplete",
+            "info": [
+                {
+                    "message": "There are no items in the cart.",
+                    "field": "items",
+                    "code": "empty"
+                }
+            ]
+        }
+    
+    In this case, the ``reason`` is always the string ``"incomplete"``, and the ``info`` is the same list of values as in the ``incomplete_reasons`` key returned in :http:get:`/_cart/`.
+
+    If processing the payment failed, the endpoint will return a 422 response with a body that looks like this:
+
+    .. sourcecode:: javascript
+
+        {
+            "reason": "payment",
+            "payment_method": "StripeCard",
+            "info": {
+                "message": "Your card was declined.",
+                // ...
+            }
+        }
+    
+    In this case, the ``reason`` is always the string ``"payment"``; ``payment_method`` is the name of the :class:`~lorikeet.models.PaymentMethod` subclass that handled the payment. ``info`` is data returned by the payment method itself; consult its documentation for its meaning.
+
+
 .. todo::
 
     describe the other endpoints

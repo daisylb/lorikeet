@@ -16,6 +16,9 @@ Models
 .. autoclass:: lorikeet.models.PaymentMethod
     :members:
 
+.. autoclass:: lorikeet.models.Order
+    :members:
+
 Serializers
 -----------
 
