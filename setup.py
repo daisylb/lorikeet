@@ -22,6 +22,7 @@ setup(
             'sphinx>=1.5.1,<1.6',
             'sphinx-rtd-theme>=0.1.9,<0.2',
             'sphinx-js>=1.3,<1.4',
+            'sphinxcontrib_httpdomain>=1.5.0,<2',
         ]
     },
 )
