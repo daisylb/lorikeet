@@ -1,19 +1,54 @@
 const csrftoken = decodeURIComponent(/(?:^|;)\s*csrftoken=([^;]+)/.exec(document.cookie)[1])
 const localStorageKey = 'au.com.cmv.open-source.lorikeet.cart-data'
 
-function apiFetch(url, params){
-  var actualParams = Object.create(params || null)
-  actualParams.headers = Object.create(params? params.headers || null : null)
-  actualParams.headers['Accept'] = 'application/json'
-  actualParams.headers['Content-Type'] = 'application/json'
-  actualParams.headers['X-CSRFToken'] = csrftoken
-  actualParams.credentials = 'same-origin'
-  return fetch(url, actualParams).then((resp) => {
-    // Reject the promise if we get a non-2xx return code
-    if (resp.ok){
-      return resp.json()
+function apiFetch(url, params, client){
+  return new Promise((resolveRaw, rejectRaw) => {
+    var resolve = function(x){
+      client && client.reloadCart()
+      resolveRaw(x)
     }
-    return resp.json().then((x) => Promise.reject(x))
+    var reject = function(x){
+      client && client.reloadCart()
+      rejectRaw(x)
+    }
+    var actualParams = Object.create(params || null)
+    actualParams.headers = Object.create(params? params.headers || null : null)
+    actualParams.headers['Accept'] = 'application/json'
+    actualParams.headers['Content-Type'] = 'application/json'
+    actualParams.headers['X-CSRFToken'] = csrftoken
+    actualParams.credentials = 'same-origin'
+
+    fetch(url, actualParams)
+    .then((resp) => {
+      // Reject the promise if we get a non-2xx return code
+      if (resp.ok){
+        resp.json().then(x => resolve(x))
+      } else {
+        resp.text().then(text => {
+          var json
+          try {
+            json = JSON.parse(text)
+          } catch (e) {
+            reject({
+              reason: 'api',
+              status: resp.status,
+              statusText: resp.statusText,
+              body: text,
+              decodeError: e,
+            })
+          }
+          if (json) {
+            reject({
+              reason: 'api',
+              status: resp.status,
+              statusText: resp.statusText,
+              body: text,
+              data: json,
+            })
+          }
+        })
+      }
+    }, x => reject({reason: 'network', error: x}))
   })
 }
 
@@ -35,9 +70,7 @@ class CartEntry {
   delete(){
     return apiFetch(this.url, {
       method: 'DELETE',
-    })
-    .then(() => this.client.reloadCart())
-    .catch(x => {this.client.reloadCart(); return Promise.reject(x)})
+    }, this.client)
   }
 }
 
@@ -61,9 +94,7 @@ class CartItem extends CartEntry {
     return apiFetch(this.url, {
       method: 'PATCH',
       body: JSON.stringify(newData),
-    })
-    .then(() => this.client.reloadCart())
-    .catch(x => {this.client.reloadCart(); return Promise.reject(x)})
+    }, this.client)
   }
 }
 
@@ -83,9 +114,7 @@ class AddressOrPayment extends CartEntry {
     return apiFetch(this.url, {
       method: 'PATCH',
       body: '{"selected": true}',
-    })
-    .then(x => {this.client.reloadCart(); return x})
-    .catch(x => {this.client.reloadCart(); return Promise.reject(x)})
+    }, this.client)
   }
 }
 
@@ -201,9 +230,7 @@ class CartClient {
     return apiFetch(url, {
       method: 'POST',
       body: JSON.stringify({type, data}),
-    })
-    .then(x => {this.reloadCart(); return x})
-    .catch(x => {this.reloadCart(); return Promise.reject(x)})
+    }, this)
   }
 
   /**
@@ -237,9 +264,7 @@ class CartClient {
   }
 
   checkout(){
-    return apiFetch(this.cart.checkout_url, {method: 'POST'})
-    .then((x) => {this.reloadCart(); return x})
-    .catch(x => {this.reloadCart(); return Promise.reject(x)})
+    return apiFetch(this.cart.checkout_url, {method: 'POST'}, this)
   }
 }
 

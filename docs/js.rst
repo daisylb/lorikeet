@@ -75,6 +75,50 @@ Reference
 
     .. js:autofunction:: AddressOrPayment#select
 
+
+Promise Behaviour
+-----------------
+
+All of the methods that modify the cart (:js:func:`CartClient.addItem`, :js:func:`CartClient.addAddress`, :js:func:`CartClient.addPaymentMethod`, :js:func:`CartItem.update`, and :js:func:`AddressOrPayment.select`) return Promises, which have the following behaviour.
+
+If the request **succeeds**, the promise will *resolve* with the JSON-decoded representation of the response returned by the relevant API endpoint.
+
+If the request **fails with a network error**, the promise will *reject* with an object that has the following shape:
+
+.. code:: javascript
+
+    {
+        reason: 'network',
+        error: TypeError("Failed to fetch"), // error from fetch() call
+    }
+
+If the request is made, but **receives an error response from the server**, the promise will *reject* with an object that has the following shape:
+
+.. code:: javascript
+
+    {
+        reason: 'api',
+        status: 422,
+        statusText: 'Unprocessable Entity',
+        body: "{\"suburb\":[\"This field is…", // Raw response body
+        data: {
+            suburb: ["This field is required."],
+            // ...
+        }, // JSON-decoded response body
+    }
+
+If an error response is returned from the server, and **the response is not valid JSON**, such as a 500 response with ``DEBUG=True`` or a 502 from a reverse proxy, the promise will instead *reject* with an object that has the following shape:
+
+.. code:: javascript
+
+    {
+        reason: 'api',
+        status: 502,
+        statusText: 'Bad Gateway',
+        body: "<html><body><h1>Bad Gateway…", // Raw response body
+        decodeError: SyntaxError("Unexpected token < in JSON at position 0"),
+    }
+
 React
 -----
 
