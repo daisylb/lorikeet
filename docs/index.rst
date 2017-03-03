@@ -12,6 +12,7 @@
    :maxdepth: 2
    :caption: Reference
 
+   settings
    python
    api
    js
