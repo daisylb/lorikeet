@@ -28,6 +28,11 @@ Serializers
 .. autoclass:: lorikeet.api_serializers.PrimaryKeyModelSerializer
     :members:
 
+Mixins
+------
+
+.. autoclass:: lorikeet.mixins.OrderMixin
+
 Exceptions
 ----------
 

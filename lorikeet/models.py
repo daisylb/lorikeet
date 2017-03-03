@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.module_loading import import_string
 from model_utils.managers import InheritanceManager
@@ -100,6 +101,47 @@ class Order(models.Model):
         of the order object will be returned.
         """
         return self.custom_invoice_id or self.id
+
+    @property
+    def delivery_address_subclass(self):
+        """Get the delivery address instance selected for this cart.
+
+        Returns an instance of one of the registered
+        :class:`~lorikeet.models.DeliveryAddress` subclasses.
+        """
+        if self.delivery_address_id is not None:
+            return DeliveryAddress.objects.get_subclass(
+                id=self.delivery_address_id)
+
+    @property
+    def payment_method_subclass(self):
+        """Get the delivery address instance selected for this cart.
+
+        Returns an instance of one of the registered
+        :class:`~lorikeet.models.DeliveryAddress` subclasses.
+        """
+        return PaymentMethod.objects.get_subclass(
+            id=self.payment.method_id)
+
+    @property
+    def payment_subclass(self):
+        """Get the payment method instance selected for this cart.
+
+        Returns an instance of one of the registered
+        :class:`~lorikeet.models.PaymentMethod` subclasses.
+        """
+        return Payment.objects.get_subclass(
+            id=self.payment_id)
+
+    def get_absolute_url(self):
+        """Get the absolute URL of an order details view.
+
+        See the documentation for the ``LORIKEET_ORDER_DETAIL_VIEW``
+        setting.
+        """
+        if lorikeet_settings.LORIKEET_ORDER_DETAIL_VIEW:
+            return reverse(lorikeet_settings.LORIKEET_ORDER_DETAIL_VIEW,
+                           kwargs={'id': self.id})
 
 
 class PaymentMethod(models.Model):

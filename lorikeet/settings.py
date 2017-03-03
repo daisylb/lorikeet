@@ -7,3 +7,7 @@ LORIKEET_CART_COMPLETE_CHECKERS = getattr(
         'lorikeet.cart_checkers.cart_not_empty',
     ]
 )
+
+LORIKEET_ORDER_DETAIL_VIEW = getattr(
+    settings, 'LORIKEET_ORDER_DETAIL_VIEW', None
+)

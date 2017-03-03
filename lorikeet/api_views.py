@@ -176,19 +176,17 @@ class CheckoutView(APIView):
                 order.save()
         except exceptions.PaymentError as e:
             return Response({
-                'success': False,
                 'reason': 'payment',
                 'payment_method': cart.payment_method_subclass.__class__.__name__,
                 'info': e.info,
             }, status=422)
         except exceptions.IncompleteCartErrorSet as e:
             return Response({
-                'success': False,
                 'reason': 'incomplete',
                 'info': e.to_json(),
             }, status=422)
         else:
             return Response({
-                'success': True,
                 'id': order.id,
+                'url': order.get_absolute_url(),
             }, status=200)

@@ -91,9 +91,10 @@ HTTP API
 
         {
             "id": 7,
+            "url": "/products/order/7/",
         }
     
-    where the returned ``id`` is the ID of the :class:`~lorikeet.models.Order` instance that was created.
+    where the returned ``id`` is the ID of the :class:`~lorikeet.models.Order` instance that was created, and the ``url`` is a URL generated from the ``LORIKEET_ORDER_DETAIL_VIEW`` setting (or ``null`` if that setting is not set).
 
     If the cart was not ready for checkout, the endpoint will return a 422 response with a body that looks like this:
 

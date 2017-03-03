@@ -12,8 +12,8 @@ def test_checkout(client, filled_cart):
                        content_type='application/json')
     assert resp.status_code == 200
     assert loads(resp.content.decode('utf-8')) == {
-        'success': True,
         'id': 1,
+        'url': None,
     }
     filled_cart.refresh_from_db()
     assert filled_cart.items.count() == 0
@@ -26,7 +26,6 @@ def test_cart_incomplete(client, cart):
                        content_type='application/json')
     assert resp.status_code == 422
     assert loads(resp.content.decode('utf-8')) == {
-        'success': False,
         'reason': 'incomplete',
         'info': [
             {
@@ -59,7 +58,6 @@ def test_payment_failed(client, filled_cart):
                        content_type='application/json')
     assert resp.status_code == 422
     assert loads(resp.content.decode('utf-8')) == {
-        'success': False,
         'reason': 'payment',
         'payment_method': 'PipeCard',
         'info': 'Insufficient funds',
