@@ -1,0 +1,58 @@
+Building the Post-Checkout Experience
+-------------------------------------
+
+Our users can make purchases and check out! Now, though, we need to make sure they can view their existing orders.
+
+This is just a matter of setting up a regular Django ``ListView`` and ``DetailView``, both with Lorikeet's :class:`~lorikeet.mixins.OrderMixin`.
+
+.. code:: python
+
+    from django.views.generic import DetailView, ListView
+    from lorikeet.mixins import OrderMixin
+
+    class OrderListView(OrderMixin, ListView):
+        template_name = "products/order_list.html"
+
+    class OrderDetailView(OrderMixin, DetailView):
+        template_name = "products/order.html"
+
+We'll make sure the views have URLs.
+
+.. code:: python
+
+    from django.conf.urls import url
+    from . import views
+
+    urlpatterns = [
+        # ...
+        url(r'^orders/$', views.OrderListView.as_view(), name='order-list'),
+        url(r'^orders/(?P<pk>\d+)/$', views.OrderDetailView.as_view(), name='order'),
+    ]
+
+All we need to do now is write up templates, consulting the documentation for :class:`~lorikeet.models.Order` to find out what we can access, the same as a standard ``DetailView``. (The ``ListView`` template is left as an exercise for the reader, but is just as straightforward. You'll also want to make sure that your delivery address and payment method models have ``__str__`` methods.)
+
+.. code-block:: htmldjango
+
+    <h1>Order {{ object.invoice_id }}</h1>
+
+    <h2>Shipped To</h2>
+    {{ object.delivery_address_subclass }}
+
+    <h2>Paid With</h2>
+    {{ object.payment_method_subclass }}
+
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </tr>
+        {% for item in object.items.select_subclasses %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.get_total }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+    </table>

@@ -6,6 +6,7 @@
 
    install
    backend
+   postcheckout
 
 
 .. toctree::
