@@ -188,5 +188,5 @@ class CheckoutView(APIView):
         else:
             return Response({
                 'id': order.id,
-                'url': order.get_absolute_url(),
+                'url': order.get_absolute_url(token=True),
             }, status=200)

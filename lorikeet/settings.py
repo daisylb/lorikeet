@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.signing import Signer
 
 LORIKEET_CART_COMPLETE_CHECKERS = getattr(
     settings, 'LORIKEET_CART_COMPLETE_CHECKERS', [
@@ -11,3 +12,6 @@ LORIKEET_CART_COMPLETE_CHECKERS = getattr(
 LORIKEET_ORDER_DETAIL_VIEW = getattr(
     settings, 'LORIKEET_ORDER_DETAIL_VIEW', None
 )
+
+order_url_signer = Signer(
+    salt='au.com.cmv.open-source.lorikeet.order-url-signer')

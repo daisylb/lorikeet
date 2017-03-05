@@ -133,15 +133,23 @@ class Order(models.Model):
         return Payment.objects.get_subclass(
             id=self.payment_id)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self, token=False):
         """Get the absolute URL of an order details view.
+
+        :param token: If true, include in the URL a token that allows
+            unauthenticated access to the detail view.
+        :type token: bool
 
         See the documentation for the ``LORIKEET_ORDER_DETAIL_VIEW``
         setting.
         """
         if lorikeet_settings.LORIKEET_ORDER_DETAIL_VIEW:
-            return reverse(lorikeet_settings.LORIKEET_ORDER_DETAIL_VIEW,
-                           kwargs={'id': self.id})
+            url = reverse(lorikeet_settings.LORIKEET_ORDER_DETAIL_VIEW,
+                          kwargs={'id': self.id})
+            if token:
+                url = "{}?token={}".format(
+                    url, lorikeet_settings.order_url_signer.sign(str(self.id)))
+            return url
 
 
 class PaymentMethod(models.Model):
