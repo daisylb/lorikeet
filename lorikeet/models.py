@@ -82,7 +82,8 @@ class Cart(models.Model):
 class Order(models.Model):
     """A completed, paid order.
     """
-    custom_invoice_id = models.CharField(max_length=255)
+    custom_invoice_id = models.CharField(
+        max_length=255, blank=True, null=True, default=None, unique=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
     guest_email = models.EmailField(blank=True)
     payment = models.ForeignKey('lorikeet.Payment', blank=True, null=True)
