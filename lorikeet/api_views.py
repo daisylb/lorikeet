@@ -141,16 +141,16 @@ class CheckoutView(APIView):
             with atomic():
                 # Prepare the order object
                 cart = request.get_cart()
-                order = models.Order.objects.create(user=cart.user)
+                grand_total = cart.get_grand_total()
+                order = models.Order.objects.create(user=cart.user,
+                                                    grand_total=grand_total)
 
                 # Check the cart is ready to be checked out
                 cart.is_complete(raise_exc=True)
 
                 # copy items onto order, also calculate grand total
-                grand_total = 0
                 for item in cart.items.select_subclasses().all():
                     total = item.get_total()
-                    grand_total += total
                     item.total_when_charged = total
                     item.order = order
                     item.cart = None
@@ -172,7 +172,6 @@ class CheckoutView(APIView):
                             order.payment,
                         )
                     )
-                order.grand_total = grand_total
                 order.save()
         except exceptions.PaymentError as e:
             return Response({

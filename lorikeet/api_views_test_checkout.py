@@ -8,6 +8,7 @@ from . import models
 
 @pytest.mark.django_db
 def test_checkout(client, filled_cart):
+    expected_total = filled_cart.get_grand_total()
     resp = client.post('/_cart/checkout/', dumps({}),
                        content_type='application/json')
     assert resp.status_code == 200
@@ -18,6 +19,7 @@ def test_checkout(client, filled_cart):
     filled_cart.refresh_from_db()
     assert filled_cart.items.count() == 0
     assert models.Order.objects.count() == 1
+    assert models.Order.objects.first().grand_total == expected_total
 
 
 @pytest.mark.django_db

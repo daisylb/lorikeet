@@ -89,6 +89,7 @@ class Order(models.Model):
     payment = models.ForeignKey('lorikeet.Payment', blank=True, null=True)
     delivery_address = models.ForeignKey(
         'lorikeet.DeliveryAddress', blank=True, null=True)
+    grand_total = models.DecimalField(max_digits=7, decimal_places=2)
 
     @property
     def email(self):
