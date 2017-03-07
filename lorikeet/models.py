@@ -200,6 +200,8 @@ class LineItem(models.Model):
     cart = models.ForeignKey(Cart, related_name='items', blank=True, null=True)
     order = models.ForeignKey(
         Order, related_name='items', blank=True, null=True)
+    total_when_charged = models.DecimalField(max_digits=7, decimal_places=2,
+                                             blank=True, null=True)
 
     objects = InheritanceManager()
 
@@ -208,11 +210,27 @@ class LineItem(models.Model):
         # ordering by date added, but we don't have to store the date
         ordering = ('id',)
 
+    @property
+    def total(self):
+        """The total cost for this line item.
+
+        Returns the total actually charged to the customer if this item
+        is attached to an :class:`~lorikeet.models.Order`, or calls
+        :func:`~lorikeet.models.LineItem.get_total` otherwise.
+        """
+        if self.order_id:
+            return self.total_when_charged
+        return self.get_total()
+
     def get_total(self):
         """Returns the total amount to charge on this LineItem.
 
-        By default this raises ``NotImplemented``; subclasses of this class
-        need to override this.
+        By default this raises ``NotImplemented``; subclasses of this
+        class need to override this.
+
+        If you want to know the total for this line item from your own
+        code, use the :func:`~lorikeet.models.LineItem.total` property
+        rather than calling this function.
         """
         raise NotImplemented("Provide a get_total method in your LineItem "
                              "subclass {}.".format(self.__class__.__name__))

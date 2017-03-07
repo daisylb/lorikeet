@@ -20,6 +20,8 @@ def test_checkout(client, filled_cart):
     assert filled_cart.items.count() == 0
     assert models.Order.objects.count() == 1
     assert models.Order.objects.first().grand_total == expected_total
+    for item in models.Order.objects.first().items.all():
+        assert item.total_when_charged
 
 
 @pytest.mark.django_db
