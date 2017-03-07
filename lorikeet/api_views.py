@@ -6,7 +6,7 @@ from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from . import api_serializers, exceptions, models
+from . import api_serializers, exceptions, models, signals
 
 logger = getLogger(__name__)
 
@@ -152,7 +152,8 @@ class CheckoutView(APIView):
                 cart = request.get_cart()
                 grand_total = cart.get_grand_total()
                 order = models.Order.objects.create(user=cart.user,
-                                                    grand_total=grand_total)
+                                                    grand_total=grand_total,
+                                                    guest_email=cart.email)
 
                 # Check the cart is ready to be checked out
                 cart.is_complete(raise_exc=True)
@@ -194,7 +195,29 @@ class CheckoutView(APIView):
                 'info': e.to_json(),
             }, status=422)
         else:
-            return Response({
+            response_body = {
                 'id': order.id,
                 'url': order.get_absolute_url(token=True),
-            }, status=200)
+            }
+
+            # Fire checkout signal
+            signal_res = signals.order_checked_out.send_robust(
+                sender=models.Order, order=order, request=self.request)
+            for handler, result in signal_res:
+                if isinstance(result, Exception):
+                    logger.error("Exception in handler %s: %r",
+                                 handler, result,
+                                 exc_info=(result.__class__,
+                                           result,
+                                           result.__traceback__))
+                elif isinstance(result, dict):
+                    logger.debug("Got result from handler %r: %r",
+                                 handler, result)
+                    response_body.update(result)
+                elif result is None:
+                    pass
+                else:
+                    logger.warning("Unexpected return type in handler %s: %r",
+                                   handler, result)
+
+            return Response(response_body, status=200)

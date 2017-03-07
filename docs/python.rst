@@ -63,3 +63,25 @@ Lorikeet's behaviour can be altered by setting the following settings in your pr
     This value should be the same as the string you'd pass as the first argument to ``django.core.urlresolvers.reverse()``, e.g. ``'products:order'``.
 
     If set, it will be used in :func:`lorikeet.models.Order.get_absolute_url` and :http:post:`/_cart/checkout/`.
+
+
+Signals
+-------
+
+.. py:data:: lorikeet.signals.order_checked_out
+
+    Fired when a cart is checked out and an order is generated.
+
+    **Parameters**:
+
+    - ``order`` - the :class:`~lorikeet.models.Order` instance that was just created.
+
+    Signal handlers can return a dictionary, which will be merged into the response returned to the client when the checkout happens. They can also return ``None``, but should not return anything else.
+
+    If signals raise an exception, the exception will be logged at the ``warning`` severity level; it's up to you to be able to report this and respond appropriately.
+
+    .. note::
+
+        This signal is fired synchronously during the checkout process, before the checkout success response is returned to the client. If you don't need to return data to the client, try to avoid doing any long-running or failure-prone processes inside handlers for this signal.
+
+        For example, if you need to send order details to a fulfilment provider, you could use a signal handler to enqueue a task in something like `Celery <http://www.celeryproject.org/>`_, or you could have a model with a one-to-one foreign key which you create in a batch process.

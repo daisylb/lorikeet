@@ -21,6 +21,7 @@
    :maxdepth: 2
    :caption: Extras
 
+   email_invoice
    stripe
 
 

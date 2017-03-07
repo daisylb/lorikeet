@@ -86,7 +86,7 @@ class Order(models.Model):
     custom_invoice_id = models.CharField(
         max_length=255, blank=True, null=True, default=None, unique=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
-    guest_email = models.EmailField(blank=True)
+    guest_email = models.EmailField(blank=True, null=True)
     payment = models.ForeignKey('lorikeet.Payment', blank=True, null=True)
     delivery_address = models.ForeignKey(
         'lorikeet.DeliveryAddress', blank=True, null=True)
