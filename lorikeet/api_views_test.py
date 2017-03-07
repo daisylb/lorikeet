@@ -39,6 +39,7 @@ def test_empty_cart(client):
         'is_complete': False,
         'checkout_url': '/_cart/checkout/',
         'is_authenticated': False,
+        'email': None,
     }
 
 
@@ -76,6 +77,7 @@ def test_empty_cart_logged_in(admin_client):
         'is_complete': False,
         'checkout_url': '/_cart/checkout/',
         'is_authenticated': True,
+        'email': None,
     }
 
 

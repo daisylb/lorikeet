@@ -64,6 +64,7 @@ Reference
     .. js:autofunction:: CartClient#addItem
     .. js:autofunction:: CartClient#addAddress
     .. js:autofunction:: CartClient#addPaymentMethod
+    .. js:autofunction:: CartClient#setEmail
     .. js:autofunction:: CartClient#addListener
     .. js:autofunction:: CartClient#removeListener
 

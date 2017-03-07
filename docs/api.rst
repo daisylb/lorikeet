@@ -27,13 +27,31 @@ HTTP API
                 }
             ],
             "checkout_url": "/_cart/checkout/",
-            "is_authenticated": true
+            "is_authenticated": true,
+            "email": null
         }
     
     The meaning of the keys is as follows:
 
     - ``items`` - The list of items in the cart. Each entry in this list is a JSON blob with the same structure as the :http:get:`/_cart/(id)/` endpoint.
     - ``delivery_addresses`` - The list of all delivery addresses available to the user. Each entry in this list is a JSON blob with the same structure as the :http:get:`/_cart/address/(id)/` endpoint.
+    - ``email`` - The email address attached to the cart, as set by :http:patch:`/_cart/`.
+
+
+.. http:patch:: /_cart/
+
+    Set an email address on this cart. This API call is useful for sites that allow anonymous checkout. Note that you **must** use the ``PATCH`` method, and you cannot update any fields other than ``email``.
+
+    An example request body looks like this:
+
+    .. sourcecode:: javascript
+
+        {"email": "joe.bloggs@example.com"}
+    
+    The email value can also be ``null`` to un-set the value.
+
+    :statuscode 200: The email was changed successfully.
+    :statuscode 400: The supplied email was invalid.
 
 
 .. http:get:: /_cart/(id)/

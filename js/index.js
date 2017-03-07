@@ -263,6 +263,18 @@ class CartClient {
     return this.add(this.cart.new_payment_method_url, type, data)
   }
 
+  /**
+   * Set an email address for the shopping cart.
+   * @param {string|null} address Email address to set. Use null to clear the
+   * address field.
+   */
+  setEmail(address){
+    return apiFetch(this.cartUrl, {
+      method: 'PATCH',
+      body: JSON.stringify({email: address})
+    }, this)
+  }
+
   checkout(){
     return apiFetch(this.cart.checkout_url, {method: 'POST'}, this)
   }

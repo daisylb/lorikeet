@@ -178,6 +178,7 @@ class CartSerializer(serializers.ModelSerializer):
     is_authenticated = fields.SerializerMethodField()
     checkout_url = fields.SerializerMethodField()
     generated_at = fields.SerializerMethodField()
+    email = fields.EmailField()
 
     def get_new_item_url(self, _):
         return reverse('lorikeet:add-to-cart')
@@ -235,7 +236,15 @@ class CartSerializer(serializers.ModelSerializer):
                   'new_address_url', 'payment_methods',
                   'new_payment_method_url', 'grand_total', 'generated_at',
                   'is_complete', 'incomplete_reasons', 'checkout_url',
-                  'is_authenticated')
+                  'is_authenticated', 'email')
+
+
+class CartUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating the cart; used only for email field."""
+
+    class Meta:
+        model = models.Cart
+        fields = ('email',)
 
 
 class LineItemSerializer(serializers.ModelSerializer):

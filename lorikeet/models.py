@@ -16,6 +16,7 @@ class Cart(models.Model):
     ``request.cart``.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
     delivery_address = models.ForeignKey(
         'lorikeet.DeliveryAddress', blank=True, null=True)
     payment_method = models.ForeignKey(

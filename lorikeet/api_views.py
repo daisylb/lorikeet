@@ -19,6 +19,15 @@ class CartView(APIView):
             cart, context={'request': self.request}).data
         return Response(data)
 
+    def patch(self, request, format=None):
+        cart = request.get_cart()
+        ser = api_serializers.CartUpdateSerializer(instance=cart,
+                                                   data=request.data,
+                                                   partial=True)
+        ser.is_valid(raise_exception=True)
+        ser.save()
+        return self.get(request, format)
+
 
 class CartItemView(RetrieveUpdateDestroyAPIView):
 
