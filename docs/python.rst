@@ -33,6 +33,11 @@ Mixins
 
 .. autoclass:: lorikeet.mixins.OrderMixin
 
+Template Tags
+-------------
+
+.. autofunction:: lorikeet.templatetags.lorikeet.lorikeet_cart
+
 Exceptions
 ----------
 

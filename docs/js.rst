@@ -120,6 +120,24 @@ If an error response is returned from the server, and **the response is not vali
         decodeError: SyntaxError("Unexpected token < in JSON at position 0"),
     }
 
+Reducing Round Trips
+--------------------
+
+The :js:class:`CartClient` constructor takes an optional second argument ``cart``, which it will use instead of hitting the API if there's no data already in local storage. (Even if there is, it'll update it if it's stale, so it's always a good idea.)
+
+You can use it alongside the :func:`~lorikeet.templatetags.lorikeet.lorikeet_cart` template tag like this:
+
+.. sourcecode:: html+django
+    
+    {% load lorikeet %}
+    {# ... #}
+    <body data-cart="{% lorikeet_cart %}">
+
+.. sourcecode:: js
+
+    var cart = JSON.parse(document.body.attributes['data-cart'].value)
+    var client = new CartClient('/_cart/', cart)
+
 React
 -----
 
