@@ -64,6 +64,12 @@ Lorikeet's behaviour can be altered by setting the following settings in your pr
 
     If set, it will be used in :func:`lorikeet.models.Order.get_absolute_url` and :http:post:`/_cart/checkout/`.
 
+.. describe:: LORIKEET_SET_CSRFTOKEN_EVERYWHERE
+
+    **Default value**: ``True``
+
+    The Lorikeet JavaScript library expects the CSRF token cookie to be set, but it isn't always (see the warning in `the Django CSRF docs <https://docs.djangoproject.com/en/1.10/ref/csrf/#ajax>`_). For convenience, Lorikeet tells Django to set the cookie on every request (the equivalent of calling `ensure_csrf_cookie() <https://docs.djangoproject.com/en/1.10/ref/csrf/#django.views.decorators.csrf.ensure_csrf_cookie>`_ on every request). If you wish to handle this yourself, you can set this setting to ``False`` to disable this behaviour.
+
 
 Signals
 -------

@@ -13,5 +13,9 @@ LORIKEET_ORDER_DETAIL_VIEW = getattr(
     settings, 'LORIKEET_ORDER_DETAIL_VIEW', None
 )
 
+LORIKEET_SET_CSRFTOKEN_EVERYWHERE = getattr(
+    settings, 'LORIKEET_SET_CSRFTOKEN_EVERYWHERE', True
+)
+
 order_url_signer = Signer(
     salt='au.com.cmv.open-source.lorikeet.order-url-signer')

@@ -1,4 +1,7 @@
+from django.middleware.csrf import get_token
+
 from .models import Cart
+from .settings import LORIKEET_SET_CSRFTOKEN_EVERYWHERE
 
 
 def cart_getter_factory(request):
@@ -33,3 +36,5 @@ class CartMiddleware:
 
     def process_request(self, request):
         request.get_cart = cart_getter_factory(request)
+        if LORIKEET_SET_CSRFTOKEN_EVERYWHERE:
+            get_token(request)  # Forces setting the CSRF cookie
