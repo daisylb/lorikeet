@@ -1,7 +1,7 @@
 const csrftoken = decodeURIComponent(/(?:^|;)\s*csrftoken=([^;]+)/.exec(document.cookie)[1])
 const localStorageKey = 'au.com.cmv.open-source.lorikeet.cart-data'
 
-function apiFetch(url, params, client){
+function apiFetch(url, params, client, expectJson = true){
   return new Promise((resolveRaw, rejectRaw) => {
     var resolve = function(x){
       client && client.reloadCart()
@@ -22,7 +22,11 @@ function apiFetch(url, params, client){
     .then((resp) => {
       // Reject the promise if we get a non-2xx return code
       if (resp.ok){
-        resp.json().then(x => resolve(x))
+        if (expectJson){
+          resp.json().then(x => resolve(x))
+        } else {
+          resp.text().then(x => resolve(x))
+        }
       } else {
         resp.text().then(text => {
           var json
@@ -70,7 +74,7 @@ class CartEntry {
   delete(){
     return apiFetch(this.url, {
       method: 'DELETE',
-    }, this.client)
+    }, this.client, false)
   }
 }
 
