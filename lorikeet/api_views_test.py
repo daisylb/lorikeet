@@ -35,6 +35,11 @@ def test_empty_cart(client):
                 'field': 'items',
                 'message': 'There are no items in the cart.',
             },
+            {
+                'code': 'not_set',
+                'field': 'email',
+                'message': 'An email address is required.',
+            },
         ],
         'is_complete': False,
         'checkout_url': '/_cart/checkout/',

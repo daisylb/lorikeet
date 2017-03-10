@@ -30,6 +30,11 @@ def test_default_check_fails_cart_empty(cart):
             'field': 'items',
             'message': 'There are no items in the cart.',
         },
+        {
+            'code': 'not_set',
+            'field': 'email',
+            'message': 'An email address is required.',
+        },
     ]
 
 

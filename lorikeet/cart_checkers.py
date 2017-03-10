@@ -26,3 +26,12 @@ def cart_not_empty(cart):
         raise IncompleteCartError('empty',
                                   'There are no items in the cart.',
                                   'items')
+
+
+def email_address_if_anonymous(cart):
+    """Checks an email address is set if the user isn't logged in."""
+
+    if not cart.user and not cart.email:
+        raise IncompleteCartError('not_set',
+                                  'An email address is required.',
+                                  'email')

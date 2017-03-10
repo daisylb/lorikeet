@@ -47,6 +47,11 @@ def test_cart_incomplete(client, cart):
                 'field': 'items',
                 'message': 'There are no items in the cart.',
             },
+            {
+                'code': 'not_set',
+                'field': 'email',
+                'message': 'An email address is required.',
+            },
         ],
     }
     assert models.Order.objects.count() == 0

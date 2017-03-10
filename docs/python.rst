@@ -57,6 +57,17 @@ Lorikeet's behaviour can be altered by setting the following settings in your pr
 
 .. describe:: LORIKEET_CART_COMPLETE_CHECKERS
 
+    **Default value**:
+
+    .. code::
+
+        [
+            'lorikeet.cart_checkers.delivery_address_required',
+            'lorikeet.cart_checkers.payment_method_required',
+            'lorikeet.cart_checkers.cart_not_empty',
+            'lorikeet.cart_checkers.email_address_if_anonymous',
+        ]
+
     A list of functions that check to see if a cart is complete and ready to be checked out. Each one takes a :class:`lorikeet.models.Cart` object as its only argument, and raises an :class:`~lorikeet.exceptions.IncompleteCartError` (or potentially a :class:`~lorikeet.exceptions.IncompleteCartErrorSet` containing multiple) if it finds any reasons that the cart should not be checked out.
 
 .. describe:: LORIKEET_ORDER_DETAIL_VIEW

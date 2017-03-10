@@ -1,4 +1,5 @@
 import pytest
+from faker import Faker
 from shop import models as smodels
 from shop import factories
 
@@ -10,6 +11,8 @@ def fill_cart(cart):
     factories.MyLineItemFactory(cart=cart)
     cart.delivery_address = factories.AustralianDeliveryAddressFactory()
     cart.payment_method = smodels.PipeCard.objects.create(card_id="Visa4242")
+    if not cart.user:
+        cart.email = Faker().safe_email()
     cart.save()
 
 

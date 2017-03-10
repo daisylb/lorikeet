@@ -6,6 +6,7 @@ LORIKEET_CART_COMPLETE_CHECKERS = getattr(
         'lorikeet.cart_checkers.delivery_address_required',
         'lorikeet.cart_checkers.payment_method_required',
         'lorikeet.cart_checkers.cart_not_empty',
+        'lorikeet.cart_checkers.email_address_if_anonymous',
     ]
 )
 
