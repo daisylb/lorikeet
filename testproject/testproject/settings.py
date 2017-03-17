@@ -126,3 +126,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', None)
+
+LORIKEET_EMAIL_INVOICE_TEMPLATE_HTML = 'email.html'

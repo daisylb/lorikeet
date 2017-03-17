@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from lorikeet.signals import order_checked_out
 from premailer import transform
 
-from . import settings
+from . import settings, textify
 
 logger = getLogger(__name__)
 
@@ -23,23 +23,28 @@ def send_email_invoice(sender, order, request, **kwargs):
         'order': order,
         'order_url': request.build_absolute_uri(order.get_absolute_url(token=True)),
     }
-    html = None
-    text = None
+    mail_kwargs = {}
     if settings.LORIKEET_EMAIL_INVOICE_TEMPLATE_HTML:
         html = render_to_string(settings.LORIKEET_EMAIL_INVOICE_TEMPLATE_HTML,
                                 ctx)
         html = transform(html, base_url=request.build_absolute_uri())
+        mail_kwargs['html_message'] = html
+
     if settings.LORIKEET_EMAIL_INVOICE_TEMPLATE_TEXT:
         text = render_to_string(settings.LORIKEET_EMAIL_INVOICE_TEMPLATE_TEXT,
                                 ctx)
+        mail_kwargs['message'] = text
+    elif settings.LORIKEET_EMAIL_INVOICE_TEMPLATE_HTML:
+        mail_kwargs['message'] = textify.transform(html)
+    else:
+        raise ValueError("No HTML or text template set")
 
     logger.debug('Sending an invoice email to %s', recipient)
     send_mail(
         subject=subject,
-        message=text,
         from_email=settings.LORIKEET_EMAIL_INVOICE_FROM_ADDRESS,
         recipient_list=[recipient],
-        html_message=html,
+        **mail_kwargs
     )
 
     return {'invoice_email': recipient}
