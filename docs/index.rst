@@ -23,6 +23,7 @@
 
    email_invoice
    stripe
+   starshipit
 
 
 Indices and tables

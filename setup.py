@@ -21,6 +21,9 @@ setup(
         'email_invoice': [
             'premailer>=3.0.1,<4',
         ],
+        'starshipit': [
+            'requests>=2.13.0,<3',
+        ],
         'docs': [
             'sphinx>=1.5.1,<1.6',
             'sphinx-rtd-theme>=0.1.9,<0.2',
