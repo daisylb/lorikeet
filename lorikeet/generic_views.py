@@ -2,6 +2,7 @@ import logging
 
 from django.core.signing import BadSignature
 from django.http import Http404, HttpResponseRedirect
+from django.views.generic import DetailView, ListView
 
 from . import models
 from .settings import order_url_signer
@@ -11,12 +12,8 @@ logger = logging.getLogger(__name__)
 ORDER_SESSION_KEY_TEMPLATE = 'lorikeet-order-{}-access'
 
 
-class OrderMixin:
-    """A mixin for views displaying orders.
-
-    This mixin provides a ``get_queryset`` implementation that lists all
-    orders belonging to the currently logged in user.
-    """
+class OrderDetailView(DetailView):
+    """A view that displays a single order."""
 
     model = models.Order
 
@@ -50,9 +47,6 @@ class OrderMixin:
 
         return super().get(request, *args, **kwargs)
 
-    def get_queryset(self):
-        return models.Order.objects.filter(user=self.request.user)
-
     def get_object(self):
         the_id = self.kwargs['id']
         session_key = ORDER_SESSION_KEY_TEMPLATE.format(the_id)
@@ -65,3 +59,16 @@ class OrderMixin:
             )
         else:
             raise Http404()
+
+
+class OrderListView(ListView):
+    """A view that displays a list of orders belonging to a user."""
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated():
+            logger.debug("Unauthenticated user attempted to access order list")
+            raise Http404()
+        orders = models.Order.objects.filter(
+            user=self.request.user).order_by('-id')
+        logger.debug("orders: %r", orders)
+        return orders
