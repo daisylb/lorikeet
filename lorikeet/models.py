@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.module_loading import import_string
+from django.utils.timezone import now
 from model_utils.managers import InheritanceManager
 
 from . import settings as lorikeet_settings
@@ -91,6 +92,7 @@ class Order(models.Model):
     delivery_address = models.ForeignKey(
         'lorikeet.DeliveryAddress', blank=True, null=True)
     grand_total = models.DecimalField(max_digits=7, decimal_places=2)
+    purchased_on = models.DateTimeField(default=now)
 
     @property
     def email(self):
