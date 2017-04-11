@@ -156,7 +156,7 @@ class CheckoutView(APIView):
                                                     guest_email=cart.email)
 
                 # Check the cart is ready to be checked out
-                cart.is_complete(raise_exc=True)
+                cart.is_complete(raise_exc=True, for_checkout=True)
 
                 # copy items onto order, also calculate grand total
                 for item in cart.items.select_subclasses().all():
@@ -166,6 +166,7 @@ class CheckoutView(APIView):
                     item.cart = None
                     item._new_order = True
                     item.save()
+                    item.prepare_for_checkout()
 
                 # copy delivery address over
                 order.delivery_address = cart.delivery_address

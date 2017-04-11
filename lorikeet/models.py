@@ -49,7 +49,7 @@ class Cart(models.Model):
             return PaymentMethod.objects.get_subclass(
                 id=self.payment_method_id)
 
-    def is_complete(self, raise_exc=False):
+    def is_complete(self, raise_exc=False, for_checkout=False):
         """Determine if this cart is able to be checked out.
 
         If this function returns ``False``, the ``.errors`` attribute will
@@ -72,6 +72,12 @@ class Cart(models.Model):
                 checker_func = import_string(checker)
                 try:
                     checker_func(self)
+                except exceptions.IncompleteCartError as e:
+                    self.errors.add(e)
+
+            for item in self.items.all().select_subclasses():
+                try:
+                    item.check_complete(for_checkout)
                 except exceptions.IncompleteCartError as e:
                     self.errors.add(e)
 
@@ -242,3 +248,45 @@ class LineItem(models.Model):
         if self.order is not None and not getattr(self, '_new_order'):
             raise ValueError("Cannot modify a cart item attached to an order.")
         return super().save(*args, **kwargs)
+
+    def check_complete(self, for_checkout=False):
+        """Checks that this line item is ready to be checked out.
+
+        This method should raise
+        :class:`~lorikeet.exceptions.IncompleteCartError` if the line
+        item is not ready to be checked out (e.g. there is insufficient
+        stock in inventory to fulfil this line item). By default it does
+        nothing.
+
+        :param for_checkout: Set to ``True`` when the cart is about to
+            be checked out. See the documentation for
+            :meth:`prepare_for_checkout` for more details.
+            is going to be called within the current transaction, so you
+            should use things like
+            `select_for_update <https://docs.djangoproject.com/en/1.10/ref/models/querysets/#select-for-update>`_.
+        :type for_checkout: bool
+        """
+        pass
+
+    def prepare_for_checkout(self):
+        """Prepare this line item for checkout.
+
+        This is called in the checkout process, shortly before the
+        payment method is charged, within a database transaction that
+        will be rolled back if payment is unsuccessful.
+
+        This function shouldn't fail. (If it does, the transaction will
+        be rolled back and the payment won't be processed so nothing
+        disastrous will happen, but the user will get a 500 error which
+        you probably don't want.)
+
+        The :meth:`check_complete` method is guaranteed to be called
+        shortly before this method, within the same transaction, and
+        with the ``for_checkout`` parameter set to ``True``. Any checks
+        you need to perform to ensure checkout will succeed should be
+        performed there, and when ``for_checkout`` is true there you
+        should ensure that those checks remain valid for the remainder
+        of the database transaction (e.g. using
+        `select_for_update <https://docs.djangoproject.com/en/1.10/ref/models/querysets/#select-for-update>`_).
+        """
+        pass
