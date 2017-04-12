@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.signing import BadSignature
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic import DetailView, ListView
@@ -61,14 +62,9 @@ class OrderDetailView(DetailView):
             raise Http404()
 
 
-class OrderListView(ListView):
+class OrderListView(LoginRequiredMixin, ListView):
     """A view that displays a list of orders belonging to a user."""
 
     def get_queryset(self):
-        if not self.request.user.is_authenticated():
-            logger.debug("Unauthenticated user attempted to access order list")
-            raise Http404()
-        orders = models.Order.objects.filter(
+        return models.Order.objects.filter(
             user=self.request.user).order_by('-id')
-        logger.debug("orders: %r", orders)
-        return orders
