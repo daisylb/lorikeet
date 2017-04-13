@@ -18,5 +18,9 @@ LORIKEET_SET_CSRFTOKEN_EVERYWHERE = getattr(
     settings, 'LORIKEET_SET_CSRFTOKEN_EVERYWHERE', True
 )
 
+LORIKEET_INVOICE_ID_GENERATOR = getattr(
+    settings, 'LORIKEET_INVOICE_ID_GENERATOR', None
+)
+
 order_url_signer = Signer(
     salt='au.com.cmv.open-source.lorikeet.order-url-signer')

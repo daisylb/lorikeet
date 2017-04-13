@@ -2,11 +2,12 @@ from logging import getLogger
 
 from django.db.transaction import atomic
 from django.http import Http404
+from django.utils.module_loading import import_string
 from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from . import api_serializers, exceptions, models, signals
+from . import api_serializers, exceptions, models, settings, signals
 
 logger = getLogger(__name__)
 
@@ -154,6 +155,12 @@ class CheckoutView(APIView):
                 order = models.Order.objects.create(user=cart.user,
                                                     grand_total=grand_total,
                                                     guest_email=cart.email)
+
+                # Get an invoice ID if required
+                if settings.LORIKEET_INVOICE_ID_GENERATOR is not None:
+                    generator = import_string(
+                        settings.LORIKEET_INVOICE_ID_GENERATOR)
+                    order.custom_invoice_id = generator()
 
                 # Check the cart is ready to be checked out
                 cart.is_complete(raise_exc=True, for_checkout=True)
