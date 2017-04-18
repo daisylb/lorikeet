@@ -7,6 +7,8 @@ from . import models
 
 def submit_orders():
     orders = lorikeet_models.Order.objects.filter(starshipit_order=None)
+    if not orders:
+        return
     blob = get_orders_blob(orders)
     requests.post('https://api.shipit.click/orders?format=json',
                   json=blob).raise_for_status()
