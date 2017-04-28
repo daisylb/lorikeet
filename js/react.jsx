@@ -10,7 +10,11 @@ import { render } from 'react-dom'
 export default function cartify(InnerComponent){
   var wrapper = class extends Component {
     constructor(props, context){
+      console.log(props, context)
       super(props, context)
+      if (typeof context.cartClient !== 'object'){
+        console.error("Cartified component mounted outside CartProvider")
+      }
       this.state = {cart: context.cartClient.cart}
     }
     componentDidMount(){
@@ -30,6 +34,12 @@ export default function cartify(InnerComponent){
 }
 
 export class CartProvider extends Component {
+  constructor(props, context){
+    super(props, context)
+    if (typeof this.props.client !== 'object'){
+      console.error("CartProvider expected client prop, got " + typeof this.props.client)
+    }
+  }
   getChildContext(){
     return {cartClient: this.props.client}
   }

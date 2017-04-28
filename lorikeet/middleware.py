@@ -28,6 +28,7 @@ def cart_getter_factory(request):
         # save the cart on the request over the top of this function,
         # so we don't have to look it up again
         request._cart = cart
+        assert bool(cart.user) == request.user.is_authenticated()
         return cart
     return get_cart
 
