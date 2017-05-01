@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='lorikeet',
+    name='django-lorikeet',
     description='A simple, generic, API-only shopping cart framework for Django',
     author='Adam Brenecki',
     author_email='adam@brenecki.id.au',
