@@ -28,11 +28,12 @@ class StripeCardSerializer(serializers.ModelSerializer):
             first_card = models.StripeCard.objects.filter(
                 user=request.user).order_by('id').first()
             if first_card is not None:
-                customer = stripe.Customer.retrieve(first_card.customer_token)
+                customer = stripe.Customer.retrieve(first_card.customer_id)
         if customer is None:
             customer = stripe.Customer.create()
 
         card = customer.sources.create(source=validated_data['card_token'])
-        validated_data['card_token'] = card['id']
-        validated_data['customer_token'] = customer['id']
+        validated_data['card_id'] = card['id']
+        validated_data['customer_id'] = customer['id']
+        del validated_data['card_token']
         return super().create(validated_data)

@@ -36,8 +36,8 @@ def card_id_no_charge():
 def create_card_obj(card_id):
     customer = stripe.Customer.create()
     card = customer.sources.create(source=card_id)
-    return models.StripeCard.objects.create(customer_token=customer['id'],
-                                            card_token=card['id'])
+    return models.StripeCard.objects.create(customer_id=customer['id'],
+                                            card_id=card['id'])
 
 
 @pytest.fixture
