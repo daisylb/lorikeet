@@ -22,7 +22,7 @@ On creation, the Stripe payment method takes only one parameter, the token that 
 
     Stripe.card.createToken(form, function(status, response){
         if (status == 200){
-            client.addPaymentMethod("StripeCard", {card_token: response.id})
+            client.addPaymentMethod("StripeCard", {token: response.id})
         }
     })
 

@@ -5,13 +5,13 @@ from . import models
 
 
 class StripeCardSerializer(serializers.ModelSerializer):
-    card_token = fields.CharField(max_length=30, write_only=True)
+    token = fields.CharField(max_length=30, write_only=True)
     brand = fields.SerializerMethodField()
     last4 = fields.SerializerMethodField()
 
     class Meta:
         model = models.StripeCard
-        fields = ('card_token', 'brand', 'last4')
+        fields = ('token', 'brand', 'last4')
 
     def get_brand(self, object):
         return object.data['brand']
@@ -32,8 +32,8 @@ class StripeCardSerializer(serializers.ModelSerializer):
         if customer is None:
             customer = stripe.Customer.create()
 
-        card = customer.sources.create(source=validated_data['card_token'])
+        card = customer.sources.create(source=validated_data['token'])
         validated_data['card_id'] = card['id']
         validated_data['customer_id'] = customer['id']
-        del validated_data['card_token']
+        del validated_data['token']
         return super().create(validated_data)

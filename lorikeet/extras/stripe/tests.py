@@ -55,7 +55,7 @@ def test_add_stripe_card(client, cart, card_id):
     resp = client.post('/_cart/new-payment-method/', dumps({
         'type': "StripeCard",
         'data': {
-            'card_token': card_id,
+            'token': card_id,
         },
     }), content_type='application/json')
     assert resp.status_code == 201
