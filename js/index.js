@@ -1,6 +1,8 @@
 const csrftoken = decodeURIComponent(/(?:^|;)\s*csrftoken=([^;]+)/.exec(document.cookie)[1])
 const localStorageKey = 'au.com.cmv.open-source.lorikeet.cart-data'
 
+var setImmediate = window.setImmediate || (x => window.setTimeout(x, 0))
+
 function apiFetch(url, params, client, expectJson = true){
   return new Promise((resolveRaw, rejectRaw) => {
     var resolve = function(x){
@@ -208,7 +210,7 @@ class CartClient {
     cart.payment_methods = cart.payment_methods.map(x => new AddressOrPayment(this, x))
 
     this.cart = cart
-    this.cartListeners.forEach(x => x(this.cart))
+    this.cartListeners.forEach(x => setImmediate(x.bind(null, this.cart)))
   }
 
   /**
