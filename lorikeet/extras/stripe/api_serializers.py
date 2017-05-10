@@ -1,7 +1,18 @@
 import stripe
-from rest_framework import fields, serializers
+from rest_framework import exceptions, fields, serializers
 
 from . import models
+
+
+class StripeAPIException(exceptions.APIException):
+    status_code = 422
+
+    def __init__(self, info):
+        super().__init__()
+        self.detail = {
+            'reason': 'stripe',
+            'info': info,
+        }
 
 
 class StripeCardSerializer(serializers.ModelSerializer):
@@ -24,15 +35,19 @@ class StripeCardSerializer(serializers.ModelSerializer):
         request = self.context['request']
         customer = None
 
-        if request.user.is_authenticated():
-            first_card = models.StripeCard.objects.filter(
-                user=request.user).order_by('id').first()
-            if first_card is not None:
-                customer = stripe.Customer.retrieve(first_card.customer_token)
-        if customer is None:
-            customer = stripe.Customer.create()
+        try:
+            if request.user.is_authenticated():
+                first_card = models.StripeCard.objects.filter(
+                    user=request.user).order_by('id').first()
+                if first_card is not None:
+                    customer = stripe.Customer.retrieve(
+                        first_card.customer_token)
+            if customer is None:
+                customer = stripe.Customer.create()
+            card = customer.sources.create(source=validated_data['card_token'])
+        except stripe.error.CardError as e:
+            raise StripeAPIException(e.json_body['error'])
 
-        card = customer.sources.create(source=validated_data['card_token'])
         validated_data['card_token'] = card['id']
         validated_data['customer_token'] = customer['id']
         return super().create(validated_data)
