@@ -44,7 +44,9 @@ class StripeCardSerializer(serializers.ModelSerializer):
             try:
                 if request.user.is_authenticated():
                     first_card = models.StripeCard.objects.filter(
-                        user=request.user).order_by('id').first()
+                        user=request.user,
+                        customer_id__isnull=False,
+                    ).order_by('id').first()
                     if first_card is not None:
                         customer = stripe.Customer.retrieve(
                             first_card.customer_id)
