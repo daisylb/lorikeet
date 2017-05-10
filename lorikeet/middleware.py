@@ -28,7 +28,18 @@ def cart_getter_factory(request):
         # save the cart on the request over the top of this function,
         # so we don't have to look it up again
         request._cart = cart
+
+        # perform some sanity checks on the cart
         assert bool(cart.user) == request.user.is_authenticated()
+        cart_dirty = False
+        if cart.payment_method is not None and not cart.payment_method.active:
+            cart.payment_method = None
+            cart_dirty = True
+        if cart.delivery_address is not None and not cart.delivery_address.active:
+            cart.delivery_address = None
+            cart_dirty = True
+        if cart_dirty:
+            cart.save()
         return cart
     return get_cart
 

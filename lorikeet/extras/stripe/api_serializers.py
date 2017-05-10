@@ -1,11 +1,22 @@
 from logging import getLogger
 
 import stripe
-from rest_framework import fields, serializers
+from rest_framework import exceptions, fields, serializers
 
 from . import models
 
 logger = getLogger(__name__)
+
+
+class StripeAPIException(exceptions.APIException):
+    status_code = 422
+
+    def __init__(self, info):
+        super().__init__()
+        self.detail = {
+            'reason': 'stripe',
+            'info': info,
+        }
 
 
 class StripeCardSerializer(serializers.ModelSerializer):
@@ -30,18 +41,24 @@ class StripeCardSerializer(serializers.ModelSerializer):
             logger.debug("Creating a reusable card record")
             customer = None
 
-            if request.user.is_authenticated():
-                first_card = models.StripeCard.objects.filter(
-                    user=request.user).order_by('id').first()
-                if first_card is not None:
-                    customer = stripe.Customer.retrieve(first_card.customer_id)
-            if customer is None:
-                customer = stripe.Customer.create()
+            try:
+                if request.user.is_authenticated():
+                    first_card = models.StripeCard.objects.filter(
+                        user=request.user).order_by('id').first()
+                    if first_card is not None:
+                        customer = stripe.Customer.retrieve(
+                            first_card.customer_id)
+                if customer is None:
+                    customer = stripe.Customer.create()
 
-            card = customer.sources.create(source=validated_data['token'])
+                card = customer.sources.create(source=validated_data['token'])
+            except stripe.error.CardError as e:
+                raise StripeAPIException(e.json_body['error'])
+
             validated_data['card_id'] = card['id']
             validated_data['customer_id'] = customer['id']
         else:
             validated_data['token_id'] = validated_data['token']
         del validated_data['token']
+
         return super().create(validated_data)
