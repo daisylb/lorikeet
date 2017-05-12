@@ -38,7 +38,7 @@ class AustralianDeliveryAddress(DeliveryAddress):
 class PipeCard(PaymentMethod):
     card_id = models.CharField(max_length=30)
 
-    def make_payment(self, amount):
+    def make_payment(self, order, amount):
         if self.card_id.endswith('9'):
             raise PaymentError("Insufficient funds")
         return PipePayment.objects.create(method=self, amount=amount)

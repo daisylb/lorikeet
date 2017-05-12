@@ -180,7 +180,7 @@ class CheckoutView(APIView):
 
                 # make payment and attach it to order
                 order.payment = cart.payment_method_subclass.make_payment(
-                    grand_total)
+                    order, grand_total)
                 print(order.payment)
                 if not isinstance(order.payment, models.Payment):
                     raise TypeError(

@@ -212,7 +212,7 @@ Then, we'll need to add a ``make_payment`` method to our ``PipeCard`` class. Thi
     class PipeCard(PaymentMethod):
         card_id = models.CharField(max_length=30)
 
-        def make_payment(self, amount):
+        def make_payment(self, order, amount):
             try:
                 payment_id = pipe.charge_card(self.card_id, amount)
             except pipe.ChargeError as e:

@@ -60,7 +60,7 @@ class StripeCard(PaymentMethod):
             cache.set(cache_key, card, 3600)
         return card
 
-    def make_payment(self, amount):
+    def make_payment(self, order, amount):
         if not self.reusable:
             self.active = False
             self.save()
@@ -70,6 +70,14 @@ class StripeCard(PaymentMethod):
                 currency='AUD',
                 customer=self.customer_id,
                 source=self.card_id or self.token_id,
+                description='Lorikeet Order {}'.format(order.invoice_id),
+                metadata={
+                    'is_lorikeet_order': True,
+                    'lorikeet_order_id': order.id,
+                    'invoice_id': order.invoice_id,
+                    'user_id': order.user_id,
+                    'email': order.email,
+                }
             )
         except stripe.error.CardError as e:
             raise PaymentError(e.json_body['error'])

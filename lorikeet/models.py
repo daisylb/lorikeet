@@ -174,7 +174,7 @@ class PaymentMethod(models.Model):
 
     objects = InheritanceManager()
 
-    def make_payment(self, amount):
+    def make_payment(self, order, amount):
         raise NotImplementedError("Provide a make_payment method in your "
                                   "PaymentMethod subclass {}.".format(
                                       self.__class__.__name__))
