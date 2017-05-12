@@ -24,9 +24,12 @@ def get_orders_blob(orders):
 
 
 def get_order_blob(order):
+    destination = starshipit_repr(order.delivery_address_subclass)
+    if 'Email' not in destination:
+        destination['Email'] = order.email
     return {
         'OrderNumber': order.invoice_id,
-        'Destination': starshipit_repr(order.delivery_address_subclass),
+        'Destination': destination,
         'Items': [starshipit_repr(x) for x in order.items.select_subclasses()],
     }
 
