@@ -10,7 +10,7 @@ def submit_orders():
     if not orders:
         return
     blob = get_orders_blob(orders)
-    requests.post('https://api.shipit.click/orders?format=json',
+    requests.post('https://api2.starshipit.com/orders?format=json',
                   json=blob).raise_for_status()
     for order in orders:
         models.StarShipItOrder.objects.create(order=order)
