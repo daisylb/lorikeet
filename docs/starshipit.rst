@@ -1,6 +1,10 @@
 StarShipIT
 ==========
 
+.. deprecated:: 0.1.5
+
+        Projects that wish to continue using this integration should vendor the ``lorikeet.extras.starshipit`` package within their own projects; it will be removed from Lorikeet before version 1.0 is released.
+
 This integration posts orders to `StarShipIT <http://www.starshipit.com/>`_, a cloud-based fulfilment software provider.
 
 Installation
