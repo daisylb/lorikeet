@@ -2,28 +2,28 @@
 
 .. toctree::
    :maxdepth: 2
-   :caption: Getting Started Guide
+   :caption: Getting Started
 
-   install
-   backend
-   postcheckout
+   tutorial/install
+   tutorial/backend
+   tutorial/postcheckout
 
 
 .. toctree::
    :maxdepth: 2
    :caption: Reference
 
-   python
-   api
-   js
+   reference/python
+   reference/api
+   reference/js
 
 .. toctree::
    :maxdepth: 2
    :caption: Extras
 
-   email_invoice
-   stripe
-   starshipit
+   extras/email_invoice
+   extras/stripe
+   extras/starshipit
 
 
 Indices and tables
