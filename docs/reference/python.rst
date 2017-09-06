@@ -55,7 +55,7 @@ Settings
 
 Lorikeet's behaviour can be altered by setting the following settings in your project's ``settings.py`` file.
 
-.. describe:: LORIKEET_CART_COMPLETE_CHECKERS
+.. data:: LORIKEET_CART_COMPLETE_CHECKERS
 
     **Default value**:
 
@@ -67,8 +67,9 @@ Lorikeet's behaviour can be altered by setting the following settings in your pr
             'lorikeet.cart_checkers.cart_not_empty',
             'lorikeet.cart_checkers.email_address_if_anonymous',
         ]
+    
+    Checkers that validate whether or not a cart is ready for checkout. For more detail on these, including how to write your own, refer to :ref:`cart-checkers`.
 
-    A list of functions that check to see if a cart is complete and ready to be checked out. Each one takes a :class:`lorikeet.models.Cart` object as its only argument, and raises an :class:`~lorikeet.exceptions.IncompleteCartError` (or potentially a :class:`~lorikeet.exceptions.IncompleteCartErrorSet` containing multiple) if it finds any reasons that the cart should not be checked out.
 
 .. describe:: LORIKEET_ORDER_DETAIL_VIEW
 

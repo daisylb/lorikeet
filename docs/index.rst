@@ -8,6 +8,13 @@
    tutorial/backend
    tutorial/postcheckout
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Guides
+
+   guides/cart_checkers
+    
+
 
 .. toctree::
    :maxdepth: 2
