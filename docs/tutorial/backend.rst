@@ -19,10 +19,9 @@ modelled using the following model.
         name = models.CharField(max_length=255)
         unit_price = models.DecimalField(max_digits=7, decimal_places=2)
 
-Lorikeet itself doesn't care how your products are modelled, though; your
-``Product`` model could be more complex than this, you could have multiple
-models for different types of products, or you could have a totally different
-structure with no ``Product`` model at all.
+.. note::
+
+    Lorikeet doesn't require that you create a ``Product`` model. You can model your products however you like; this is just how we've chosen to do it in this tutorial.
 
 Line Items
 ----------
@@ -43,20 +42,8 @@ that returns how much they cost. Here's a simple one:
         def get_total(self):
             return self.quantity * self.product.unit_price
 
-Once again, Lorikeet doesn't care how this is modelled, only that it has a
-``get_total`` method. For instance, if you're selling T-shirts you might
-need fields for colour and size, or if you're selling goods by the
-kilogram you might make ``quantity`` a ``DecimalField``.
-
-.. tip::
-
-    Lorikeet isn't limited to one type of line item, either. If you sell
-    multiple different kinds of products, and you need to store different kinds
-    of data on their respective line items, you can make multiple LineItem
-    subclasses.
-
-Next, you'll need to create a serializer, so you can create new
-LineItems from your frontend. You should subclass these from
+Every line item type needs a serializer, so that your frontend can create new
+LineItems and add things to your users' carts. You should subclass these from
 :class:`lorikeet.api_serializers.LineItemSerializer`, but otherwise write them
 as you would a normal Django REST Framework serializer.
 
@@ -81,15 +68,10 @@ as you would a normal Django REST Framework serializer.
             model = models.MyLineItem
             fields = ('product', 'quantity',)
 
-We've also made a simple serializer for our ``Product`` class. Notice that we've
-subclassed :class:`lorikeet.api_serializers.PrimaryKeyModelSerializer`; we'll
-talk about what this class does in the next section.
 
-.. tip::
+.. note::
 
-    If you have any application logic you need to run when you add an item to
-    the cart, you can do it inside the ``create()`` method on the line item's
-    serializer.
+    We've also made a simple serializer for our ``Product`` class. Notice that we've subclassed :class:`lorikeet.api_serializers.PrimaryKeyModelSerializer`; we'll talk about what this serializer class does when we get to the frontend.
 
 The last thing we need to do is link the two together when Django starts up.
 The easiest place to do this is in the `ready` method of your app's `AppConfig`:

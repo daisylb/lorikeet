@@ -22,10 +22,15 @@ Models
 Serializers
 -----------
 
-.. autoclass:: lorikeet.api_serializers.LineItemSerializerRegistry
-    :members:
+.. autodata:: lorikeet.api_serializers.registry
+    :annotation:
+
+    .. automethod:: lorikeet.api_serializers.registry.register
 
 .. autoclass:: lorikeet.api_serializers.PrimaryKeyModelSerializer
+    :members:
+
+.. autoclass:: lorikeet.api_serializers.LineItemSerializer
     :members:
 
 Mixins

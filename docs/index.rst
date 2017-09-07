@@ -6,12 +6,15 @@
 
    tutorial/install
    tutorial/backend
+   tutorial/frontend
    tutorial/postcheckout
 
 .. toctree::
    :maxdepth: 2
    :caption: Guides
 
+   guides/line_items
+   guides/registry
    guides/cart_checkers
     
 
