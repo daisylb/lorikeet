@@ -43,6 +43,19 @@ Template Tags
 
 .. autofunction:: lorikeet.templatetags.lorikeet.lorikeet_cart
 
+.. _api-cart-checkers:
+
+Cart Checkers
+-------------
+
+.. autofunction:: lorikeet.cart_checkers.delivery_address_required
+
+.. autofunction:: lorikeet.cart_checkers.payment_method_required
+
+.. autofunction:: lorikeet.cart_checkers.cart_not_empty
+
+.. autofunction:: lorikeet.cart_checkers.email_address_if_anonymous
+
 Exceptions
 ----------
 
@@ -73,7 +86,11 @@ Lorikeet's behaviour can be altered by setting the following settings in your pr
             'lorikeet.cart_checkers.email_address_if_anonymous',
         ]
     
-    Checkers that validate whether or not a cart is ready for checkout. For more detail on these, including how to write your own, refer to :ref:`cart-checkers`.
+    Checkers that validate whether or not a cart is ready for checkout. For more detail on these, including how to write your own, refer to the guide on :doc:`/guides/cart_checkers`.
+
+    .. warning::
+
+        The default value for :data:`LORIKEET_CART_COMPLETE_CHECKERS` contains important built-in checkers that you probably don't want to disable, because they prevent things like going through checkout with an empty cart. If you override this setting, make sure you include them!
 
 
 .. describe:: LORIKEET_ORDER_DETAIL_VIEW

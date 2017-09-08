@@ -1,5 +1,3 @@
-.. _cart-checkers:
-
 Cart Checkers
 =============
 
@@ -22,10 +20,26 @@ Here's one that's built in to Lorikeet:
         """Checks that a payment method is set on the cart."""
 
         if cart.payment_method is None:
-            raise IncompleteCartError('not_set',
-                                    'A payment method is required.',
-                                    'payment_method')
+            raise IncompleteCartError(code='not_set',
+                                      message='A payment method is required.',
+                                      field='payment_method')
 
 If your cart checker identifies multiple different reasons the cart can't be checked out, it should instead raise a :class:`~lorikeet.exceptions.IncompleteCartErrorSet`, which can be passed a list of :class:`~lorikeet.exceptions.IncompleteCartError` instances.
 
 Once you've written your cart checker, add it to the :data:`LORIKEET_CART_COMPLETE_CHECKERS` setting.
+
+.. warning::
+
+    The default value for :data:`LORIKEET_CART_COMPLETE_CHECKERS` contains important built-in checkers that you probably don't want to disable, because they prevent things like going through checkout with an empty cart. If you override this setting, make sure you include them!
+
+Built-in Cart Checkers
+----------------------
+
+The built-in cart checkers are documented in the :ref:`api-cart-checkers` section of the API documentation.
+
+Handling an Incomplete Cart on the Client
+-----------------------------------------
+
+.. todo::
+
+    Document the API side of things

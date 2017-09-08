@@ -2,7 +2,7 @@ from .exceptions import IncompleteCartError
 
 
 def delivery_address_required(cart):
-    """Checks that a delivery address is set on the cart."""
+    """Prevents checkout unless a delivery address is selected."""
 
     if cart.delivery_address is None:
         raise IncompleteCartError('not_set',
@@ -11,7 +11,7 @@ def delivery_address_required(cart):
 
 
 def payment_method_required(cart):
-    """Checks that a payment method is set on the cart."""
+    """Prevents checkout unless a payment method is selected."""
 
     if cart.payment_method is None:
         raise IncompleteCartError('not_set',
@@ -20,7 +20,7 @@ def payment_method_required(cart):
 
 
 def cart_not_empty(cart):
-    """Checks that a payment method is set on the cart."""
+    """Prevents checkout of an empty cart."""
 
     if not cart.items.exists():
         raise IncompleteCartError('empty',
@@ -29,7 +29,7 @@ def cart_not_empty(cart):
 
 
 def email_address_if_anonymous(cart):
-    """Checks an email address is set if the user isn't logged in."""
+    """Prevents anonymous users checking out without an email address."""
 
     if not cart.user and not cart.email:
         raise IncompleteCartError('not_set',
