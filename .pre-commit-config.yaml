@@ -34,3 +34,10 @@ repos:
         language: system
         files: \.py$
         exclude: migrations\/[^/]*\.py$|settings\/[^/]*\.py$
+-   repo: https://github.com/prettier/prettier
+    sha: 1.7.0
+    hooks:
+    -   id: prettier
+        types: [file]
+        files: \.(css|less|scss|ts|tsx|graphql|gql|json|js|jsx)$
+        exclude: \.min\.(js|css)$
