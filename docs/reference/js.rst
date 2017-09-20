@@ -128,7 +128,7 @@ The :js:class:`CartClient` constructor takes an optional second argument ``cart`
 You can use it alongside the :func:`~lorikeet.templatetags.lorikeet.lorikeet_cart` template tag like this:
 
 .. sourcecode:: html+django
-    
+
     {% load lorikeet %}
     {# ... #}
     <body data-cart="{% lorikeet_cart %}">

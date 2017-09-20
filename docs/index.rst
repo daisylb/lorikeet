@@ -16,7 +16,7 @@
    guides/line_items
    guides/registry
    guides/cart_checkers
-    
+
 
 
 .. toctree::

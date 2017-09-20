@@ -15,4 +15,5 @@ class StripeAppConfig(AppConfig):
         registry.register(models.StripeCard,
                           api_serializers.StripeCardSerializer)
 
+
 default_app_config = 'lorikeet.extras.stripe.StripeAppConfig'

@@ -11,7 +11,7 @@ HTTP API
             "items": [/* omitted */],
             "new_item_url": "/_cart/new/",
             "delivery_addresses": [
-                
+
             ],
             "new_address_url": "/_cart/new-address/",
             "payment_methods": [/* omitted */],
@@ -30,7 +30,7 @@ HTTP API
             "is_authenticated": true,
             "email": null
         }
-    
+
     The meaning of the keys is as follows:
 
     - ``items`` - The list of items in the cart. Each entry in this list is a JSON blob with the same structure as the :http:get:`/_cart/(id)/` endpoint.
@@ -47,7 +47,7 @@ HTTP API
     .. sourcecode:: javascript
 
         {"email": "joe.bloggs@example.com"}
-    
+
     The email value can also be ``null`` to un-set the value.
 
     :statuscode 200: The email was changed successfully.
@@ -111,7 +111,7 @@ HTTP API
             "id": 7,
             "url": "/products/order/7/",
         }
-    
+
     where the returned ``id`` is the ID of the :class:`~lorikeet.models.Order` instance that was created, and the ``url`` is a URL generated from the ``LORIKEET_ORDER_DETAIL_VIEW`` setting (or ``null`` if that setting is not set).
 
     If the cart was not ready for checkout, the endpoint will return a 422 response with a body that looks like this:
@@ -128,7 +128,7 @@ HTTP API
                 }
             ]
         }
-    
+
     In this case, the ``reason`` is always the string ``"incomplete"``, and the ``info`` is the same list of values as in the ``incomplete_reasons`` key returned in :http:get:`/_cart/`.
 
     If processing the payment failed, the endpoint will return a 422 response with a body that looks like this:
@@ -143,7 +143,7 @@ HTTP API
                 // ...
             }
         }
-    
+
     In this case, the ``reason`` is always the string ``"payment"``; ``payment_method`` is the name of the :class:`~lorikeet.models.PaymentMethod` subclass that handled the payment. ``info`` is data returned by the payment method itself; consult its documentation for its meaning.
 
 

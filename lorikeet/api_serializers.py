@@ -49,6 +49,7 @@ class LineItemSerializerRegistry:
     def get_serializer(self, instance):
         return self.get_serializer_class(instance)(instance)
 
+
 registry = LineItemSerializerRegistry()
 
 

@@ -85,7 +85,7 @@ Lorikeet's behaviour can be altered by setting the following settings in your pr
             'lorikeet.cart_checkers.cart_not_empty',
             'lorikeet.cart_checkers.email_address_if_anonymous',
         ]
-    
+
     Checkers that validate whether or not a cart is ready for checkout. For more detail on these, including how to write your own, refer to the guide on :doc:`/guides/cart_checkers`.
 
     .. warning::

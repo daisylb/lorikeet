@@ -36,4 +36,3 @@ Mappings can be declared by calling :meth:`lorikeet.api_serializers.registry.reg
     your app's ``__init__.py``.
 
     For more on app configs, check out the `Django documentation <https://docs.djangoproject.com/en/1.10/ref/applications/#application-configuration>`_.
-

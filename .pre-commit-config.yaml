@@ -1,5 +1,6 @@
+repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    sha: 5da199bb8d60f764c0f77a20b0a1dc3a7640bcdd
+    sha: v0.9.4
     hooks:
     -   id: check-added-large-files
     -   id: check-case-conflict
@@ -12,21 +13,24 @@
         language_version: python3.5
         exclude: migrations\/[^/]*\.py
 -   repo: https://github.com/Lucas-C/pre-commit-hooks
-    sha: c25201a00e6b0514370501050cf2a8538ac12270
+    sha: v1.1.4
     hooks:
     -   id: forbid-crlf
         exclude: \.csv$
     -   id: forbid-tabs
         exclude: Makefile|\.bat$
 -   repo: git://github.com/FalconSocial/pre-commit-python-sorter
-    sha: 1.0.4
+    sha: b57843b0b874df1d16eb0bef00b868792cb245c2
     hooks:
     -   id: python-import-sorter
         language_version: python3.5
         exclude: migrations\/[^/]*\.py
--   repo: git://github.com/guykisel/prospector-mirror
-    sha: 00fbd80101566b1b9c873c71f2ab7b95b8bd0a7d
+-   repo: local
     hooks:
     -   id: prospector
-        exclude: migrations\/[^/]*\.py
-        args: ['-A', '--uses', 'django']
+        name: Prospector
+        description: 'This hook runs Prospector: https://github.com/landscapeio/prospector'
+        entry: prospector
+        language: system
+        files: \.py$
+        exclude: migrations\/[^/]*\.py$|settings\/[^/]*\.py$
