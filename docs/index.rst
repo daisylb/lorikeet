@@ -16,8 +16,7 @@
    guides/line_items
    guides/registry
    guides/cart_checkers
-
-
+   guides/custom_invoice_ids
 
 .. toctree::
    :maxdepth: 2
