@@ -30,3 +30,10 @@ class AustralianDeliveryAddressFactory(DjangoModelFactory):
 
     class Meta:
         model = models.AustralianDeliveryAddress
+
+
+class CartDiscountFactory(DjangoModelFactory):
+    percentage = fuzzy.FuzzyInteger(1, 99)
+
+    class Meta:
+        model = models.CartDiscount

@@ -1,7 +1,7 @@
 import pytest
 from faker import Faker
-from shop import models as smodels
 from shop import factories
+from shop import models as smodels
 
 from . import models
 
@@ -23,6 +23,11 @@ def cart(client):
     session['cart_id'] = cart.id
     session.save()
     return cart
+
+
+@pytest.fixture
+def other_cart():
+    return models.Cart.objects.create()
 
 
 @pytest.fixture

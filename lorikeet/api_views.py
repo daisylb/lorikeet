@@ -144,6 +144,32 @@ class DeliveryAddressView(RetrieveUpdateDestroyAPIView):
             instance, context={'cart': self.request.get_cart()}, *args, **kwargs)
 
 
+class AdjustmentView(RetrieveUpdateDestroyAPIView):
+
+    def get_object(self):
+        cart = self.request.get_cart()
+        try:
+            return cart.adjustments.get_subclass(id=self.kwargs['id'])
+        except models.Adjustment.DoesNotExist:
+            raise Http404()
+
+    def get_serializer(self, instance, *args, **kwargs):
+        return api_serializers.AdjustmentSerializer(
+            instance, context={'cart': self.request.get_cart()}, *args, **kwargs)
+
+
+class NewAdjustmentView(CreateAPIView):
+
+    def get_serializer(self, data, *args, **kwargs):
+        ser_class = api_serializers.registry.adjustments[data['type']]
+        return ser_class(data=data['data'],
+                         context={'request': self.request},
+                         *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.save(cart=self.request.get_cart())
+
+
 class CheckoutView(APIView):
 
     def post(self, request, format=None):

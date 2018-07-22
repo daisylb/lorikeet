@@ -48,3 +48,9 @@ class PipeCardSerializer(serializers.ModelSerializer):
         card_token = validated_data.pop('card_token')
         validated_data['card_id'] = codecs.encode(card_token, 'rot13')
         return super().create(validated_data)
+
+
+class CartDiscountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CartDiscount
+        fields = ('percentage',)

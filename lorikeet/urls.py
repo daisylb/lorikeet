@@ -15,5 +15,9 @@ urlpatterns = [
         name='payment-method'),
     url(r'^new-payment-method/$',
         api_views.NewPaymentMethodView.as_view(), name='new-payment-method'),
+    url(r'^adjustment/(?P<id>\d+)/$',
+        api_views.AdjustmentView.as_view(), name='adjustment'),
+    url(r'^new-adjustment/$', api_views.NewAdjustmentView.as_view(),
+        name='new-adjustment'),
     url(r'^checkout/$', api_views.CheckoutView.as_view(), name='checkout'),
 ]

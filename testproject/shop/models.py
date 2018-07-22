@@ -1,6 +1,9 @@
+from decimal import ROUND_DOWN, Decimal
+
 from django.db import models
 from lorikeet.exceptions import PaymentError
-from lorikeet.models import DeliveryAddress, LineItem, Payment, PaymentMethod
+from lorikeet.models import (Adjustment, DeliveryAddress, LineItem, Payment,
+                             PaymentMethod)
 
 AUSTRALIAN_STATES = (
     ('NSW', 'New South Wales'),
@@ -46,3 +49,12 @@ class PipeCard(PaymentMethod):
 
 class PipePayment(Payment):
     amount = models.DecimalField(max_digits=7, decimal_places=2)
+
+
+class CartDiscount(Adjustment):
+    percentage = models.PositiveSmallIntegerField()
+
+    def get_total(self, subtotal):
+        assert isinstance(subtotal, Decimal)
+        discount = -subtotal * self.percentage / 100
+        return discount.quantize(Decimal('.01'), rounding=ROUND_DOWN)

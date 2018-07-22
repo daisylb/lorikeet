@@ -29,6 +29,11 @@ setup(
             'sphinx-rtd-theme>=0.2.4,<0.3',
             'sphinx-js>=1.3,<1.4',
             'sphinxcontrib_httpdomain>=1.5.0,<2',
+        ],
+        'dev': [
+            'django<=1.10.999',
+            'factory-boy',
+            'tox',
         ]
     },
 )

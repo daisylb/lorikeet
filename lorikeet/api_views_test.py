@@ -1,8 +1,9 @@
+from decimal import ROUND_DOWN, Decimal
 from json import loads
 
 import pytest
-from shop import models as smodels
 from shop import factories
+from shop import models as smodels
 
 
 @pytest.mark.django_db
@@ -18,6 +19,7 @@ def test_empty_cart(client):
         'new_address_url': '/_cart/new-address/',
         'payment_methods': [],
         'new_payment_method_url': '/_cart/new-payment-method/',
+        'adjustments': [],
         'grand_total': '0.00',
         'incomplete_reasons': [
             {
@@ -61,6 +63,7 @@ def test_empty_cart_logged_in(admin_client):
         'new_address_url': '/_cart/new-address/',
         'payment_methods': [],
         'new_payment_method_url': '/_cart/new-payment-method/',
+        'adjustments': [],
         'grand_total': '0.00',
         'incomplete_reasons': [
             {
@@ -111,6 +114,38 @@ def test_cart_contents(client, cart):
         'total': str(i.product.unit_price * i.quantity),
     }]
     assert data['grand_total'] == str(i.product.unit_price * i.quantity)
+
+
+@pytest.mark.django_db
+def test_cart_contents_with_adjustment(client, cart):
+    # set up cart contents
+    i = factories.MyLineItemFactory(cart=cart)
+
+    # add some more line items not attached to the cart
+    factories.MyLineItemFactory()
+    factories.MyLineItemFactory()
+
+    # add an adjustment
+    a = factories.CartDiscountFactory(cart=cart)
+
+    # add more adjustments not attached to the cart
+    factories.CartDiscountFactory()
+    factories.CartDiscountFactory()
+
+    resp = client.get('/_cart/')
+    data = loads(resp.content.decode('utf-8'))
+    discount = (-cart.get_subtotal() * (Decimal(a.percentage) / 100)
+                ).quantize(Decimal('.01'), rounding=ROUND_DOWN)
+    assert data['adjustments'] == [{
+        'type': 'CartDiscount',
+        # 'url': '/_cart/adjustment/{}/'.format(i.id),
+        'data': {
+            'percentage': a.percentage,
+        },
+        'total': str(discount)
+    }]
+    assert data['grand_total'] == str(
+        (i.product.unit_price * i.quantity) + discount)
 
 
 @pytest.mark.django_db

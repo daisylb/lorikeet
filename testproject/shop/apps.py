@@ -14,3 +14,5 @@ class ShopConfig(AppConfig):
                           api_serializers.AustralianDeliveryAddressSerializer)
         registry.register(models.PipeCard,
                           api_serializers.PipeCardSerializer)
+        registry.register(models.CartDiscount,
+                          api_serializers.CartDiscountSerializer)

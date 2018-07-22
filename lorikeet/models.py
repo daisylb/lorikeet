@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -5,8 +7,8 @@ from django.utils.module_loading import import_string
 from django.utils.timezone import now
 from model_utils.managers import InheritanceManager
 
-from . import settings as lorikeet_settings
 from . import exceptions
+from . import settings as lorikeet_settings
 
 
 class Cart(models.Model):
@@ -23,9 +25,18 @@ class Cart(models.Model):
     payment_method = models.ForeignKey(
         'lorikeet.PaymentMethod', blank=True, null=True)
 
+    def get_subtotal(self):
+        """Calculate the subtotal for this cart.
+
+        This returns the sum of all of the item totals, but does not
+        include any adjustments applied to the cart.
+        """
+        return sum((x.get_total() for x in self.items.select_subclasses().all()), Decimal(0))
+
     def get_grand_total(self):
         """Calculate the grand total for this cart."""
-        return sum(x.get_total() for x in self.items.select_subclasses().all())
+        subtotal = self.get_subtotal()
+        return subtotal + sum((x.get_total(subtotal) for x in self.adjustments.select_subclasses().all()), Decimal(0))
 
     @property
     def delivery_address_subclass(self):
@@ -290,3 +301,37 @@ class LineItem(models.Model):
         `select_for_update <https://docs.djangoproject.com/en/1.10/ref/models/querysets/#select-for-update>`_).
         """
         pass
+
+
+class Adjustment(models.Model):
+    """An adjustment to the total on a cart.
+
+    Subclass this model only for adjustments that users can add to their carts
+    (e.g. discount codes).
+
+    This model doesn't do anything by itself; you'll need to subclass it.
+    """
+    cart = models.ForeignKey(
+        Cart, related_name='adjustments', blank=True, null=True)
+    order = models.ForeignKey(
+        Order, related_name='adjustments', blank=True, null=True)
+
+    objects = InheritanceManager()
+
+    def get_total(self, subtotal):
+        """Returns the total adjustment to make to the cart.
+
+        By default this raises :class:`NotImplementedError`; subclasses will
+        need to override this.
+
+        :param subtotal: The subtotal of all line items, which is passed in
+            as a convenience.
+        :type subtotal: decimal.Decimal
+        :return: The amount to add to the cart. This value can be
+            (and in most cases, will be) negative, in order to represent a
+            discount.
+        :rtype: decimal.Decimal
+        """
+        raise NotImplementedError("Provide a get_total method in your "
+                                  "Adjustment subclass {}."
+                                  .format(self.__class__.__name__))

@@ -22,6 +22,7 @@ class LineItemSerializerRegistry:
         self.line_items = {}
         self.payment_methods = {}
         self.delivery_addresses = {}
+        self.adjustments = {}
 
     def register(self, model, serializer):
         """Associate ``model`` with ``serializer``."""
@@ -32,9 +33,12 @@ class LineItemSerializerRegistry:
             self.payment_methods[model.__name__] = serializer
         elif issubclass(model, models.DeliveryAddress):
             self.delivery_addresses[model.__name__] = serializer
+        elif issubclass(model, models.Adjustment):
+            self.adjustments[model.__name__] = serializer
         else:
             raise ValueError("model must be a subclass of "
-                             "LineItem, PaymentMethod or DeliveryAddress")
+                             "LineItem, PaymentMethod, DeliveryAddress or "
+                             "Adjustment")
 
     def get_serializer_class(self, instance):
         if isinstance(instance, models.LineItem):
@@ -43,8 +47,11 @@ class LineItemSerializerRegistry:
             return self.payment_methods[instance.__class__.__name__]
         if isinstance(instance, models.DeliveryAddress):
             return self.delivery_addresses[instance.__class__.__name__]
+        if isinstance(instance, models.Adjustment):
+            return self.adjustments[instance.__class__.__name__]
         raise ValueError("instance must be an instance of a "
-                         "LineItem, PaymentMethod or DeliveryAddress subclass")
+                         "LineItem, PaymentMethod, DeliveryAddress or "
+                         "Adjustment subclass")
 
     def get_serializer(self, instance):
         return self.get_serializer_class(instance)(instance)
@@ -158,6 +165,14 @@ class PaymentMethodSerializer(RegistryRelatedWithMetadataSerializer):
         return reverse('lorikeet:payment-method', kwargs={'id': instance.id})
 
 
+class AdjustmentSerializer(RegistryRelatedWithMetadataSerializer):
+    total = fields.SerializerMethodField()
+
+    def get_total(self, instance):
+        # TODO: Store subtotal so that it's only calculated once
+        return str(instance.get_total(instance.cart.get_subtotal()))
+
+
 class SubclassListSerializer(serializers.ListSerializer):
 
     def to_representation(self, instance, *args, **kwargs):
@@ -172,6 +187,7 @@ class CartSerializer(serializers.ModelSerializer):
     new_address_url = fields.SerializerMethodField()
     payment_methods = fields.SerializerMethodField()
     new_payment_method_url = fields.SerializerMethodField()
+    adjustments = SubclassListSerializer(child=AdjustmentSerializer())
     grand_total = fields.DecimalField(
         max_digits=7, decimal_places=2, source='get_grand_total')
     is_complete = fields.SerializerMethodField()
@@ -237,7 +253,7 @@ class CartSerializer(serializers.ModelSerializer):
                   'new_address_url', 'payment_methods',
                   'new_payment_method_url', 'grand_total', 'generated_at',
                   'is_complete', 'incomplete_reasons', 'checkout_url',
-                  'is_authenticated', 'email')
+                  'is_authenticated', 'email', 'adjustments')
 
 
 class CartUpdateSerializer(serializers.ModelSerializer):
