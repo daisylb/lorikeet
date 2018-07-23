@@ -9,6 +9,8 @@ from . import models
 @pytest.mark.django_db
 def test_checkout(client, filled_cart):
     expected_total = filled_cart.get_grand_total()
+    expected_item_count = filled_cart.items.count()
+    expected_adjustment_count = filled_cart.adjustments.count()
     resp = client.post('/_cart/checkout/', dumps({}),
                        content_type='application/json')
     assert resp.status_code == 200
@@ -19,9 +21,14 @@ def test_checkout(client, filled_cart):
     filled_cart.refresh_from_db()
     assert filled_cart.items.count() == 0
     assert models.Order.objects.count() == 1
-    assert models.Order.objects.first().grand_total == expected_total
-    for item in models.Order.objects.first().items.all():
+    order = models.Order.objects.first()
+    assert order.grand_total == expected_total
+    assert order.items.count() == expected_item_count
+    assert order.adjustments.count() == expected_adjustment_count
+    for item in order.items.all():
         assert item.total_when_charged
+    for adj in order.adjustments.all():
+        assert adj.total_when_charged
 
 
 @pytest.mark.django_db

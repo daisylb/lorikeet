@@ -177,6 +177,7 @@ class CheckoutView(APIView):
             with atomic():
                 # Prepare the order object
                 cart = request.get_cart()
+                subtotal = cart.get_subtotal()
                 grand_total = cart.get_grand_total()
                 order = models.Order.objects.create(user=cart.user,
                                                     grand_total=grand_total,
@@ -191,7 +192,7 @@ class CheckoutView(APIView):
                 # Check the cart is ready to be checked out
                 cart.is_complete(raise_exc=True, for_checkout=True)
 
-                # copy items onto order, also calculate grand total
+                # copy items onto order
                 for item in cart.items.select_subclasses().all():
                     total = item.get_total()
                     item.total_when_charged = total
@@ -200,6 +201,16 @@ class CheckoutView(APIView):
                     item._new_order = True
                     item.save()
                     item.prepare_for_checkout()
+
+                # copy adjustments onto order
+                for adj in cart.adjustments.select_subclasses().all():
+                    total = adj.get_total(subtotal)
+                    adj.total_when_charged = total
+                    adj.order = order
+                    adj.cart = None
+                    adj._new_order = True
+                    adj.save()
+                    adj.prepare_for_checkout()
 
                 # copy delivery address over
                 order.delivery_address = cart.delivery_address

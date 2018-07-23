@@ -9,6 +9,7 @@ from . import models
 def fill_cart(cart):
     factories.MyLineItemFactory(cart=cart)
     factories.MyLineItemFactory(cart=cart)
+    factories.CartDiscountFactory(cart=cart, percentage=10)
     cart.delivery_address = factories.AustralianDeliveryAddressFactory()
     cart.payment_method = smodels.PipeCard.objects.create(card_id="Visa4242")
     if not cart.user:

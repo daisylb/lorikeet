@@ -92,6 +92,12 @@ class Cart(models.Model):
                 except exceptions.IncompleteCartError as e:
                     self.errors.add(e)
 
+            for adj in self.adjustments.all().select_subclasses():
+                try:
+                    adj.check_complete(for_checkout)
+                except exceptions.IncompleteCartError as e:
+                    self.errors.add(e)
+
         if raise_exc and self.errors:
             raise self.errors
 
@@ -315,14 +321,32 @@ class Adjustment(models.Model):
         Cart, related_name='adjustments', blank=True, null=True)
     order = models.ForeignKey(
         Order, related_name='adjustments', blank=True, null=True)
+    total_when_charged = models.DecimalField(max_digits=7, decimal_places=2,
+                                             blank=True, null=True)
 
     objects = InheritanceManager()
+
+    @property
+    def total(self):
+        """The total cost for this line item.
+
+        Returns the total actually charged to the customer if this
+        adjustment is attached to an :class:`~lorikeet.models.Order`, or
+        calls :func:`~lorikeet.models.Adjustment.get_total` otherwise.
+        """
+        if self.order_id:
+            return self.total_when_charged
+        return self.get_total()
 
     def get_total(self, subtotal):
         """Returns the total adjustment to make to the cart.
 
         By default this raises :class:`NotImplementedError`; subclasses will
         need to override this.
+
+        If you want to know the total for this adjustment from your own
+        code, use the :func:`~lorikeet.models.Adjustment.total` property
+        rather than calling this function.
 
         :param subtotal: The subtotal of all line items, which is passed in
             as a convenience.
@@ -335,3 +359,45 @@ class Adjustment(models.Model):
         raise NotImplementedError("Provide a get_total method in your "
                                   "Adjustment subclass {}."
                                   .format(self.__class__.__name__))
+
+    def check_complete(self, for_checkout=False):
+        """Checks that this adjustment is ready to be checked out.
+
+        This method should raise
+        :class:`~lorikeet.exceptions.IncompleteCartError` if the line
+        item is not ready to be checked out (e.g. there is insufficient
+        stock in inventory to fulfil this line item). By default it does
+        nothing.
+
+        :param for_checkout: Set to ``True`` when the cart is about to
+            be checked out. See the documentation for
+            :meth:`prepare_for_checkout` for more details.
+            is going to be called within the current transaction, so you
+            should use things like
+            `select_for_update <https://docs.djangoproject.com/en/1.10/ref/models/querysets/#select-for-update>`_.
+        :type for_checkout: bool
+        """
+        pass
+
+    def prepare_for_checkout(self):
+        """Prepare this adjustment for checkout.
+
+        This is called in the checkout process, shortly before the
+        payment method is charged, within a database transaction that
+        will be rolled back if payment is unsuccessful.
+
+        This function shouldn't fail. (If it does, the transaction will
+        be rolled back and the payment won't be processed so nothing
+        disastrous will happen, but the user will get a 500 error which
+        you probably don't want.)
+
+        The :meth:`check_complete` method is guaranteed to be called
+        shortly before this method, within the same transaction, and
+        with the ``for_checkout`` parameter set to ``True``. Any checks
+        you need to perform to ensure checkout will succeed should be
+        performed there, and when ``for_checkout`` is true there you
+        should ensure that those checks remain valid for the remainder
+        of the database transaction (e.g. using
+        `select_for_update <https://docs.djangoproject.com/en/1.10/ref/models/querysets/#select-for-update>`_).
+        """
+        pass
