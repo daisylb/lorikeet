@@ -1,6 +1,9 @@
 [tool.poetry]
 name = "lorikeet"
 version = "0.1.6"
+# Don't forget to also change the version in:
+# - package.json
+# - docs/conf.py
 description = "A simple, generic, API-only shopping cart framework for Django"
 authors = ["Adam Brenecki <adam@brenecki.id.au>"]
 license = "MIT"

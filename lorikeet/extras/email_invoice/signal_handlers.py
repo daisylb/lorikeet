@@ -45,7 +45,6 @@ def send_email_invoice(sender, order, request, **kwargs):
         recipient_list=[recipient],
         **mail_kwargs
     )
-    print('copy address', settings.copy_address)
     if settings.copy_address:
         send_mail(
             subject=subject,
