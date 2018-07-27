@@ -1,15 +1,24 @@
-from django.conf import settings
+from django.conf import settings as s
 
-LORIKEET_EMAIL_INVOICE_SUBJECT = getattr(
-    settings, 'LORIKEET_EMAIL_INVOICE_SUBJECT',
-    "Your order ID {order.invoice_id}")
 
-LORIKEET_EMAIL_INVOICE_FROM_ADDRESS = getattr(
-    settings, 'LORIKEET_EMAIL_INVOICE_FROM_ADDRESS',
-    "orders@example.com")
+class Settings:
+    _defaults = {
+        'subject': "Your order ID {order.invoice_id}",
+        'from_address': 'orders@example.com',
+        'template_html': None,
+        'template_text': None,
+        'copy_address': None,
+    }
 
-LORIKEET_EMAIL_INVOICE_TEMPLATE_HTML = getattr(
-    settings, 'LORIKEET_EMAIL_INVOICE_TEMPLATE_HTML', None)
+    def __getattr__(self, attr):
+        if attr not in self._defaults:
+            raise KeyError(attr)
+        return getattr(s, 'LORIKEET_EMAIL_INVOICE_' + attr.upper(), self._defaults[attr])
 
-LORIKEET_EMAIL_INVOICE_TEMPLATE_TEXT = getattr(
-    settings, 'LORIKEET_EMAIL_INVOICE_TEMPLATE_TEXT', None)
+    @property
+    def copy_address(self):
+        return getattr(s, 'LORIKEET_EMAIL_INVOICE_COPY_ADDRESS', None)
+
+
+settings = Settings()
+__all__ = ['settings']

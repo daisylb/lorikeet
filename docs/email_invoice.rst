@@ -11,13 +11,15 @@ Installation
 4. Set the ``LORIKEET_EMAIL_INVOICE_TEMPLATE_TEXT`` variable in ``settings.py`` to a plain text template.
 3. Set the ``LORIKEET_EMAIL_INVOICE_FROM_ADDRESS`` variable in ``settings.py`` to an email address.
 
+You can also set the ``LORIKEET_EMAIL_INVOICE_COPY_ADDRESS`` setting in ``settings.py`` to an email address; if this setting is set, a copy of every invoice will be sent to that address as well.
+
 
 Usage
 -----
 
 Set the ``LORIKEET_EMAIL_INVOICE_SUBJECT`` setting to the subject line you want your emails to have. You can use the `Python new-style format string syntax <https://docs.python.org/3/library/string.html#format-string-syntax>`_ to reference the :class:`~lorikeet.models.Order` object, e.g. ``"Your invoice for order {order.invoice_id}"``.
 
-Create a HTML template at the path you set ``LORIKEET_EMAIL_INVOICE_TEMPLATE_HTML`` to. It will recieve the :class:`~lorikeet.models.Order` instance in its context as ``order``, and ``order_url`` will be set to the absolute URL to your order details view, 
+Create a HTML template at the path you set ``LORIKEET_EMAIL_INVOICE_TEMPLATE_HTML`` to. It will recieve the :class:`~lorikeet.models.Order` instance in its context as ``order``, and ``order_url`` will be set to the absolute URL to your order details view,
 
 The template will be run through `premailer <https://pypi.python.org/pypi/premailer>`_, so you can safely use ``<style>`` and ``<link rel="stylesheet">`` tags. Of course, you can still only use CSS properties supported by the email clients you're targeting.
 
