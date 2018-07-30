@@ -68,6 +68,39 @@ python-versions = "*"
 version = "1.0.2"
 
 [[package]]
+category = "main"
+description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
+name = "django"
+optional = false
+platform = "*"
+python-versions = ">=3.4"
+version = "2.0.7"
+
+[package.dependencies]
+pytz = "*"
+
+[[package]]
+category = "main"
+description = "Django model mixins and utilities"
+name = "django-model-utils"
+optional = false
+platform = "*"
+python-versions = "*"
+version = "2.6.1"
+
+[package.dependencies]
+Django = ">=1.4.2"
+
+[[package]]
+category = "main"
+description = "Web APIs for Django, made easy."
+name = "djangorestframework"
+optional = false
+platform = "UNKNOWN"
+python-versions = "*"
+version = "3.5.4"
+
+[[package]]
 category = "dev"
 description = "Docutils -- Python Documentation Utilities"
 name = "docutils"
@@ -149,7 +182,7 @@ python-versions = "*"
 version = "2.2.0"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "World timezone definitions, modern and historical"
 name = "pytz"
 optional = false
@@ -281,7 +314,7 @@ starshipit = ["requests"]
 stripe = ["stripe"]
 
 [metadata]
-content-hash = "044de1258a3d853fae1e8ebc1c419ce218108efd48e529e9723eb129629f418d"
+content-hash = "593c058e1eb1bd0ef9dc6af6fe719a7e1ebf55942d6514272854f4eef95ad5fe"
 platform = "*"
 python-versions = ">=3.4"
 
@@ -293,6 +326,9 @@ chardet = ["84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae", "
 colorama = ["463f8483208e921368c9f306094eb6f725c6ca42b0f97e313cb5d5512459feda", "48eb22f4f8461b1df5734a074b57042430fb06e1d61bd1e11b078c0fe6d7a1f1"]
 cssselect = ["066d8bc5229af09617e24b3ca4d52f1f9092d9e061931f4184cd572885c23204", "3b5103e8789da9e936a68d993b70df732d06b8bb9a337a05ed4eb52c17ef7206"]
 cssutils = ["a2fcf06467553038e98fea9cfe36af2bf14063eb147a70958cfcaa8f5786acaf", "c74dbe19c92f5052774eadb15136263548dd013250f1ed1027988e7fef125c8d"]
+django = ["97886b8a13bbc33bfeba2ff133035d3eca014e2309dff2b6da0bdfc0b8656613", "e900b73beee8977c7b887d90c6c57d68af10066b9dac898e1eaf0f82313de334"]
+django-model-utils = ["92e2ea87147447935800cbc21d79ccf678298166e345c794340d6b0e7a3307e7"]
+djangorestframework = ["110afa12784ceadfb50808882689302d266785b51e3d13286744333ff6d78e60", "f995a35ae22f354d2a9a42ee6d2c059c101f826b1485ed46781677895ad25ee5"]
 docutils = ["02aec4bd92ab067f6ff27a38a38a41173bf01bed8f89157768c1573f53e474a6", "51e64ef2ebfb29cae1faa133b3710143496eca21c530f3f71424d77687764274", "7a4bd47eaf6596e1295ecb11361139febe29b084a87bf005bf899f9a42edc3c6"]
 idna = ["156a6814fb5ac1fc6850fb002e0852d56c0c8d2531923a51032d1b70760e186e", "684a38a6f903c1d71d6d5fac066b58d7768af4de2b832e426ec79c30daa94a16"]
 imagesize = ["3620cc0cadba3f7475f9940d22431fc4d407269f1be59ec9b8edcca26440cf18", "5b326e4678b6925158ccc66a9fa3122b6106d7c876ee32d7de6ce59385b96315"]
