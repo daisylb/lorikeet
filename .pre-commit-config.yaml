@@ -33,7 +33,7 @@ repos:
         entry: prospector
         language: system
         files: \.py$
-        exclude: migrations\/[^/]*\.py$|settings\/[^/]*\.py$
+        exclude: migrations\/[^/]*\.py$|settings\/[^/]*\.py$|^docs/conf\.py$
 -   repo: https://github.com/prettier/prettier
     sha: 1.7.0
     hooks:

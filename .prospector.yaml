@@ -1,0 +1,13 @@
+strictness: medium
+pylint:
+  disable:
+    # Unused arguments are often needed to conform to an expected signature.
+    - unused-argument
+    # Pylint is sometimes quite bad at the type inference necessary for these.
+    - unsubscriptable-object
+    - unsupported-membership-test
+    # This one is too picky (it complains about *args, **kwargs) and errors of
+    # this type are trivial to catch with minimal actual testing
+    - arguments-differ
+    # If Pylint can't import something, it's usually Pylint's fault
+    - import-error

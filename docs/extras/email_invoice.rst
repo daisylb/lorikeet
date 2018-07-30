@@ -11,6 +11,8 @@ Installation
 4. Set the ``LORIKEET_EMAIL_INVOICE_TEMPLATE_TEXT`` variable in ``settings.py`` to a plain text template.
 3. Set the ``LORIKEET_EMAIL_INVOICE_FROM_ADDRESS`` variable in ``settings.py`` to an email address.
 
+You can also set the ``LORIKEET_EMAIL_INVOICE_COPY_ADDRESS`` setting in ``settings.py`` to an email address; if this setting is set, a copy of every invoice will be sent to that address as well.
+
 
 Usage
 -----
