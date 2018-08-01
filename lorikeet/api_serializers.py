@@ -66,7 +66,7 @@ class WritableSerializerMethodField(fields.SerializerMethodField):
         self.method_name = method_name
         self.write_serializer = write_serializer
         kwargs['source'] = '*'
-        super(fields.SerializerMethodField, self).__init__(**kwargs)
+        super(fields.SerializerMethodField, self).__init__(**kwargs)  # noqa
 
     def to_internal_value(self, representation):
         return {self.field_name: self.write_serializer.to_representation(representation)}
@@ -92,8 +92,8 @@ class PrimaryKeyModelSerializer(serializers.ModelSerializer):
         """
         return self.Meta.model.objects.all()
 
-    def to_internal_value(self, repr):
-        return self.get_queryset().get(pk=repr)
+    def to_internal_value(self, representation):
+        return self.get_queryset().get(pk=representation)
 
 
 class RegistryRelatedField(fields.Field):
@@ -167,10 +167,14 @@ class PaymentMethodSerializer(RegistryRelatedWithMetadataSerializer):
 
 class AdjustmentSerializer(RegistryRelatedWithMetadataSerializer):
     total = fields.SerializerMethodField()
+    url = fields.SerializerMethodField()
 
     def get_total(self, instance):
         # TODO: Store subtotal so that it's only calculated once
         return str(instance.get_total(instance.cart.get_subtotal()))
+
+    def get_url(self, instance):
+        return reverse('lorikeet:adjustment', kwargs={'id': instance.id})
 
 
 class SubclassListSerializer(serializers.ListSerializer):
@@ -183,11 +187,14 @@ class SubclassListSerializer(serializers.ListSerializer):
 class CartSerializer(serializers.ModelSerializer):
     items = SubclassListSerializer(child=LineItemMetadataSerializer())
     new_item_url = fields.SerializerMethodField()
+    subtotal = fields.DecimalField(
+        max_digits=7, decimal_places=2, source='get_subtotal')
     delivery_addresses = fields.SerializerMethodField()
     new_address_url = fields.SerializerMethodField()
     payment_methods = fields.SerializerMethodField()
     new_payment_method_url = fields.SerializerMethodField()
     adjustments = SubclassListSerializer(child=AdjustmentSerializer())
+    new_adjustment_url = fields.SerializerMethodField()
     grand_total = fields.DecimalField(
         max_digits=7, decimal_places=2, source='get_grand_total')
     is_complete = fields.SerializerMethodField()
@@ -232,6 +239,9 @@ class CartSerializer(serializers.ModelSerializer):
 
         return PaymentMethodSerializer(instance=the_set, many=True, context={'cart': cart}).data
 
+    def get_new_adjustment_url(self, _):
+        return reverse('lorikeet:new-adjustment')
+
     def get_generated_at(self, cart):
         return time()
 
@@ -253,7 +263,8 @@ class CartSerializer(serializers.ModelSerializer):
                   'new_address_url', 'payment_methods',
                   'new_payment_method_url', 'grand_total', 'generated_at',
                   'is_complete', 'incomplete_reasons', 'checkout_url',
-                  'is_authenticated', 'email', 'adjustments')
+                  'is_authenticated', 'email', 'adjustments',
+                  'new_adjustment_url', 'subtotal')
 
 
 class CartUpdateSerializer(serializers.ModelSerializer):
@@ -267,7 +278,7 @@ class CartUpdateSerializer(serializers.ModelSerializer):
 class LineItemSerializer(serializers.ModelSerializer):
     """Base serializer for LineItem subclasses."""
 
-    def __init__(self, instance=None, *args, **kwargs):
+    def __init__(self, instance=None, *args, **kwargs):  # noqa
         if 'cart' in kwargs:
             self.cart = kwargs.pop('cart')
         elif instance is not None:
@@ -275,7 +286,7 @@ class LineItemSerializer(serializers.ModelSerializer):
         else:
             raise TypeError("Either instance or cart arguments must be "
                             "provided to {}".format(self.__class__.__name__))
-        return super().__init__(instance, *args, **kwargs)
+        super().__init__(instance, *args, **kwargs)
 
     def create(self, validated_data):
         validated_data['cart'] = self.cart

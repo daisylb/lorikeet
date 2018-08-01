@@ -73,11 +73,8 @@ description = "A high-level Python Web framework that encourages rapid developme
 name = "django"
 optional = false
 platform = "*"
-python-versions = ">=3.4"
-version = "2.0.7"
-
-[package.dependencies]
-pytz = "*"
+python-versions = "*"
+version = "1.10.8"
 
 [[package]]
 category = "main"
@@ -260,7 +257,7 @@ version = "2.7.3"
 six = ">=1.5"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "World timezone definitions, modern and historical"
 name = "pytz"
 optional = false
@@ -426,7 +423,7 @@ starshipit = ["requests"]
 stripe = ["stripe"]
 
 [metadata]
-content-hash = "6a8b2513f6fa9a73de72c18d18b7bc2f2e39244a34313bfd236ce5d71bd2f55e"
+content-hash = "7331857351a183f614e12cf937c3c18e8d0d41f38556644819d9864991e1f5c6"
 platform = "*"
 python-versions = ">=3.4"
 
@@ -438,7 +435,7 @@ chardet = ["84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae", "
 colorama = ["463f8483208e921368c9f306094eb6f725c6ca42b0f97e313cb5d5512459feda", "48eb22f4f8461b1df5734a074b57042430fb06e1d61bd1e11b078c0fe6d7a1f1"]
 cssselect = ["066d8bc5229af09617e24b3ca4d52f1f9092d9e061931f4184cd572885c23204", "3b5103e8789da9e936a68d993b70df732d06b8bb9a337a05ed4eb52c17ef7206"]
 cssutils = ["a2fcf06467553038e98fea9cfe36af2bf14063eb147a70958cfcaa8f5786acaf", "c74dbe19c92f5052774eadb15136263548dd013250f1ed1027988e7fef125c8d"]
-django = ["97886b8a13bbc33bfeba2ff133035d3eca014e2309dff2b6da0bdfc0b8656613", "e900b73beee8977c7b887d90c6c57d68af10066b9dac898e1eaf0f82313de334"]
+django = ["d4ef83bd326573c00972cb9429beb396d210341a636e4b816fc9b3f505c498bb", "ffdc7e938391ae3c2ee8ff82e0b4444e4e6bb15c99d00770285233d42aaf33d6"]
 django-model-utils = ["92e2ea87147447935800cbc21d79ccf678298166e345c794340d6b0e7a3307e7"]
 djangorestframework = ["110afa12784ceadfb50808882689302d266785b51e3d13286744333ff6d78e60", "f995a35ae22f354d2a9a42ee6d2c059c101f826b1485ed46781677895ad25ee5"]
 docutils = ["02aec4bd92ab067f6ff27a38a38a41173bf01bed8f89157768c1573f53e474a6", "51e64ef2ebfb29cae1faa133b3710143496eca21c530f3f71424d77687764274", "7a4bd47eaf6596e1295ecb11361139febe29b084a87bf005bf899f9a42edc3c6"]

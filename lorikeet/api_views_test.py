@@ -11,15 +11,17 @@ def test_empty_cart(client):
     resp = client.get('/_cart/')
     data = loads(resp.content.decode('utf-8'))
     generated_at = data.pop('generated_at')
-    assert type(generated_at) == float
+    assert isinstance(generated_at, float)
     assert data == {
         'items': [],
         'new_item_url': '/_cart/new/',
+        'subtotal': '0.00',
         'delivery_addresses': [],
         'new_address_url': '/_cart/new-address/',
         'payment_methods': [],
         'new_payment_method_url': '/_cart/new-payment-method/',
         'adjustments': [],
+        'new_adjustment_url': '/_cart/new-adjustment/',
         'grand_total': '0.00',
         'incomplete_reasons': [
             {
@@ -55,15 +57,17 @@ def test_empty_cart_logged_in(admin_client):
     resp = admin_client.get('/_cart/')
     data = loads(resp.content.decode('utf-8'))
     generated_at = data.pop('generated_at')
-    assert type(generated_at) == float
+    assert isinstance(generated_at, float)
     assert data == {
         'items': [],
         'new_item_url': '/_cart/new/',
+        'subtotal': '0.00',
         'delivery_addresses': [],
         'new_address_url': '/_cart/new-address/',
         'payment_methods': [],
         'new_payment_method_url': '/_cart/new-payment-method/',
         'adjustments': [],
+        'new_adjustment_url': '/_cart/new-adjustment/',
         'grand_total': '0.00',
         'incomplete_reasons': [
             {
@@ -138,11 +142,11 @@ def test_cart_contents_with_adjustment(client, cart):
                 ).quantize(Decimal('.01'), rounding=ROUND_DOWN)
     assert data['adjustments'] == [{
         'type': 'CartDiscount',
-        # 'url': '/_cart/adjustment/{}/'.format(i.id),
+        'url': '/_cart/adjustment/{}/'.format(i.id),
         'data': {
             'percentage': a.percentage,
         },
-        'total': str(discount)
+        'total': str(discount),
     }]
     assert data['grand_total'] == str(
         (i.product.unit_price * i.quantity) + discount)

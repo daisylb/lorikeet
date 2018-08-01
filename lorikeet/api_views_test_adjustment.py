@@ -31,6 +31,7 @@ def test_view_adjustment(client, cart):
             'percentage': a.percentage,
         },
         'total': '0.00',
+        'url': '/_cart/adjustment/{}/'.format(a.id),
     }
 
 
@@ -52,3 +53,13 @@ def test_delete_adjustment(client, cart):
     assert resp.status_code == 204
     with pytest.raises(smodels.CartDiscount.DoesNotExist):
         a.refresh_from_db()
+
+
+@pytest.mark.django_db
+def test_delete_unowned_adjustment(client, other_cart):
+    a = sfactories.CartDiscountFactory(cart=other_cart)
+
+    url = '/_cart/adjustment/{}/'.format(a.id)
+    resp = client.delete(url)
+    assert resp.status_code == 404
+    a.refresh_from_db()

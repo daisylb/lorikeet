@@ -151,6 +151,8 @@ class AddressOrPayment extends CartEntry {
  *     currently available to the user.
  * @property {AddressOrPayment[]} payment_methods All payment methods currently
  *     available to the user.
+ * @property {CartEntry[]} adjustments All adjustments currently applied to
+ *     the cart.
  */
 
 /**
@@ -173,6 +175,7 @@ class CartClient {
     this.addItem = this.addItem.bind(this)
     this.addAddress = this.addAddress.bind(this)
     this.addPaymentMethod = this.addPaymentMethod.bind(this)
+    this.addAdjustment = this.addAdjustment.bind(this)
     this.checkout = this.checkout.bind(this)
 
     this.cartUrl = cartUrl
@@ -230,6 +233,7 @@ class CartClient {
     cart.payment_methods = cart.payment_methods.map(
       x => new AddressOrPayment(this, x),
     )
+    cart.adjustments = cart.adjustments.map(x => new CartEntry(this, x))
 
     this.cart = cart
     this.cartListeners.forEach(x => setImmediate(x.bind(null, this.cart)))
@@ -286,13 +290,23 @@ class CartClient {
   }
 
   /**
-   * Add a delivery address to the shopping cart.
+   * Add a payment method to the shopping cart.
    * @param {string} type - Type of PaymentMethod to create
    * @param {object} data - Data that the corresponding PaymentMethod
    *     serializer is expecting.
    */
   addPaymentMethod(type, data) {
     return this.add(this.cart.new_payment_method_url, type, data)
+  }
+
+  /**
+   * Add an adjustment to the shopping cart.
+   * @param {string} type - Type of PaymentMethod to create
+   * @param {object} data - Data that the corresponding PaymentMethod
+   *     serializer is expecting.
+   */
+  addAdjustment(type, data) {
+    return this.add(this.cart.new_adjustment_url, type, data)
   }
 
   /**

@@ -10,6 +10,6 @@
     "babel-preset-react": "^6.16.0"
   },
   "scripts": {
-    "prepublish": "babel -d . js"
+    "prepare": "babel -d . js"
   }
 }
