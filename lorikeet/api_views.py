@@ -1,3 +1,4 @@
+from decimal import Decimal
 from logging import getLogger
 
 from django.db.transaction import atomic
@@ -14,13 +15,13 @@ logger = getLogger(__name__)
 
 class CartView(APIView):
 
-    def get(self, request, format=None):
+    def get(self, request, format=None):  # noqa
         cart = request.get_cart()
         data = api_serializers.CartSerializer(
             cart, context={'request': self.request}).data
         return Response(data)
 
-    def patch(self, request, format=None):
+    def patch(self, request, format=None):  # noqa
         cart = request.get_cart()
         ser = api_serializers.CartUpdateSerializer(instance=cart,
                                                    data=request.data,
@@ -172,7 +173,7 @@ class NewAdjustmentView(CreateAPIView):
 
 class CheckoutView(APIView):
 
-    def post(self, request, format=None):
+    def post(self, request, format=None):  # noqa
         try:
             with atomic():
                 # Prepare the order object
@@ -192,23 +193,43 @@ class CheckoutView(APIView):
                 # Check the cart is ready to be checked out
                 cart.is_complete(raise_exc=True, for_checkout=True)
 
-                # copy items onto order
-                for item in cart.items.select_subclasses().all():
+                items = tuple(cart.items.select_subclasses().all())
+                adjustments = tuple(cart.adjustments.select_subclasses().all())
+
+                # Calculate and store totals
+                running_total = Decimal(0)
+                for item in items:
                     total = item.get_total()
                     item.total_when_charged = total
+                    running_total += total
+
+                assert running_total == subtotal
+
+                for adj in adjustments:
+                    total = adj.get_total(subtotal)
+                    adj.total_when_charged = total
+                    running_total += total
+
+                assert running_total == grand_total
+
+                # Copy items and adjustments onto order
+                # We do this in a separate loop because some get_total()
+                # methods (especially on adjustments) might depend on
+                # the state of the rest of the cart, and if we call them
+                # on a half-empty cart, they might not return the
+                # correct result.
+                for item in items:
                     item.order = order
                     item.cart = None
-                    item._new_order = True
+                    item._new_order = True  # noqa
                     item.save()
                     item.prepare_for_checkout()
 
                 # copy adjustments onto order
-                for adj in cart.adjustments.select_subclasses().all():
-                    total = adj.get_total(subtotal)
-                    adj.total_when_charged = total
+                for adj in adjustments:
                     adj.order = order
                     adj.cart = None
-                    adj._new_order = True
+                    adj._new_order = True  # noqa
                     adj.save()
                     adj.prepare_for_checkout()
 
