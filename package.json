@@ -1,6 +1,6 @@
 {
   "name": "lorikeet",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "main": "index.js",
   "repository": "gitlab:abre/lorikeet",
   "files": ["index.js", "react.js"],
