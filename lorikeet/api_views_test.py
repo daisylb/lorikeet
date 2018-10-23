@@ -49,6 +49,8 @@ def test_empty_cart(client):
         'checkout_url': '/_cart/checkout/',
         'is_authenticated': False,
         'email': None,
+        'compatible_version': 2,
+        'incompatible_version': 1,
     }
 
 
@@ -90,6 +92,8 @@ def test_empty_cart_logged_in(admin_client):
         'checkout_url': '/_cart/checkout/',
         'is_authenticated': True,
         'email': None,
+        'compatible_version': 2,
+        'incompatible_version': 1,
     }
 
 

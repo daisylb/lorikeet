@@ -203,6 +203,8 @@ class CartSerializer(serializers.ModelSerializer):
     checkout_url = fields.SerializerMethodField()
     generated_at = fields.SerializerMethodField()
     email = fields.EmailField()
+    compatible_version = fields.SerializerMethodField()
+    incompatible_version = fields.SerializerMethodField()
 
     def get_new_item_url(self, _):
         return reverse('lorikeet:add-to-cart')
@@ -257,6 +259,12 @@ class CartSerializer(serializers.ModelSerializer):
     def get_checkout_url(self, _):
         return reverse('lorikeet:checkout')
 
+    def get_compatible_version(self, _):
+        return 2
+
+    def get_incompatible_version(self, _):
+        return 1
+
     class Meta:
         model = models.Cart
         fields = ('items', 'new_item_url', 'delivery_addresses',
@@ -264,7 +272,8 @@ class CartSerializer(serializers.ModelSerializer):
                   'new_payment_method_url', 'grand_total', 'generated_at',
                   'is_complete', 'incomplete_reasons', 'checkout_url',
                   'is_authenticated', 'email', 'adjustments',
-                  'new_adjustment_url', 'subtotal')
+                  'new_adjustment_url', 'subtotal', 'compatible_version',
+                  'incompatible_version')
 
 
 class CartUpdateSerializer(serializers.ModelSerializer):
