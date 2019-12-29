@@ -7,7 +7,7 @@ and you shouldn't use it in production yet.
 Lorikeet is a simple, generic, API-only shopping cart framework for
 Django.
 
-Lorikeet currently supports Django 1.8 to 1.10 on Python 3.4+. New versions of Lorikeet will support `Django versions that currently have extended support <https://www.djangoproject.com/download/#supported-versions>`_.
+Lorikeet currently supports Django 1.8 to 1.10 on Python 3.5+. New versions of Lorikeet will support `Django versions that currently have extended support <https://www.djangoproject.com/download/#supported-versions>`_.
 
 Why use Lorikeet?
 -----------------
