@@ -50,7 +50,7 @@ There's also ``addItem``, ``addAddress`` and ``addPaymentMethod`` methods, which
 
     client.addItem("MyLineItem", {product: 1, quantity: 2})
     client.addAddress("AustralianDeliveryAddress", {
-      addressee: "Adam Brenecki",
+      addressee: "Leigh Brenecki",
       address: "Commercial Motor Vehicles Pty Ltd\nLevel 1, 290 Wright St",
       suburb: "Adelaide", state: "SA", postcode: "5000",
     })

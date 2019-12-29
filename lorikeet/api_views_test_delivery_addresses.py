@@ -10,7 +10,7 @@ def test_add_delivery_address(client, cart):
     resp = client.post('/_cart/new-address/', dumps({
         'type': "AustralianDeliveryAddress",
         'data': {
-            'addressee': 'Adam Brenecki',
+            'addressee': 'Leigh Brenecki',
             'address': 'Commercial Motor Vehicles Pty Ltd\n'
                        'Level 1, 290 Wright Street',
             'suburb': 'Adelaide',
@@ -29,7 +29,7 @@ def test_add_delivery_address_logged_in(admin_user, admin_client, admin_cart):
     resp = admin_client.post('/_cart/new-address/', dumps({
         'type': "AustralianDeliveryAddress",
         'data': {
-            'addressee': 'Adam Brenecki',
+            'addressee': 'Leigh Brenecki',
             'address': 'Commercial Motor Vehicles Pty Ltd\n'
                        'Level 1, 290 Wright Street',
             'suburb': 'Adelaide',

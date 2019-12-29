@@ -60,7 +60,7 @@ import django
 
 copyright = '2016–{:%Y}, Commercial Motor Vehicles Pty Ltd'.format(
     date.today())
-author = 'Adam Brenecki'
+author = 'Leigh Brenecki'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -140,7 +140,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Lorikeet.tex', 'Lorikeet Documentation',
-     'Adam Brenecki', 'manual'),
+     'Leigh Brenecki', 'manual'),
 ]
 
 
