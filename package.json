@@ -2,7 +2,7 @@
   "name": "lorikeet",
   "version": "0.1.10",
   "main": "index.js",
-  "repository": "gitlab:abre/lorikeet",
+  "repository": "github:excitedleigh/lorikeet",
   "files": ["index.js", "react.js"],
   "devDependencies": {
     "babel-cli": "^6.18.0",

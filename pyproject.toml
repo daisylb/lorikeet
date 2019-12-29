@@ -9,7 +9,7 @@ authors = ["Adam Brenecki <adam@brenecki.id.au>"]
 license = "MIT"
 readme = "README.rst"
 homepage = "https://lorikeet.readthedocs.io/"
-repository = "https://gitlab.com/abre/lorikeet"
+repository = "https://github.com/excitedleigh/lorikeet"
 
 [tool.poetry.dependencies]
 python = ">=3.4"

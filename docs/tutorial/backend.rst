@@ -109,7 +109,7 @@ Now that Lorikeet knows about the things you're selling, it needs to know where 
 
 .. note::
 
-    There are `plans to eventually add an optional pre-built postal addressing plugin <https://gitlab.com/abre/lorikeet/issues/2>`_, which will mean you'll be able to skip this section in the future if you're delivering to postal addresses.
+    There are `plans to eventually add an optional pre-built postal addressing plugin <https://github.com/excitedleigh/lorikeet/issues/1>`_, which will mean you'll be able to skip this section in the future if you're delivering to postal addresses.
 
 Just like with line items, we need a model subclassing :class:`lorikeet.models.DeliveryAddress`, a serializer, and a ``registry.register`` call to connect the two. Delivery addresses are even eaiser, though; there's no special methods you need to define.
 
