@@ -11,3 +11,4 @@ testproject/db.sqlite3
 .pytest_cache
 .python-version
 .env
+.nox
