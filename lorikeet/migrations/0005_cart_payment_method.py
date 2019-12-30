@@ -9,13 +9,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lorikeet', '0004_auto_20161220_1431'),
+        ("lorikeet", "0004_auto_20161220_1431"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='cart',
-            name='payment_method',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='lorikeet.PaymentMethod'),
+            model_name="cart",
+            name="payment_method",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="lorikeet.PaymentMethod",
+            ),
         ),
     ]

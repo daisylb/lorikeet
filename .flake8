@@ -1,2 +1,4 @@
 [flake8]
 max_line_length = 88
+ignore =
+    E501, # max line length exceeded (this is usually a URL, and we have Black for this)

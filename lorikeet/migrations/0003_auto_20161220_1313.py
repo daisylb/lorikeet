@@ -8,12 +8,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lorikeet', '0002_auto_20161213_1158'),
+        ("lorikeet", "0002_auto_20161213_1158"),
     ]
 
     operations = [
-        migrations.AlterModelOptions(
-            name='lineitem',
-            options={'ordering': ('id',)},
-        ),
+        migrations.AlterModelOptions(name="lineitem", options={"ordering": ("id",)},),
     ]

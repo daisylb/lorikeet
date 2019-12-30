@@ -17,24 +17,24 @@ def test_default_check_fails_cart_empty(cart):
     assert not result
     assert cart.errors.to_json() == [
         {
-            'code': 'not_set',
-            'field': 'delivery_address',
-            'message': 'A delivery address is required.',
+            "code": "not_set",
+            "field": "delivery_address",
+            "message": "A delivery address is required.",
         },
         {
-            'code': 'not_set',
-            'field': 'payment_method',
-            'message': 'A payment method is required.',
+            "code": "not_set",
+            "field": "payment_method",
+            "message": "A payment method is required.",
         },
         {
-            'code': 'empty',
-            'field': 'items',
-            'message': 'There are no items in the cart.',
+            "code": "empty",
+            "field": "items",
+            "message": "There are no items in the cart.",
         },
         {
-            'code': 'not_set',
-            'field': 'email',
-            'message': 'An email address is required.',
+            "code": "not_set",
+            "field": "email",
+            "message": "An email address is required.",
         },
     ]
 

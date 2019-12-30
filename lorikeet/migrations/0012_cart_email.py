@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lorikeet', '0011_lineitem_total_when_charged'),
+        ("lorikeet", "0011_lineitem_total_when_charged"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='cart',
-            name='email',
+            model_name="cart",
+            name="email",
             field=models.EmailField(blank=True, max_length=254, null=True),
         ),
     ]

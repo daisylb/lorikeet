@@ -7,8 +7,7 @@ from django.utils.module_loading import import_string
 from django.utils.timezone import now
 from model_utils.managers import InheritanceManager
 
-from . import exceptions
-from . import settings as lorikeet_settings
+from . import exceptions, settings as lorikeet_settings
 
 
 class Cart(models.Model):
@@ -18,13 +17,17 @@ class Cart(models.Model):
     the session otherwise; in either case it can be accessed on
     ``request.cart``.
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             blank=True, null=True, on_delete=models.PROTECT)
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.PROTECT
+    )
     email = models.EmailField(blank=True, null=True)
     delivery_address = models.ForeignKey(
-        'lorikeet.DeliveryAddress', blank=True, null=True, on_delete=models.PROTECT)
+        "lorikeet.DeliveryAddress", blank=True, null=True, on_delete=models.PROTECT
+    )
     payment_method = models.ForeignKey(
-        'lorikeet.PaymentMethod', blank=True, null=True, on_delete=models.PROTECT)
+        "lorikeet.PaymentMethod", blank=True, null=True, on_delete=models.PROTECT
+    )
 
     def get_subtotal(self):
         """Calculate the subtotal for this cart.
@@ -32,12 +35,17 @@ class Cart(models.Model):
         This returns the sum of all of the item totals, but does not
         include any adjustments applied to the cart.
         """
-        return sum((x.get_total() for x in self.items.select_subclasses().all()), Decimal(0))
+        return sum(
+            (x.get_total() for x in self.items.select_subclasses().all()), Decimal(0)
+        )
 
     def get_grand_total(self):
         """Calculate the grand total for this cart."""
         subtotal = self.get_subtotal()
-        return subtotal + sum((x.get_total(subtotal) for x in self.adjustments.select_subclasses().all()), Decimal(0))
+        return subtotal + sum(
+            (x.get_total(subtotal) for x in self.adjustments.select_subclasses().all()),
+            Decimal(0),
+        )
 
     @property
     def delivery_address_subclass(self):
@@ -47,8 +55,7 @@ class Cart(models.Model):
         :class:`~lorikeet.models.DeliveryAddress` subclasses.
         """
         if self.delivery_address_id is not None:
-            return DeliveryAddress.objects.get_subclass(
-                id=self.delivery_address_id)
+            return DeliveryAddress.objects.get_subclass(id=self.delivery_address_id)
         return None
 
     @property
@@ -59,8 +66,7 @@ class Cart(models.Model):
         :class:`~lorikeet.models.PaymentMethod` subclasses.
         """
         if self.payment_method_id is not None:
-            return PaymentMethod.objects.get_subclass(
-                id=self.payment_method_id)
+            return PaymentMethod.objects.get_subclass(id=self.payment_method_id)
         return None
 
     def is_complete(self, raise_exc=False, for_checkout=False):
@@ -79,7 +85,7 @@ class Cart(models.Model):
         """
 
         # Use the .errors attribute to effectively memoize this function
-        if not hasattr(self, 'errors'):
+        if not hasattr(self, "errors"):
             self.errors = exceptions.IncompleteCartErrorSet()
 
             for checker in lorikeet_settings.LORIKEET_CART_COMPLETE_CHECKERS:
@@ -110,15 +116,20 @@ class Cart(models.Model):
 class Order(models.Model):
     """A completed, paid order.
     """
+
     custom_invoice_id = models.CharField(
-        max_length=255, blank=True, null=True, default=None, unique=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             blank=True, null=True, on_delete=models.PROTECT)
+        max_length=255, blank=True, null=True, default=None, unique=True
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.PROTECT
+    )
     guest_email = models.EmailField(blank=True, null=True)
     payment = models.ForeignKey(
-        'lorikeet.Payment', blank=True, null=True, on_delete=models.PROTECT)
+        "lorikeet.Payment", blank=True, null=True, on_delete=models.PROTECT
+    )
     delivery_address = models.ForeignKey(
-        'lorikeet.DeliveryAddress', blank=True, null=True, on_delete=models.PROTECT)
+        "lorikeet.DeliveryAddress", blank=True, null=True, on_delete=models.PROTECT
+    )
     grand_total = models.DecimalField(max_digits=7, decimal_places=2)
     purchased_on = models.DateTimeField(default=now)
 
@@ -143,8 +154,7 @@ class Order(models.Model):
         :class:`~lorikeet.models.DeliveryAddress` subclasses.
         """
         if self.delivery_address_id is not None:
-            return DeliveryAddress.objects.get_subclass(
-                id=self.delivery_address_id)
+            return DeliveryAddress.objects.get_subclass(id=self.delivery_address_id)
         return None
 
     @property
@@ -154,8 +164,7 @@ class Order(models.Model):
         Returns an instance of one of the registered
         :class:`~lorikeet.models.DeliveryAddress` subclasses.
         """
-        return PaymentMethod.objects.get_subclass(
-            id=self.payment.method_id)
+        return PaymentMethod.objects.get_subclass(id=self.payment.method_id)
 
     @property
     def payment_subclass(self):
@@ -164,8 +173,7 @@ class Order(models.Model):
         Returns an instance of one of the registered
         :class:`~lorikeet.models.PaymentMethod` subclasses.
         """
-        return Payment.objects.get_subclass(
-            id=self.payment_id)
+        return Payment.objects.get_subclass(id=self.payment_id)
 
     def get_absolute_url(self, token=False):
         """Get the absolute URL of an order details view.
@@ -178,11 +186,13 @@ class Order(models.Model):
         setting.
         """
         if lorikeet_settings.LORIKEET_ORDER_DETAIL_VIEW:
-            url = reverse(lorikeet_settings.LORIKEET_ORDER_DETAIL_VIEW,
-                          kwargs={'id': self.id})
+            url = reverse(
+                lorikeet_settings.LORIKEET_ORDER_DETAIL_VIEW, kwargs={"id": self.id}
+            )
             if token:
                 url = "{}?token={}".format(
-                    url, lorikeet_settings.order_url_signer.sign(str(self.id)))
+                    url, lorikeet_settings.order_url_signer.sign(str(self.id))
+                )
             return url
 
         return None
@@ -194,16 +204,19 @@ class PaymentMethod(models.Model):
     This model doesn't do anything by itself; you'll need to subclass it as
     described in the :doc:`Getting Started Guide <backend>`.
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             blank=True, null=True, on_delete=models.CASCADE)
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE
+    )
     active = models.BooleanField(default=True)
 
     objects = InheritanceManager()
 
     def make_payment(self, order, amount):
-        raise NotImplementedError("Provide a make_payment method in your "
-                                  "PaymentMethod subclass {}.".format(
-                                      self.__class__.__name__))
+        raise NotImplementedError(
+            "Provide a make_payment method in your "
+            "PaymentMethod subclass {}.".format(self.__class__.__name__)
+        )
 
     def assign_to_user(self, user):
         self.user = user
@@ -219,8 +232,14 @@ class DeliveryAddress(models.Model):
     This model doesn't do anything by itself; you'll need to subclass it as
     described in the :doc:`Getting Started Guide <backend>`.
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True,
-                             related_name='delivery_addresses', on_delete=models.CASCADE)
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        related_name="delivery_addresses",
+        on_delete=models.CASCADE,
+    )
     active = models.BooleanField(default=True)
 
     objects = InheritanceManager()
@@ -232,19 +251,23 @@ class LineItem(models.Model):
     This model doesn't do anything by itself; you'll need to subclass it as
     described in the :doc:`Getting Started Guide <backend>`.
     """
-    cart = models.ForeignKey(Cart, related_name='items',
-                             blank=True, null=True, on_delete=models.PROTECT)
+
+    cart = models.ForeignKey(
+        Cart, related_name="items", blank=True, null=True, on_delete=models.PROTECT
+    )
     order = models.ForeignKey(
-        Order, related_name='items', blank=True, null=True, on_delete=models.CASCADE)
-    total_when_charged = models.DecimalField(max_digits=7, decimal_places=2,
-                                             blank=True, null=True)
+        Order, related_name="items", blank=True, null=True, on_delete=models.CASCADE
+    )
+    total_when_charged = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True
+    )
 
     objects = InheritanceManager()
 
     class Meta:
         # Because IDs auto increment, ordering by ID has the same effect as
         # ordering by date added, but we don't have to store the date
-        ordering = ('id',)
+        ordering = ("id",)
 
     @property
     def total(self):
@@ -268,11 +291,13 @@ class LineItem(models.Model):
         code, use the :func:`~lorikeet.models.LineItem.total` property
         rather than calling this function.
         """
-        raise NotImplementedError("Provide a get_total method in your LineItem "
-                                  "subclass {}.".format(self.__class__.__name__))
+        raise NotImplementedError(
+            "Provide a get_total method in your LineItem "
+            "subclass {}.".format(self.__class__.__name__)
+        )
 
     def save(self, *args, **kwargs):
-        if self.order is not None and not getattr(self, '_new_order'):
+        if self.order is not None and not getattr(self, "_new_order"):
             raise ValueError("Cannot modify a cart item attached to an order.")
         return super().save(*args, **kwargs)
 
@@ -325,12 +350,24 @@ class Adjustment(models.Model):
 
     This model doesn't do anything by itself; you'll need to subclass it.
     """
+
     cart = models.ForeignKey(
-        Cart, related_name='adjustments', blank=True, null=True, on_delete=models.CASCADE)
+        Cart,
+        related_name="adjustments",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
     order = models.ForeignKey(
-        Order, related_name='adjustments', blank=True, null=True, on_delete=models.CASCADE)
-    total_when_charged = models.DecimalField(max_digits=7, decimal_places=2,
-                                             blank=True, null=True)
+        Order,
+        related_name="adjustments",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
+    total_when_charged = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True, null=True
+    )
 
     objects = InheritanceManager()
 
@@ -364,9 +401,10 @@ class Adjustment(models.Model):
             discount.
         :rtype: decimal.Decimal
         """
-        raise NotImplementedError("Provide a get_total method in your "
-                                  "Adjustment subclass {}."
-                                  .format(self.__class__.__name__))
+        raise NotImplementedError(
+            "Provide a get_total method in your "
+            "Adjustment subclass {}.".format(self.__class__.__name__)
+        )
 
     def check_complete(self, for_checkout=False):
         """Checks that this adjustment is ready to be checked out.

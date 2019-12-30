@@ -15,7 +15,8 @@ def lorikeet_cart(context):
     :http:get:`/_cart/`. Requires that the current request be in the
     template's context.
     """
-    cart = context['request'].get_cart()
+    cart = context["request"].get_cart()
     data = api_serializers.CartSerializer(
-        cart, context={'request': context['request']}).data
+        cart, context={"request": context["request"]}
+    ).data
     return dumps(data)

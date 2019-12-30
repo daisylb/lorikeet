@@ -8,18 +8,14 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('stripe', '0002_stripepayment'),
+        ("stripe", "0002_stripepayment"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='stripecard',
-            old_name='card_token',
-            new_name='card_id',
+            model_name="stripecard", old_name="card_token", new_name="card_id",
         ),
         migrations.RenameField(
-            model_name='stripecard',
-            old_name='customer_token',
-            new_name='customer_id',
+            model_name="stripecard", old_name="customer_token", new_name="customer_id",
         ),
     ]

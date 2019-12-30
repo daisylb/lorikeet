@@ -10,7 +10,7 @@ from .settings import order_url_signer
 
 logger = logging.getLogger(__name__)
 
-ORDER_SESSION_KEY_TEMPLATE = 'lorikeet-order-{}-access'
+ORDER_SESSION_KEY_TEMPLATE = "lorikeet-order-{}-access"
 
 
 class OrderDetailView(DetailView):
@@ -24,9 +24,9 @@ class OrderDetailView(DetailView):
         # https://robots.thoughtbot.com/is-your-site-leaking-password-reset-links
         # This token is not quite as high-value as a password reset token,
         # but we should probably do the right thing anyway.
-        if 'token' in request.GET:
+        if "token" in request.GET:
             new_query = request.GET.copy()
-            token = new_query.pop('token')
+            token = new_query.pop("token")
             try:
                 order_id = order_url_signer.unsign(token[0])
             except BadSignature:
@@ -40,25 +40,22 @@ class OrderDetailView(DetailView):
                 request.session[session_key] = True
 
             if new_query:
-                return HttpResponseRedirect('{}?{}'.format(
-                    request.path, new_query.urlencode()
-                ))
+                return HttpResponseRedirect(
+                    "{}?{}".format(request.path, new_query.urlencode())
+                )
 
             return HttpResponseRedirect(request.path)
 
         return super().get(request, *args, **kwargs)
 
     def get_object(self):
-        the_id = self.kwargs['id']
+        the_id = self.kwargs["id"]
         session_key = ORDER_SESSION_KEY_TEMPLATE.format(the_id)
         if session_key in self.request.session:
             return models.Order.objects.get(id=the_id)
 
         if self.request.user.is_authenticated:
-            return models.Order.objects.get(
-                user=self.request.user,
-                id=the_id,
-            )
+            return models.Order.objects.get(user=self.request.user, id=the_id,)
 
         raise Http404()
 
@@ -67,5 +64,4 @@ class OrderListView(LoginRequiredMixin, ListView):
     """A view that displays a list of orders belonging to a user."""
 
     def get_queryset(self):
-        return models.Order.objects.filter(
-            user=self.request.user).order_by('-id')
+        return models.Order.objects.filter(user=self.request.user).order_by("-id")

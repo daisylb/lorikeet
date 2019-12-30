@@ -8,14 +8,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lorikeet', '0010_order_grand_total'),
+        ("lorikeet", "0010_order_grand_total"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lineitem',
-            name='total_when_charged',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True),
+            model_name="lineitem",
+            name="total_when_charged",
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=7, null=True
+            ),
         ),
         # migrations.RunSQL(["""
         #     ALTER TABLE lorikeet_lineitem

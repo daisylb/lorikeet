@@ -9,29 +9,64 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lorikeet', '0005_cart_payment_method'),
-        ('shop', '0001_initial'),
+        ("lorikeet", "0005_cart_payment_method"),
+        ("shop", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AustralianDeliveryAddress',
+            name="AustralianDeliveryAddress",
             fields=[
-                ('deliveryaddress_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='lorikeet.DeliveryAddress')),
-                ('addressee', models.CharField(max_length=255)),
-                ('address', models.TextField()),
-                ('suburb', models.CharField(max_length=255)),
-                ('state', models.CharField(choices=[('NSW', 'New South Wales'), ('VIC', 'Victoria'), ('QLD', 'Queensland'), ('WA', 'Western Australia'), ('SA', 'South Australia'), ('TAS', 'Tasmania'), ('ACT', 'Australian Capital Territory'), ('NT', 'Northern Territory')], max_length=3)),
-                ('postcode', models.CharField(max_length=4)),
+                (
+                    "deliveryaddress_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="lorikeet.DeliveryAddress",
+                    ),
+                ),
+                ("addressee", models.CharField(max_length=255)),
+                ("address", models.TextField()),
+                ("suburb", models.CharField(max_length=255)),
+                (
+                    "state",
+                    models.CharField(
+                        choices=[
+                            ("NSW", "New South Wales"),
+                            ("VIC", "Victoria"),
+                            ("QLD", "Queensland"),
+                            ("WA", "Western Australia"),
+                            ("SA", "South Australia"),
+                            ("TAS", "Tasmania"),
+                            ("ACT", "Australian Capital Territory"),
+                            ("NT", "Northern Territory"),
+                        ],
+                        max_length=3,
+                    ),
+                ),
+                ("postcode", models.CharField(max_length=4)),
             ],
-            bases=('lorikeet.deliveryaddress',),
+            bases=("lorikeet.deliveryaddress",),
         ),
         migrations.CreateModel(
-            name='PipeCard',
+            name="PipeCard",
             fields=[
-                ('paymentmethod_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='lorikeet.PaymentMethod')),
-                ('card_id', models.CharField(max_length=30)),
+                (
+                    "paymentmethod_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="lorikeet.PaymentMethod",
+                    ),
+                ),
+                ("card_id", models.CharField(max_length=30)),
             ],
-            bases=('lorikeet.paymentmethod',),
+            bases=("lorikeet.paymentmethod",),
         ),
     ]

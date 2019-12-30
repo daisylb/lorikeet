@@ -26,10 +26,13 @@ class StarShipItOrder(models.Model):
         if cached_status is not None:
             return cached_status
 
-        status = requests.get('https://api2.starshipit.com/tracking', params={
-            'apikey': settings.STARSHIPIT_API_KEY,
-            'OrderNumber': self.order.invoice_id,
-            'format': 'json',
-        }).json()
+        status = requests.get(
+            "https://api2.starshipit.com/tracking",
+            params={
+                "apikey": settings.STARSHIPIT_API_KEY,
+                "OrderNumber": self.order.invoice_id,
+                "format": "json",
+            },
+        ).json()
         cache.set(cache_key, status, 300)
         return status

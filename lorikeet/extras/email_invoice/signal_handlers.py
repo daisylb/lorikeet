@@ -18,27 +18,27 @@ def send_email_invoice(sender, order, request, **kwargs):
     recipient = order.user.email if order.user else order.guest_email
 
     if recipient is None:
-        return {'invoice_email': None}
+        return {"invoice_email": None}
 
     ctx = {
-        'order': order,
-        'order_url': request.build_absolute_uri(order.get_absolute_url(token=True)),
+        "order": order,
+        "order_url": request.build_absolute_uri(order.get_absolute_url(token=True)),
     }
     mail_kwargs = {}
     if settings.template_html:
         html = render_to_string(settings.template_html, ctx)
         html = transform(html, base_url=request.build_absolute_uri())
-        mail_kwargs['html_message'] = html
+        mail_kwargs["html_message"] = html
 
     if settings.template_text:
         text = render_to_string(settings.template_text, ctx)
-        mail_kwargs['message'] = text
+        mail_kwargs["message"] = text
     elif settings.template_html:
-        mail_kwargs['message'] = textify.transform(html)
+        mail_kwargs["message"] = textify.transform(html)
     else:
         raise ValueError("No HTML or text template set")
 
-    logger.debug('Sending an invoice email to %s', recipient)
+    logger.debug("Sending an invoice email to %s", recipient)
     send_mail(
         subject=subject,
         from_email=settings.from_address,
@@ -53,4 +53,4 @@ def send_email_invoice(sender, order, request, **kwargs):
             **mail_kwargs
         )
 
-    return {'invoice_email': recipient}
+    return {"invoice_email": recipient}

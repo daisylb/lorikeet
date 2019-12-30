@@ -8,10 +8,9 @@ from . import models
 def merge_carts(sender, user, request, **kwargs):
     # Try to find the session's cart. If there isn't one, we return;
     # there's nothing to merge.
-    if 'cart_id' in request.session:
+    if "cart_id" in request.session:
         try:
-            session_cart = models.Cart.objects.get(
-                id=request.session['cart_id'])
+            session_cart = models.Cart.objects.get(id=request.session["cart_id"])
         except models.Cart.DoesNotExist:
             return
     else:
@@ -47,5 +46,5 @@ def merge_carts(sender, user, request, **kwargs):
 
         user_cart.save()
         session_cart.delete()
-        del request.session['cart_id']
+        del request.session["cart_id"]
         request._cart = user_cart
