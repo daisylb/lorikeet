@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lorikeet"
-version = "0.1.10"
+version = "0.2.0"
 # Don't forget to also change the version in:
 # - package.json
 # - docs/conf.py
