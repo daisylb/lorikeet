@@ -15,4 +15,5 @@ def tests(session, django):
                 # its own virtualenv
                 env={'VIRTUAL_ENV': session.virtualenv.location})
     session.install(f'django>={django},<{django}.999')
-    session.run('pytest', *session.posargs, env={'STRIPE_API_KEY': environ['STRIPE_API_KEY']})
+    test_env = {'STRIPE_API_KEY': environ['STRIPE_API_KEY']} if 'STRIPE_API_KEY' in environ else {}
+    session.run('pytest', *session.posargs, env=test_env)
