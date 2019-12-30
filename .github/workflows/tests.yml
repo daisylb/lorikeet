@@ -5,6 +5,18 @@ jobs:
     name: Run tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@1.0.0
-      - uses: excitedleigh/setup-nox@0.1.0
-      - run: nox
+      - name: Check out
+        uses: actions/checkout@v1
+      - name: Cache Nox virtualenvs
+        uses: actions/cache@v1
+        with:
+            path: .nox
+            key: ${{ runner.os }}-nox-${{ hashFiles('poetry.lock') }}
+            restore-keys: |
+            ${{ runner.os }}-nox-${{ env.cache-name }}-
+            ${{ runner.os }}-nox-
+            ${{ runner.os }}-
+      - name: Set up Nox
+        uses: excitedleigh/setup-nox@0.1.0
+      - name: Run tests
+        run: nox
