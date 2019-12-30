@@ -16,9 +16,9 @@ python = ">=3.5"
 django = ">=1.8,<=2.2"
 django-model-utils = "^3.2"
 djangorestframework = "^3.10"
-stripe = {version = "^1.44.0", optional = true}
-premailer = {version = "^3.0.1", optional = true}
-requests = {version = "^2.13.0", optional = true}
+stripe = {version = "^2.41", optional = true}
+premailer = {version = "^3.6", optional = true}
+requests = {version = "^2.21", optional = true}
 
 [tool.poetry.dev-dependencies]
 sphinx = "~1.5.1"
