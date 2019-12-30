@@ -13,9 +13,9 @@ jobs:
             path: .nox
             key: ${{ runner.os }}-nox-${{ hashFiles('poetry.lock') }}
             restore-keys: |
-            ${{ runner.os }}-nox-${{ env.cache-name }}-
-            ${{ runner.os }}-nox-
-            ${{ runner.os }}-
+                ${{ runner.os }}-nox-${{ env.cache-name }}-
+                ${{ runner.os }}-nox-
+                ${{ runner.os }}-
       - name: Set up Nox
         uses: excitedleigh/setup-nox@0.1.0
       - name: Run tests
