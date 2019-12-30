@@ -36,3 +36,7 @@ pytest-pythonpath = "^0.7.3"
 stripe = ["stripe"]
 email_invoice = ["premailer"]
 starshipit = ["requests"]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
