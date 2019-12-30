@@ -4,7 +4,6 @@
 /*.js
 
 node_modules
-.tox
 docs/_build
 jsdoc/
 testproject/db.sqlite3
