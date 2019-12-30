@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.urls import reverse
 from django.utils.module_loading import import_string
@@ -186,9 +185,7 @@ class Order(models.Model):
                     url, lorikeet_settings.order_url_signer.sign(str(self.id)))
             return url
 
-        # If we make it here we haven't configured a detail view
-        raise ImproperlyConfigured(
-            "Django setting LORIKEET_ORDER_DETAIL_VIEW has not been set.")
+        return None
 
 
 class PaymentMethod(models.Model):
