@@ -9,3 +9,5 @@ docs/_build
 jsdoc/
 testproject/db.sqlite3
 .pytest_cache
+.python-version
+.env

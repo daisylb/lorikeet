@@ -4,7 +4,7 @@ Email Invoicing
 Installation
 ------------
 
-1. Make sure Lorikeet is installed with the ``email_invoice`` extra, by running ``pip install https://gitlab.com/abre/lorikeet.git[email_invoice]``.
+1. Make sure Lorikeet is installed with the ``email_invoice`` extra, by running ``pip install https://github.com/excitedleigh/lorikeet.git[email_invoice]``.
 2. Add ``'lorikeet.extras.email_invoice'`` to your ``INSTALLED_APPS``.
 3. Set the ``LORIKEET_EMAIL_INVOICE_SUBJECT`` variable in ``settings.py`` to a subject line.
 3. Set the ``LORIKEET_EMAIL_INVOICE_TEMPLATE_HTML`` variable in ``settings.py`` to a HTML template.

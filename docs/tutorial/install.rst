@@ -1,7 +1,7 @@
 Installation
 ============
 
-This tutorial assumes you have an existing Django project set up. If you don't, you can create one with `startproject <https://docs.djangoproject.com/en/1.10/ref/django-admin/#startproject>`_.
+This tutorial assumes you have an existing Django project set up. If you don't, you can create one with `startproject <https://docs.djangoproject.com/en/2.2/ref/django-admin/#startproject>`_.
 
 1. Install Lorikeet, by running ``pip install lorikeet``.
 2. Add ``'lorikeet'`` to ``INSTALLED_APPS``.

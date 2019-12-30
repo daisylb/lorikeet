@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from . import api_views
 
+app_name = 'lorikeet'
+
 urlpatterns = [
     url(r'^$', api_views.CartView.as_view(), name='cart'),
     url(r'^(?P<id>\d+)/$', api_views.CartItemView.as_view(), name='cart-item'),

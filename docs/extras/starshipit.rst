@@ -10,7 +10,7 @@ This integration posts orders to `StarShipIT <http://www.starshipit.com/>`_, a c
 Installation
 ------------
 
-1. Make sure Lorikeet is installed with the ``starshipit`` extra, by running ``pip install https://gitlab.com/abre/lorikeet.git[starshipit]``.
+1. Make sure Lorikeet is installed with the ``starshipit`` extra, by running ``pip install https://github.com/excitedleigh/lorikeet.git[starshipit]``.
 2. Add ``'lorikeet.extras.starshipit'`` to your ``INSTALLED_APPS``.
 3. Set the ``STARSHIPIT_API_KEY`` variable in ``settings.py`` to your `StarShipIT API key <https://app.shipit.click/Members/Settings/API.aspx>`_.
 4. Configure your site to call ``lorikeet.extras.starshipit.submit.submit_orders()`` periodically (using e.g. a management command, django-cron or Celery Beat). If you're using Celery, there's a task at ``lorikeet.extras.starshipit.tasks.submit_orders`` that you can add to your ``CELERYBEAT_SCHEDULE``.

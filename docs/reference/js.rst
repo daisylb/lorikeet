@@ -8,7 +8,7 @@ It supports IE11, the latest versions of Safari, Edge and Firefox, and the two l
 Installation
 ------------
 
-The JavaScript component of Lorikeet can be installed via NPM (to be used with a bundler like Webpack). In the future, it will also be provided as a CDN-hosted file you can reference in a ``<script>`` tag. To install it, run ``npm install https://gitlab.com/abre/lorikeet``.
+The JavaScript component of Lorikeet can be installed via NPM (to be used with a bundler like Webpack). In the future, it will also be provided as a CDN-hosted file you can reference in a ``<script>`` tag. To install it, run ``npm install https://github.com/excitedleigh/lorikeet``.
 
 Usage
 -----

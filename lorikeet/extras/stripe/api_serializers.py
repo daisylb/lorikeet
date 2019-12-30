@@ -28,11 +28,11 @@ class StripeCardSerializer(serializers.ModelSerializer):
         model = models.StripeCard
         fields = ('token', 'reusable', 'brand', 'last4')
 
-    def get_brand(self, object):
-        return object.data['brand']
+    def get_brand(self, obj):
+        return obj.data['brand']
 
-    def get_last4(self, object):
-        return object.data['last4']
+    def get_last4(self, obj):
+        return obj.data['last4']
 
     def create(self, validated_data):
         request = self.context['request']
@@ -42,7 +42,7 @@ class StripeCardSerializer(serializers.ModelSerializer):
             customer = None
 
             try:
-                if request.user.is_authenticated():
+                if request.user.is_authenticated:
                     first_card = models.StripeCard.objects.filter(
                         user=request.user,
                         customer_id__isnull=False,

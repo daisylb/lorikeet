@@ -43,8 +43,8 @@ class OrderDetailView(DetailView):
                 return HttpResponseRedirect('{}?{}'.format(
                     request.path, new_query.urlencode()
                 ))
-            else:
-                return HttpResponseRedirect(request.path)
+
+            return HttpResponseRedirect(request.path)
 
         return super().get(request, *args, **kwargs)
 
@@ -53,13 +53,14 @@ class OrderDetailView(DetailView):
         session_key = ORDER_SESSION_KEY_TEMPLATE.format(the_id)
         if session_key in self.request.session:
             return models.Order.objects.get(id=the_id)
-        elif self.request.user.is_authenticated():
+
+        if self.request.user.is_authenticated:
             return models.Order.objects.get(
                 user=self.request.user,
                 id=the_id,
             )
-        else:
-            raise Http404()
+
+        raise Http404()
 
 
 class OrderListView(LoginRequiredMixin, ListView):
