@@ -14,8 +14,8 @@ repository = "https://github.com/excitedleigh/lorikeet"
 [tool.poetry.dependencies]
 python = ">=3.5"
 django = ">=1.8,<=2.2"
-django-model-utils = "^2.6"
-djangorestframework = "~3.5.3"
+django-model-utils = "^3.2"
+djangorestframework = "^3.10"
 stripe = {version = "^1.44.0", optional = true}
 premailer = {version = "^3.0.1", optional = true}
 requests = {version = "^2.13.0", optional = true}
@@ -28,6 +28,7 @@ sphinxcontrib_httpdomain = "^1.5.0"
 factory-boy = "^2.11"
 tox = "^3.1"
 pre-commit = "^1.20.0"
+prospector = "^1.2.0"
 
 [tool.poetry.extras]
 stripe = ["stripe"]

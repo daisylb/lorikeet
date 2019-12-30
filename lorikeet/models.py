@@ -1,8 +1,9 @@
 from decimal import Decimal
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.urls import reverse
 from django.utils.module_loading import import_string
 from django.utils.timezone import now
 from model_utils.managers import InheritanceManager
@@ -18,12 +19,13 @@ class Cart(models.Model):
     the session otherwise; in either case it can be accessed on
     ``request.cart``.
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             blank=True, null=True, on_delete=models.PROTECT)
     email = models.EmailField(blank=True, null=True)
     delivery_address = models.ForeignKey(
-        'lorikeet.DeliveryAddress', blank=True, null=True)
+        'lorikeet.DeliveryAddress', blank=True, null=True, on_delete=models.PROTECT)
     payment_method = models.ForeignKey(
-        'lorikeet.PaymentMethod', blank=True, null=True)
+        'lorikeet.PaymentMethod', blank=True, null=True, on_delete=models.PROTECT)
 
     def get_subtotal(self):
         """Calculate the subtotal for this cart.
@@ -48,6 +50,7 @@ class Cart(models.Model):
         if self.delivery_address_id is not None:
             return DeliveryAddress.objects.get_subclass(
                 id=self.delivery_address_id)
+        return None
 
     @property
     def payment_method_subclass(self):
@@ -59,6 +62,7 @@ class Cart(models.Model):
         if self.payment_method_id is not None:
             return PaymentMethod.objects.get_subclass(
                 id=self.payment_method_id)
+        return None
 
     def is_complete(self, raise_exc=False, for_checkout=False):
         """Determine if this cart is able to be checked out.
@@ -109,11 +113,13 @@ class Order(models.Model):
     """
     custom_invoice_id = models.CharField(
         max_length=255, blank=True, null=True, default=None, unique=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             blank=True, null=True, on_delete=models.PROTECT)
     guest_email = models.EmailField(blank=True, null=True)
-    payment = models.ForeignKey('lorikeet.Payment', blank=True, null=True)
+    payment = models.ForeignKey(
+        'lorikeet.Payment', blank=True, null=True, on_delete=models.PROTECT)
     delivery_address = models.ForeignKey(
-        'lorikeet.DeliveryAddress', blank=True, null=True)
+        'lorikeet.DeliveryAddress', blank=True, null=True, on_delete=models.PROTECT)
     grand_total = models.DecimalField(max_digits=7, decimal_places=2)
     purchased_on = models.DateTimeField(default=now)
 
@@ -140,6 +146,7 @@ class Order(models.Model):
         if self.delivery_address_id is not None:
             return DeliveryAddress.objects.get_subclass(
                 id=self.delivery_address_id)
+        return None
 
     @property
     def payment_method_subclass(self):
@@ -179,6 +186,10 @@ class Order(models.Model):
                     url, lorikeet_settings.order_url_signer.sign(str(self.id)))
             return url
 
+        # If we make it here we haven't configured a detail view
+        raise ImproperlyConfigured(
+            "Django setting LORIKEET_ORDER_DETAIL_VIEW has not been set.")
+
 
 class PaymentMethod(models.Model):
     """A payment method, like a credit card or bank details.
@@ -186,7 +197,8 @@ class PaymentMethod(models.Model):
     This model doesn't do anything by itself; you'll need to subclass it as
     described in the :doc:`Getting Started Guide <backend>`.
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             blank=True, null=True, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
 
     objects = InheritanceManager()
@@ -201,7 +213,7 @@ class PaymentMethod(models.Model):
 
 
 class Payment(models.Model):
-    method = models.ForeignKey(PaymentMethod)
+    method = models.ForeignKey(PaymentMethod, on_delete=models.PROTECT)
 
 
 class DeliveryAddress(models.Model):
@@ -211,7 +223,7 @@ class DeliveryAddress(models.Model):
     described in the :doc:`Getting Started Guide <backend>`.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True,
-                             related_name='delivery_addresses')
+                             related_name='delivery_addresses', on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
 
     objects = InheritanceManager()
@@ -223,9 +235,10 @@ class LineItem(models.Model):
     This model doesn't do anything by itself; you'll need to subclass it as
     described in the :doc:`Getting Started Guide <backend>`.
     """
-    cart = models.ForeignKey(Cart, related_name='items', blank=True, null=True)
+    cart = models.ForeignKey(Cart, related_name='items',
+                             blank=True, null=True, on_delete=models.PROTECT)
     order = models.ForeignKey(
-        Order, related_name='items', blank=True, null=True)
+        Order, related_name='items', blank=True, null=True, on_delete=models.CASCADE)
     total_when_charged = models.DecimalField(max_digits=7, decimal_places=2,
                                              blank=True, null=True)
 
@@ -258,8 +271,8 @@ class LineItem(models.Model):
         code, use the :func:`~lorikeet.models.LineItem.total` property
         rather than calling this function.
         """
-        raise NotImplemented("Provide a get_total method in your LineItem "
-                             "subclass {}.".format(self.__class__.__name__))
+        raise NotImplementedError("Provide a get_total method in your LineItem "
+                                  "subclass {}.".format(self.__class__.__name__))
 
     def save(self, *args, **kwargs):
         if self.order is not None and not getattr(self, '_new_order'):
@@ -283,7 +296,6 @@ class LineItem(models.Model):
             `select_for_update <https://docs.djangoproject.com/en/1.10/ref/models/querysets/#select-for-update>`_.
         :type for_checkout: bool
         """
-        pass
 
     def prepare_for_checkout(self):
         """Prepare this line item for checkout.
@@ -306,7 +318,6 @@ class LineItem(models.Model):
         of the database transaction (e.g. using
         `select_for_update <https://docs.djangoproject.com/en/1.10/ref/models/querysets/#select-for-update>`_).
         """
-        pass
 
 
 class Adjustment(models.Model):
@@ -318,9 +329,9 @@ class Adjustment(models.Model):
     This model doesn't do anything by itself; you'll need to subclass it.
     """
     cart = models.ForeignKey(
-        Cart, related_name='adjustments', blank=True, null=True)
+        Cart, related_name='adjustments', blank=True, null=True, on_delete=models.CASCADE)
     order = models.ForeignKey(
-        Order, related_name='adjustments', blank=True, null=True)
+        Order, related_name='adjustments', blank=True, null=True, on_delete=models.CASCADE)
     total_when_charged = models.DecimalField(max_digits=7, decimal_places=2,
                                              blank=True, null=True)
 
@@ -338,7 +349,7 @@ class Adjustment(models.Model):
             return self.total_when_charged
         return self.get_total()
 
-    def get_total(self, subtotal):
+    def get_total(self, subtotal=None):
         """Returns the total adjustment to make to the cart.
 
         By default this raises :class:`NotImplementedError`; subclasses will
@@ -377,7 +388,6 @@ class Adjustment(models.Model):
             `select_for_update <https://docs.djangoproject.com/en/1.10/ref/models/querysets/#select-for-update>`_.
         :type for_checkout: bool
         """
-        pass
 
     def prepare_for_checkout(self):
         """Prepare this adjustment for checkout.
@@ -400,4 +410,3 @@ class Adjustment(models.Model):
         of the database transaction (e.g. using
         `select_for_update <https://docs.djangoproject.com/en/1.10/ref/models/querysets/#select-for-update>`_).
         """
-        pass

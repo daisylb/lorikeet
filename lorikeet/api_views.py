@@ -60,7 +60,7 @@ class NewAddressView(CreateAPIView):
         return ser_class(data=data['data'], *args, **kwargs)
 
     def perform_create(self, serializer):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             serializer.validated_data['user'] = self.request.user
         super().perform_create(serializer)
         cart = self.request.get_cart()
@@ -77,7 +77,7 @@ class NewPaymentMethodView(CreateAPIView):
                          *args, **kwargs)
 
     def perform_create(self, serializer):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             serializer.validated_data['user'] = self.request.user
         super().perform_create(serializer)
         cart = self.request.get_cart()
@@ -89,7 +89,7 @@ class PaymentMethodView(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         try:
-            assert self.request.user.is_authenticated()
+            assert self.request.user.is_authenticated
             return models.PaymentMethod.objects.get_subclass(
                 user=self.request.user,
                 id=self.kwargs['id'],
@@ -119,7 +119,7 @@ class DeliveryAddressView(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         try:
-            assert self.request.user.is_authenticated()
+            assert self.request.user.is_authenticated
             return models.DeliveryAddress.objects.get_subclass(
                 user=self.request.user,
                 id=self.kwargs['id'],

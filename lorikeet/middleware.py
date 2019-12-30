@@ -7,11 +7,11 @@ from .settings import LORIKEET_SET_CSRFTOKEN_EVERYWHERE
 def cart_getter_factory(request):
     def get_cart():
         if hasattr(request, '_cart'):
-            return request._cart
+            return request._cart  # pylint: disable = protected-access
 
         cart = None
 
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             cart, _ = Cart.objects.get_or_create(user=request.user)
         elif 'cart_id' in request.session:
             try:
@@ -27,10 +27,10 @@ def cart_getter_factory(request):
 
         # save the cart on the request over the top of this function,
         # so we don't have to look it up again
-        request._cart = cart
+        request._cart = cart  # pylint: disable = protected-access
 
         # perform some sanity checks on the cart
-        assert bool(cart.user) == request.user.is_authenticated()
+        assert bool(cart.user) == request.user.is_authenticated
         cart_dirty = False
         if cart.payment_method is not None and not cart.payment_method.active:
             cart.payment_method = None
@@ -46,7 +46,15 @@ def cart_getter_factory(request):
 
 class CartMiddleware:
 
+    def __init__(self, get_response):
+        self.get_response = get_response
+
     def process_request(self, request):
         request.get_cart = cart_getter_factory(request)
         if LORIKEET_SET_CSRFTOKEN_EVERYWHERE:
             get_token(request)  # Forces setting the CSRF cookie
+
+    def __call__(self, request):
+        self.process_request(request)
+        response = self.get_response(request)
+        return response
