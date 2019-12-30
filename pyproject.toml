@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lorikeet"
-version = "0.1.10"
+version = "0.2.0"
 # Don't forget to also change the version in:
 # - package.json
 # - docs/conf.py
@@ -27,7 +27,6 @@ sphinx-js = "~1.3"
 sphinxcontrib_httpdomain = "^1.5.0"
 factory-boy = "^2.11"
 pre-commit = "^1.20.0"
-prospector = "^1.2.0"
 pytest = "^5.3.2"
 pytest-django = "^3.7.0"
 pytest-pythonpath = "^0.7.3"
