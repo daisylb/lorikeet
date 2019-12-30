@@ -5,7 +5,7 @@ version = "0.1.10"
 # - package.json
 # - docs/conf.py
 description = "A simple, generic, API-only shopping cart framework for Django"
-authors = ["Adam Brenecki <adam@brenecki.id.au>"]
+authors = ["Leigh Brenecki <leigh@brenecki.id.au>"]
 license = "MIT"
 readme = "README.rst"
 homepage = "https://lorikeet.readthedocs.io/"
