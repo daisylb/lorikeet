@@ -22,24 +22,30 @@ class StripeCard(PaymentMethod):
         errors = {}
         if self.reusable:
             if self.token_id is not None:
-                errors['token_id'] = ValidationError(
-                    "token_id cannot be set if save is true")
+                errors["token_id"] = ValidationError(
+                    "token_id cannot be set if save is true"
+                )
             if not self.card_id:
-                errors['card_id'] = ValidationError(
-                    "card_id must be set if save is true")
+                errors["card_id"] = ValidationError(
+                    "card_id must be set if save is true"
+                )
             if not self.customer_id:
-                errors['customer_id'] = ValidationError(
-                    "customer_id must be set if save is true")
+                errors["customer_id"] = ValidationError(
+                    "customer_id must be set if save is true"
+                )
         else:
             if not self.token_id:
-                errors['token_id'] = ValidationError(
-                    "token_id must be set if save is false")
+                errors["token_id"] = ValidationError(
+                    "token_id must be set if save is false"
+                )
             if self.card_id is not None:
-                errors['card_id'] = ValidationError(
-                    "card_id cannot be set if save is false")
+                errors["card_id"] = ValidationError(
+                    "card_id cannot be set if save is false"
+                )
             if self.customer_id is not None:
-                errors['customer_id'] = ValidationError(
-                    "customer_id cannot be set if save is false")
+                errors["customer_id"] = ValidationError(
+                    "customer_id cannot be set if save is false"
+                )
 
         if errors:
             raise ValidationError(errors)
@@ -47,8 +53,9 @@ class StripeCard(PaymentMethod):
     @property
     def data(self):
         """Returns the corresponding customer object from the Stripe API"""
-        cache_key = 'w4yl.apps.stripe:card_data:{}'.format(
-            self.card_id or self.token_id)
+        cache_key = "w4yl.apps.stripe:card_data:{}".format(
+            self.card_id or self.token_id
+        )
         card = cache.get(cache_key)
         if card is None:
             if self.reusable:
@@ -56,7 +63,7 @@ class StripeCard(PaymentMethod):
                 card = customer.sources.retrieve(self.card_id)
             else:
                 token = stripe.Token.retrieve(self.token_id)
-                card = token['card']
+                card = token["card"]
             cache.set(cache_key, card, 3600)
         return card
 
@@ -67,23 +74,22 @@ class StripeCard(PaymentMethod):
         try:
             chg = stripe.Charge.create(
                 amount=int(amount * 100),
-                currency='AUD',
+                currency="AUD",
                 customer=self.customer_id,
                 source=self.card_id or self.token_id,
-                description='Lorikeet Order {}'.format(order.invoice_id),
+                description="Lorikeet Order {}".format(order.invoice_id),
                 metadata={
-                    'is_lorikeet_order': True,
-                    'lorikeet_order_id': order.id,
-                    'invoice_id': order.invoice_id,
-                    'user_id': order.user_id,
-                    'email': order.email,
-                }
+                    "is_lorikeet_order": True,
+                    "lorikeet_order_id": order.id,
+                    "invoice_id": order.invoice_id,
+                    "user_id": order.user_id,
+                    "email": order.email,
+                },
             )
         except stripe.error.CardError as e:
-            raise PaymentError(e.json_body['error'])
+            raise PaymentError(e.json_body["error"])
         else:
-            return StripePayment.objects.create(method=self,
-                                                charge_id=chg['id'])
+            return StripePayment.objects.create(method=self, charge_id=chg["id"])
 
 
 class StripePayment(Payment):

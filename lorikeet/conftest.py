@@ -1,7 +1,6 @@
 import pytest
 from faker import Faker
-from shop import factories
-from shop import models as smodels
+from shop import factories, models as smodels
 
 from . import models
 
@@ -21,7 +20,7 @@ def fill_cart(cart):
 def cart(client):
     cart = models.Cart.objects.create()
     session = client.session
-    session['cart_id'] = cart.id
+    session["cart_id"] = cart.id
     session.save()
     return cart
 

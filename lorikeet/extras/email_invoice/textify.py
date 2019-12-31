@@ -1,11 +1,43 @@
 from html import parser
 
-BLOCK_ELEMENTS = ('address', 'article', 'aside', 'blockquote', 'br',
-                  'canvas', 'dd', 'div', 'dl', 'fieldset', 'figcaption',
-                  'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4',
-                  'h5', 'h6', 'header', 'hgroup', 'hr', 'li', 'main',
-                  'nav', 'noscript', 'ol', 'output', 'p', 'pre',
-                  'section', 'table', 'tfoot', 'ul', 'video')
+BLOCK_ELEMENTS = (
+    "address",
+    "article",
+    "aside",
+    "blockquote",
+    "br",
+    "canvas",
+    "dd",
+    "div",
+    "dl",
+    "fieldset",
+    "figcaption",
+    "figure",
+    "footer",
+    "form",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "header",
+    "hgroup",
+    "hr",
+    "li",
+    "main",
+    "nav",
+    "noscript",
+    "ol",
+    "output",
+    "p",
+    "pre",
+    "section",
+    "table",
+    "tfoot",
+    "ul",
+    "video",
+)
 
 
 class TextifyParser(parser.HTMLParser):
@@ -14,7 +46,7 @@ class TextifyParser(parser.HTMLParser):
     def __init__(self, transformer):
         super().__init__()
         self.transformer = transformer
-        self.element_stack = [('DOCUMENT', (), [])]
+        self.element_stack = [("DOCUMENT", (), [])]
 
     def handle_starttag(self, tag, attrs):
         attr_dict = {k: v for (k, v) in attrs}
@@ -32,19 +64,19 @@ class TextifyParser(parser.HTMLParser):
         return self.element_stack[0][2]
 
     def get_string_result(self):
-        return ''.join(self.get_result())
+        return "".join(self.get_result())
 
 
 def transformer(name, attrs, body_list):
-    body = ''.join(body_list)
+    body = "".join(body_list)
 
-    if name in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
-        return body + '\n' + '=' * len(body) + '\n'
-    if name == 'a' and 'href' in attrs:
-        return body + ' [' + attrs['href'] + ']'
+    if name in ("h1", "h2", "h3", "h4", "h5", "h6"):
+        return body + "\n" + "=" * len(body) + "\n"
+    if name == "a" and "href" in attrs:
+        return body + " [" + attrs["href"] + "]"
 
     if name in BLOCK_ELEMENTS:
-        return body + '\n'
+        return body + "\n"
     else:
         return body
 

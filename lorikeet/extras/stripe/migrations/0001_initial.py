@@ -11,17 +11,27 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('lorikeet', '0004_auto_20161220_1431'),
+        ("lorikeet", "0004_auto_20161220_1431"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='StripeCard',
+            name="StripeCard",
             fields=[
-                ('paymentmethod_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='lorikeet.PaymentMethod')),
-                ('card_token', models.CharField(max_length=30)),
-                ('customer_token', models.CharField(max_length=30)),
+                (
+                    "paymentmethod_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="lorikeet.PaymentMethod",
+                    ),
+                ),
+                ("card_token", models.CharField(max_length=30)),
+                ("customer_token", models.CharField(max_length=30)),
             ],
-            bases=('lorikeet.paymentmethod',),
+            bases=("lorikeet.paymentmethod",),
         ),
     ]

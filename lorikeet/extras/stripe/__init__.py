@@ -4,7 +4,7 @@ import stripe
 
 
 class StripeAppConfig(AppConfig):
-    name = 'lorikeet.extras.stripe'
+    name = "lorikeet.extras.stripe"
     verbose_name = "Lorikeet Stripe"
 
     def ready(self):
@@ -12,8 +12,8 @@ class StripeAppConfig(AppConfig):
 
         from . import models, api_serializers
         from lorikeet.api_serializers import registry
-        registry.register(models.StripeCard,
-                          api_serializers.StripeCardSerializer)
+
+        registry.register(models.StripeCard, api_serializers.StripeCardSerializer)
 
 
-default_app_config = 'lorikeet.extras.stripe.StripeAppConfig'
+default_app_config = "lorikeet.extras.stripe.StripeAppConfig"

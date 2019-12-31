@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lorikeet', '0005_cart_payment_method'),
+        ("lorikeet", "0005_cart_payment_method"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='paymentmethod',
-            name='active',
+            model_name="paymentmethod",
+            name="active",
             field=models.BooleanField(default=True),
         ),
     ]

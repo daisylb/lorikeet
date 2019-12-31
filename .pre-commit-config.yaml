@@ -33,6 +33,7 @@
   hooks:
     - id: python-bandit-vulnerability-check
       args: [--recursive]
+      exclude: (^|/)(.*_test|.*_test_.*|tests).py$
 - repo: https://github.com/prettier/prettier
   rev: 1.16.4
   hooks:
@@ -40,4 +41,4 @@
       language_version: system
       types: [file]
       files: \.(css|less|scss|ts|tsx|graphql|gql|json|js|jsx)$
-      exclude: \.min\.(js|css)$
+      exclude: \.min\.(js|css)$|^package-lock\.json$

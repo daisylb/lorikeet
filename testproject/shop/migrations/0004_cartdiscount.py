@@ -9,17 +9,27 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lorikeet', '0015_adjustment'),
-        ('shop', '0003_pipepayment'),
+        ("lorikeet", "0015_adjustment"),
+        ("shop", "0003_pipepayment"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CartDiscount',
+            name="CartDiscount",
             fields=[
-                ('adjustment_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='lorikeet.Adjustment')),
-                ('percentage', models.PositiveSmallIntegerField()),
+                (
+                    "adjustment_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="lorikeet.Adjustment",
+                    ),
+                ),
+                ("percentage", models.PositiveSmallIntegerField()),
             ],
-            bases=('lorikeet.adjustment',),
+            bases=("lorikeet.adjustment",),
         ),
     ]

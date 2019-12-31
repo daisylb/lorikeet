@@ -11,29 +11,49 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('lorikeet', '0005_cart_payment_method'),
+        ("lorikeet", "0005_cart_payment_method"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='MyLineItem',
+            name="MyLineItem",
             fields=[
-                ('lineitem_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='lorikeet.LineItem')),
-                ('quantity', models.PositiveSmallIntegerField()),
+                (
+                    "lineitem_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="lorikeet.LineItem",
+                    ),
+                ),
+                ("quantity", models.PositiveSmallIntegerField()),
             ],
-            bases=('lorikeet.lineitem',),
+            bases=("lorikeet.lineitem",),
         ),
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('unit_price', models.DecimalField(decimal_places=2, max_digits=7)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("unit_price", models.DecimalField(decimal_places=2, max_digits=7)),
             ],
         ),
         migrations.AddField(
-            model_name='mylineitem',
-            name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='shop.Product'),
+            model_name="mylineitem",
+            name="product",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT, to="shop.Product"
+            ),
         ),
     ]

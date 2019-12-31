@@ -11,15 +11,30 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('lorikeet', '0013_auto_20170307_1512'),
+        ("lorikeet", "0013_auto_20170307_1512"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='StarShipItOrder',
+            name="StarShipItOrder",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('order', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='starshipit_order', to='lorikeet.Order')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "order",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="starshipit_order",
+                        to="lorikeet.Order",
+                    ),
+                ),
             ],
         ),
     ]

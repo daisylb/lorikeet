@@ -36,9 +36,11 @@ class LineItemSerializerRegistry:
         elif issubclass(model, models.Adjustment):
             self.adjustments[model.__name__] = serializer
         else:
-            raise ValueError("model must be a subclass of "
-                             "LineItem, PaymentMethod, DeliveryAddress or "
-                             "Adjustment")
+            raise ValueError(
+                "model must be a subclass of "
+                "LineItem, PaymentMethod, DeliveryAddress or "
+                "Adjustment"
+            )
 
     def get_serializer_class(self, instance):
         if isinstance(instance, models.LineItem):
@@ -49,9 +51,11 @@ class LineItemSerializerRegistry:
             return self.delivery_addresses[instance.__class__.__name__]
         if isinstance(instance, models.Adjustment):
             return self.adjustments[instance.__class__.__name__]
-        raise ValueError("instance must be an instance of a "
-                         "LineItem, PaymentMethod, DeliveryAddress or "
-                         "Adjustment subclass")
+        raise ValueError(
+            "instance must be an instance of a "
+            "LineItem, PaymentMethod, DeliveryAddress or "
+            "Adjustment subclass"
+        )
 
     def get_serializer(self, instance):
         return self.get_serializer_class(instance)(instance)
@@ -61,15 +65,16 @@ registry = LineItemSerializerRegistry()
 
 
 class WritableSerializerMethodField(fields.SerializerMethodField):
-
     def __init__(self, write_serializer, method_name=None, **kwargs):
         self.method_name = method_name
         self.write_serializer = write_serializer
-        kwargs['source'] = '*'
+        kwargs["source"] = "*"
         super(fields.SerializerMethodField, self).__init__(**kwargs)  # noqa
 
     def to_internal_value(self, representation):
-        return {self.field_name: self.write_serializer.to_representation(representation)}
+        return {
+            self.field_name: self.write_serializer.to_representation(representation)
+        }
 
 
 class PrimaryKeyModelSerializer(serializers.ModelSerializer):
@@ -97,7 +102,6 @@ class PrimaryKeyModelSerializer(serializers.ModelSerializer):
 
 
 class RegistryRelatedField(fields.Field):
-
     def to_representation(self, instance):
         return registry.get_serializer(instance).data
 
@@ -122,11 +126,11 @@ class LineItemMetadataSerializer(RegistryRelatedWithMetadataSerializer):
         return str(instance.get_total())
 
     def get_url(self, instance):
-        return reverse('lorikeet:cart-item', kwargs={'id': instance.id})
+        return reverse("lorikeet:cart-item", kwargs={"id": instance.id})
 
     def update(self, instance, validated_data):
         ser = registry.get_serializer(instance)
-        return ser.update(instance, validated_data['data'])
+        return ser.update(instance, validated_data["data"])
 
 
 class DeliveryAddressSerializer(RegistryRelatedWithMetadataSerializer):
@@ -134,14 +138,14 @@ class DeliveryAddressSerializer(RegistryRelatedWithMetadataSerializer):
     url = fields.SerializerMethodField()
 
     def get_selected(self, instance):
-        return instance.id == self.context['cart'].delivery_address_id
+        return instance.id == self.context["cart"].delivery_address_id
 
     def get_url(self, instance):
-        return reverse('lorikeet:address', kwargs={'id': instance.id})
+        return reverse("lorikeet:address", kwargs={"id": instance.id})
 
     def update(self, instance, validated_data):
-        if validated_data['selected']:
-            cart = self.context['cart']
+        if validated_data["selected"]:
+            cart = self.context["cart"]
             cart.delivery_address = instance
             cart.save()
         return instance
@@ -152,17 +156,17 @@ class PaymentMethodSerializer(RegistryRelatedWithMetadataSerializer):
     url = fields.SerializerMethodField()
 
     def get_selected(self, instance):
-        return instance.id == self.context['cart'].payment_method_id
+        return instance.id == self.context["cart"].payment_method_id
 
     def update(self, instance, validated_data):
-        if validated_data['selected']:
-            cart = self.context['cart']
+        if validated_data["selected"]:
+            cart = self.context["cart"]
             cart.payment_method = instance
             cart.save()
         return instance
 
     def get_url(self, instance):
-        return reverse('lorikeet:payment-method', kwargs={'id': instance.id})
+        return reverse("lorikeet:payment-method", kwargs={"id": instance.id})
 
 
 class AdjustmentSerializer(RegistryRelatedWithMetadataSerializer):
@@ -174,11 +178,10 @@ class AdjustmentSerializer(RegistryRelatedWithMetadataSerializer):
         return str(instance.get_total(instance.cart.get_subtotal()))
 
     def get_url(self, instance):
-        return reverse('lorikeet:adjustment', kwargs={'id': instance.id})
+        return reverse("lorikeet:adjustment", kwargs={"id": instance.id})
 
 
 class SubclassListSerializer(serializers.ListSerializer):
-
     def to_representation(self, instance, *args, **kwargs):
         instance = instance.select_subclasses()
         return super().to_representation(instance, *args, **kwargs)
@@ -188,7 +191,8 @@ class CartSerializer(serializers.ModelSerializer):
     items = SubclassListSerializer(child=LineItemMetadataSerializer())
     new_item_url = fields.SerializerMethodField()
     subtotal = fields.DecimalField(
-        max_digits=7, decimal_places=2, source='get_subtotal')
+        max_digits=7, decimal_places=2, source="get_subtotal"
+    )
     delivery_addresses = fields.SerializerMethodField()
     new_address_url = fields.SerializerMethodField()
     payment_methods = fields.SerializerMethodField()
@@ -196,7 +200,8 @@ class CartSerializer(serializers.ModelSerializer):
     adjustments = SubclassListSerializer(child=AdjustmentSerializer())
     new_adjustment_url = fields.SerializerMethodField()
     grand_total = fields.DecimalField(
-        max_digits=7, decimal_places=2, source='get_grand_total')
+        max_digits=7, decimal_places=2, source="get_grand_total"
+    )
     is_complete = fields.SerializerMethodField()
     incomplete_reasons = fields.SerializerMethodField()
     is_authenticated = fields.SerializerMethodField()
@@ -207,10 +212,10 @@ class CartSerializer(serializers.ModelSerializer):
     incompatible_version = fields.SerializerMethodField()
 
     def get_new_item_url(self, _):
-        return reverse('lorikeet:add-to-cart')
+        return reverse("lorikeet:add-to-cart")
 
     def get_new_address_url(self, _):
-        return reverse('lorikeet:new-address')
+        return reverse("lorikeet:new-address")
 
     def get_delivery_addresses(self, cart):
         selected = cart.delivery_address_subclass
@@ -218,15 +223,18 @@ class CartSerializer(serializers.ModelSerializer):
 
         if cart.user:
             the_set = cart.user.delivery_addresses.filter(
-                active=True).select_subclasses()
+                active=True
+            ).select_subclasses()
 
         if selected is not None and selected not in the_set:
             the_set = chain(the_set, [selected])
 
-        return DeliveryAddressSerializer(instance=the_set, many=True, context={'cart': cart}).data
+        return DeliveryAddressSerializer(
+            instance=the_set, many=True, context={"cart": cart}
+        ).data
 
     def get_new_payment_method_url(self, _):
-        return reverse('lorikeet:new-payment-method')
+        return reverse("lorikeet:new-payment-method")
 
     def get_payment_methods(self, cart):
         the_set = []
@@ -234,15 +242,18 @@ class CartSerializer(serializers.ModelSerializer):
 
         if cart.user:
             the_set = cart.user.paymentmethod_set.filter(
-                active=True).select_subclasses()
+                active=True
+            ).select_subclasses()
 
         if selected is not None and selected not in the_set:
             the_set = chain(the_set, [selected])
 
-        return PaymentMethodSerializer(instance=the_set, many=True, context={'cart': cart}).data
+        return PaymentMethodSerializer(
+            instance=the_set, many=True, context={"cart": cart}
+        ).data
 
     def get_new_adjustment_url(self, _):
-        return reverse('lorikeet:new-adjustment')
+        return reverse("lorikeet:new-adjustment")
 
     def get_generated_at(self, cart):
         return time()
@@ -257,7 +268,7 @@ class CartSerializer(serializers.ModelSerializer):
         return cart.user_id is not None
 
     def get_checkout_url(self, _):
-        return reverse('lorikeet:checkout')
+        return reverse("lorikeet:checkout")
 
     def get_compatible_version(self, _):
         return 2
@@ -267,13 +278,26 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Cart
-        fields = ('items', 'new_item_url', 'delivery_addresses',
-                  'new_address_url', 'payment_methods',
-                  'new_payment_method_url', 'grand_total', 'generated_at',
-                  'is_complete', 'incomplete_reasons', 'checkout_url',
-                  'is_authenticated', 'email', 'adjustments',
-                  'new_adjustment_url', 'subtotal', 'compatible_version',
-                  'incompatible_version')
+        fields = (
+            "items",
+            "new_item_url",
+            "delivery_addresses",
+            "new_address_url",
+            "payment_methods",
+            "new_payment_method_url",
+            "grand_total",
+            "generated_at",
+            "is_complete",
+            "incomplete_reasons",
+            "checkout_url",
+            "is_authenticated",
+            "email",
+            "adjustments",
+            "new_adjustment_url",
+            "subtotal",
+            "compatible_version",
+            "incompatible_version",
+        )
 
 
 class CartUpdateSerializer(serializers.ModelSerializer):
@@ -281,22 +305,24 @@ class CartUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Cart
-        fields = ('email',)
+        fields = ("email",)
 
 
 class LineItemSerializer(serializers.ModelSerializer):
     """Base serializer for LineItem subclasses."""
 
     def __init__(self, instance=None, *args, **kwargs):  # noqa
-        if 'cart' in kwargs:
-            self.cart = kwargs.pop('cart')
+        if "cart" in kwargs:
+            self.cart = kwargs.pop("cart")
         elif instance is not None:
             self.cart = instance.cart
         else:
-            raise TypeError("Either instance or cart arguments must be "
-                            "provided to {}".format(self.__class__.__name__))
+            raise TypeError(
+                "Either instance or cart arguments must be "
+                "provided to {}".format(self.__class__.__name__)
+            )
         super().__init__(instance, *args, **kwargs)
 
     def create(self, validated_data):
-        validated_data['cart'] = self.cart
+        validated_data["cart"] = self.cart
         return super().create(validated_data)

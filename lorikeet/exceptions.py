@@ -37,9 +37,9 @@ class IncompleteCartError(Exception):
         :rtype: dict
         """
         return {
-            'code': self.code,
-            'message': self.message,
-            'field': self.field,
+            "code": self.code,
+            "message": self.message,
+            "field": self.field,
         }
 
     def __key(self):

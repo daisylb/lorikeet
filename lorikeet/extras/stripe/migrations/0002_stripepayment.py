@@ -9,17 +9,27 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('lorikeet', '0008_auto_20170117_0453'),
-        ('stripe', '0001_initial'),
+        ("lorikeet", "0008_auto_20170117_0453"),
+        ("stripe", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='StripePayment',
+            name="StripePayment",
             fields=[
-                ('payment_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='lorikeet.Payment')),
-                ('charge_id', models.CharField(max_length=30)),
+                (
+                    "payment_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="lorikeet.Payment",
+                    ),
+                ),
+                ("charge_id", models.CharField(max_length=30)),
             ],
-            bases=('lorikeet.payment',),
+            bases=("lorikeet.payment",),
         ),
     ]
