@@ -14,7 +14,7 @@ repository = "https://github.com/excitedleigh/lorikeet"
 [tool.poetry.dependencies]
 python = ">=3.5"
 django = ">=1.8,<2.3"
-django-model-utils = "^3.2"
+django-model-utils = ">=3.2,<5.0"
 djangorestframework = "^3.10"
 stripe = {version = "^2.41", optional = true}
 premailer = {version = "^3.6", optional = true}

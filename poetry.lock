@@ -133,10 +133,10 @@ description = "Django model mixins and utilities"
 name = "django-model-utils"
 optional = false
 python-versions = "*"
-version = "3.2.0"
+version = "4.0.0"
 
 [package.dependencies]
-Django = ">=1.11"
+Django = ">=2.0.1"
 
 [[package]]
 category = "main"
@@ -662,7 +662,7 @@ starshipit = ["requests"]
 stripe = ["stripe"]
 
 [metadata]
-content-hash = "623d4dc46106f31616c2b6c0484dc650d84890665611a63d96b5b5e7d7152b38"
+content-hash = "b47c3c63a8c682c1171956d6d9e7dc22a9ec96cc799a98055d29f1ac272b70d6"
 python-versions = ">=3.5"
 
 [metadata.files]
@@ -719,8 +719,8 @@ django = [
     {file = "Django-2.2.10.tar.gz", hash = "sha256:1226168be1b1c7efd0e66ee79b0e0b58b2caa7ed87717909cd8a57bb13a7079a"},
 ]
 django-model-utils = [
-    {file = "django-model-utils-3.2.0.tar.gz", hash = "sha256:682f58c1de330cedcda58cc85d5232c5b47a9e2cb67bef4541fb43fdaeb18e96"},
-    {file = "django_model_utils-3.2.0-py2.py3-none-any.whl", hash = "sha256:3f130a262e45d73e0950d2be76af4bf4ee86804dd60e5f90afc5cd948fcfe760"},
+    {file = "django-model-utils-4.0.0.tar.gz", hash = "sha256:adf09e5be15122a7f4e372cb5a6dd512bbf8d78a23a90770ad0983ee9d909061"},
+    {file = "django_model_utils-4.0.0-py2.py3-none-any.whl", hash = "sha256:9cf882e5b604421b62dbe57ad2b18464dc9c8f963fc3f9831badccae66c1139c"},
 ]
 djangorestframework = [
     {file = "djangorestframework-3.11.0-py3-none-any.whl", hash = "sha256:05809fc66e1c997fd9a32ea5730d9f4ba28b109b9da71fccfa5ff241201fd0a4"},
