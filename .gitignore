@@ -11,3 +11,4 @@ testproject/db.sqlite3
 .python-version
 .env
 .nox
+dist
