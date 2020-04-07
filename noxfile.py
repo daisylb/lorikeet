@@ -7,8 +7,8 @@ nox.options.reuse_existing_virtualenvs = True
 nox.options.error_on_external_run = True
 
 
-@nox.session(python=("3.5", "3.6", "3.7"))
-@nox.parametrize("django", ("1.11", "2.0", "2.1", "2.2"))
+@nox.session(python=("3.6", "3.7", "3.8"))
+@nox.parametrize("django", ("2.2", "3.0"))
 def tests(session, django):
     session.install("poetry")
     session.run(
