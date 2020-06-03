@@ -400,7 +400,7 @@ description = "pytest: simple powerful testing with Python"
 name = "pytest"
 optional = false
 python-versions = ">=3.5"
-version = "5.3.2"
+version = "5.4.3"
 
 [package.dependencies]
 atomicwrites = ">=1.0"
@@ -421,6 +421,7 @@ python = "<3.6"
 version = ">=2.2.0"
 
 [package.extras]
+checkqa-mypy = ["mypy (v0.761)"]
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
 
 [[package]]
@@ -662,7 +663,7 @@ starshipit = ["requests"]
 stripe = ["stripe"]
 
 [metadata]
-content-hash = "c08d8e293f092070a69b77f6f0fdaa17f7f13fa17bb7d600b7f7556285892079"
+content-hash = "1c2783d58fa76d0f2bf6829bb8c2e70dc3b12435b84baada6bf9a18e336a44ed"
 python-versions = ">=3.5"
 
 [metadata.files]
@@ -866,8 +867,8 @@ pyparsing = [
     {file = "pyparsing-2.4.6.tar.gz", hash = "sha256:4c830582a84fb022400b85429791bc551f1f4871c33f23e44f353119e92f969f"},
 ]
 pytest = [
-    {file = "pytest-5.3.2-py3-none-any.whl", hash = "sha256:e41d489ff43948babd0fad7ad5e49b8735d5d55e26628a58673c39ff61d95de4"},
-    {file = "pytest-5.3.2.tar.gz", hash = "sha256:6b571215b5a790f9b41f19f3531c53a45cf6bb8ef2988bc1ff9afb38270b25fa"},
+    {file = "pytest-5.4.3-py3-none-any.whl", hash = "sha256:5c0db86b698e8f170ba4582a492248919255fcd4c79b1ee64ace34301fb589a1"},
+    {file = "pytest-5.4.3.tar.gz", hash = "sha256:7979331bfcba207414f5e1263b5a0f8f521d0f457318836a7355531ed1a4c7d8"},
 ]
 pytest-django = [
     {file = "pytest-django-3.7.0.tar.gz", hash = "sha256:17592f06d51c2ef4b7a0fb24aa32c8b6998506a03c8439606cb96db160106659"},
