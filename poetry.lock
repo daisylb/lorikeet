@@ -299,6 +299,17 @@ six = "*"
 
 [[package]]
 category = "dev"
+description = "(Soon to be) the fastest pure-Python PEG parser I could muster"
+name = "parsimonious"
+optional = false
+python-versions = "*"
+version = "0.7.0"
+
+[package.dependencies]
+six = "*"
+
+[[package]]
+category = "dev"
 description = "Object-oriented filesystem paths"
 marker = "python_version < \"3.6\""
 name = "pathlib2"
@@ -541,13 +552,14 @@ description = "Support for using Sphinx on JSDoc-documented JS code"
 name = "sphinx-js"
 optional = false
 python-versions = "*"
-version = "1.3.1"
+version = "2.7.1"
 
 [package.dependencies]
 Jinja2 = ">2.0,<3.0"
 Sphinx = "<2.0"
 docutils = "*"
-six = "<2.0"
+parsimonious = ">=0.7.0,<0.8.0"
+six = ">=1.9.0,<2.0"
 
 [[package]]
 category = "dev"
@@ -663,7 +675,7 @@ starshipit = ["requests"]
 stripe = ["stripe"]
 
 [metadata]
-content-hash = "1c2783d58fa76d0f2bf6829bb8c2e70dc3b12435b84baada6bf9a18e336a44ed"
+content-hash = "144bb29f972ca46b875c11ff625389b51b04939eb187b259d75d7badaa7753d7"
 python-versions = ">=3.5"
 
 [metadata.files]
@@ -838,6 +850,9 @@ packaging = [
     {file = "packaging-19.2-py2.py3-none-any.whl", hash = "sha256:d9551545c6d761f3def1677baf08ab2a3ca17c56879e70fecba2fc4dde4ed108"},
     {file = "packaging-19.2.tar.gz", hash = "sha256:28b924174df7a2fa32c1953825ff29c61e2f5e082343165438812f00d3a7fc47"},
 ]
+parsimonious = [
+    {file = "parsimonious-0.7.0.tar.gz", hash = "sha256:396d424f64f834f9463e81ba79a331661507a21f1ed7b644f7f6a744006fd938"},
+]
 pathlib2 = [
     {file = "pathlib2-2.3.5-py2.py3-none-any.whl", hash = "sha256:0ec8205a157c80d7acc301c0b18fbd5d44fe655968f5d947b6ecef5290fc35db"},
     {file = "pathlib2-2.3.5.tar.gz", hash = "sha256:6cd9a47b597b37cc57de1c05e56fb1a1c9cc9fab04fe78c29acd090418529868"},
@@ -915,7 +930,7 @@ sphinx = [
     {file = "Sphinx-1.5.6.tar.gz", hash = "sha256:565a72dd39dd6ea2e8c548d34c127c981e4bcaead69a2c456a6e33ef69151ace"},
 ]
 sphinx-js = [
-    {file = "sphinx-js-1.3.1.tar.gz", hash = "sha256:d9b10842256b954571b1f77ec3a0f99bc23f1e8c7e4e3f8c10757c4cc2a62f1a"},
+    {file = "sphinx-js-2.7.1.tar.gz", hash = "sha256:daa5a9da8f43aaeccf6cf696194d86a3a10c2e0210c392c15f95df2112fc6f6c"},
 ]
 sphinx-rtd-theme = [
     {file = "sphinx_rtd_theme-0.1.9-py2-none-any.whl", hash = "sha256:3c38d037713bd78043486eea5bf771d71ed697ec25c09e16f49e44887f7fe184"},
