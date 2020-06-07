@@ -551,14 +551,14 @@ six = "<2.0"
 
 [[package]]
 category = "dev"
-description = "ReadTheDocs.org theme for Sphinx, 2013 version."
+description = "Read the Docs theme for Sphinx"
 name = "sphinx-rtd-theme"
 optional = false
 python-versions = "*"
-version = "0.1.9"
+version = "0.4.3"
 
 [package.dependencies]
-sphinx = ">=1.3"
+sphinx = "*"
 
 [[package]]
 category = "dev"
@@ -663,7 +663,7 @@ starshipit = ["requests"]
 stripe = ["stripe"]
 
 [metadata]
-content-hash = "1c2783d58fa76d0f2bf6829bb8c2e70dc3b12435b84baada6bf9a18e336a44ed"
+content-hash = "4b9aa87c9eeecaa2a076c406bc0235b16ae4c368afe63f42ab8d733f441df0e6"
 python-versions = ">=3.5"
 
 [metadata.files]
@@ -918,9 +918,8 @@ sphinx-js = [
     {file = "sphinx-js-1.3.1.tar.gz", hash = "sha256:d9b10842256b954571b1f77ec3a0f99bc23f1e8c7e4e3f8c10757c4cc2a62f1a"},
 ]
 sphinx-rtd-theme = [
-    {file = "sphinx_rtd_theme-0.1.9-py2-none-any.whl", hash = "sha256:3c38d037713bd78043486eea5bf771d71ed697ec25c09e16f49e44887f7fe184"},
-    {file = "sphinx_rtd_theme-0.1.9-py3-none-any.whl", hash = "sha256:46c2ca8b482b0398b9621bb5a8ec7c9c5c7226926e5363e18d744f5f0d39d78f"},
-    {file = "sphinx_rtd_theme-0.1.9.tar.gz", hash = "sha256:273846f8aacac32bf9542365a593b495b68d8035c2e382c9ccedcac387c9a0a1"},
+    {file = "sphinx_rtd_theme-0.4.3-py2.py3-none-any.whl", hash = "sha256:00cf895504a7895ee433807c62094cf1e95f065843bf3acd17037c3e9a2becd4"},
+    {file = "sphinx_rtd_theme-0.4.3.tar.gz", hash = "sha256:728607e34d60456d736cc7991fd236afb828b21b82f956c5ea75f94c8414040a"},
 ]
 sphinxcontrib-httpdomain = [
     {file = "sphinxcontrib-httpdomain-1.7.0.tar.gz", hash = "sha256:ac40b4fba58c76b073b03931c7b8ead611066a6aebccafb34dc19694f4eb6335"},
