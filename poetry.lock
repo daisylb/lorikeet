@@ -586,7 +586,7 @@ description = "Python bindings for the Stripe API"
 name = "stripe"
 optional = true
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "2.41.0"
+version = "2.54.0"
 
 [package.dependencies]
 [package.dependencies.requests]
@@ -664,6 +664,7 @@ stripe = ["stripe"]
 
 [metadata]
 content-hash = "1c2783d58fa76d0f2bf6829bb8c2e70dc3b12435b84baada6bf9a18e336a44ed"
+lock-version = "1.0"
 python-versions = ">=3.5"
 
 [metadata.files]
@@ -899,6 +900,7 @@ pyyaml = [
     {file = "PyYAML-5.2.tar.gz", hash = "sha256:c0ee8eca2c582d29c3c2ec6e2c4f703d1b7f1fb10bc72317355a746057e7346c"},
 ]
 requests = [
+    {file = "requests-2.23.0-py2.7.egg", hash = "sha256:5d2d0ffbb515f39417009a46c14256291061ac01ba8f875b90cad137de83beb4"},
     {file = "requests-2.23.0-py2.py3-none-any.whl", hash = "sha256:43999036bfa82904b6af1d99e4882b560e5e2c68e5c4b0aa03b655f3d7d73fee"},
     {file = "requests-2.23.0.tar.gz", hash = "sha256:b3f43d496c6daba4493e7c431722aeb7dbc6288f52a6e04e7b6023b0247817e6"},
 ]
@@ -931,8 +933,8 @@ sqlparse = [
     {file = "sqlparse-0.3.0.tar.gz", hash = "sha256:7c3dca29c022744e95b547e867cee89f4fce4373f3549ccd8797d8eb52cdb873"},
 ]
 stripe = [
-    {file = "stripe-2.41.0-py2.py3-none-any.whl", hash = "sha256:50900b01a6db4f4f8db0f02a5125db0b2d732252c7683f73187abd08b7d238f3"},
-    {file = "stripe-2.41.0.tar.gz", hash = "sha256:2f0ec677136985ece9cca232f106c2a87193261cac1fe58d4e959215310a0da8"},
+    {file = "stripe-2.54.0-py2.py3-none-any.whl", hash = "sha256:6daf0dcb7f9cb8d1af93e94eb7d91df4c0b112db517c8c446017ea0b7f037c83"},
+    {file = "stripe-2.54.0.tar.gz", hash = "sha256:a622bce0d6d0ac99a53b6e6a6475c39250207d644f28ad0ed276af7b96d12617"},
 ]
 text-unidecode = [
     {file = "text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93"},
