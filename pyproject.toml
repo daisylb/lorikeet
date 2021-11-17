@@ -21,7 +21,7 @@ premailer = {version = "^3.6", optional = true}
 requests = {version = "^2.21", optional = true}
 
 [tool.poetry.dev-dependencies]
-sphinx = "~1.5.1"
+sphinx = "~1.8.6"
 sphinx-rtd-theme = "^0.1.9"
 sphinx-js = "~1.3"
 sphinxcontrib_httpdomain = "^1.5.0"
