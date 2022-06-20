@@ -16,7 +16,7 @@ python = ">=3.5"
 django = ">=2.2,<4"
 django-model-utils = "^4.0.0"
 djangorestframework = "^3.10"
-stripe = {version = "^2.41", optional = true}
+stripe = {version = ">=2.41,<4.0", optional = true}
 premailer = {version = "^3.6", optional = true}
 requests = {version = "^2.21", optional = true}
 
